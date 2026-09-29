@@ -1,12 +1,13 @@
 {
-  "name": "skillpassport",
+  "name": "credonet",
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
+    "dev": "npm run dev:frontend",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run dev",
+    "start:backend": "cd backend && npm start",
+    "build:frontend": "cd frontend && npm run build",
     "compile": "hardhat compile",
     "test:contract": "hardhat test",
     "deploy:local": "hardhat run scripts/deploy.js --network localhost",

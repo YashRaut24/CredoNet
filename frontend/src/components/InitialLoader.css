@@ -1,0 +1,144 @@
+/* InitialLoader.css - Enterprise Security Handshake Loading Animation */
+.initial-loader-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #0d0b09;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+.initial-loader-overlay.fade-out {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.loader-box {
+  width: 100%;
+  max-width: 440px;
+  background: #14110e;
+  border: 1px solid #2e261f;
+  border-radius: 12px;
+  padding: 36px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Security Scanner Sweep Bar */
+.loader-scanner-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #e36128;
+  animation: scan-vertical 2s ease-in-out infinite;
+}
+
+@keyframes scan-vertical {
+  0% { transform: translateY(0); opacity: 0.3; }
+  50% { transform: translateY(280px); opacity: 1; }
+  100% { transform: translateY(0); opacity: 0.3; }
+}
+
+.loader-icon-container {
+  width: 60px;
+  height: 60px;
+  border-radius: 10px;
+  background: #1d1814;
+  border: 1px solid #3d3228;
+  color: #e36128;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.loader-brand {
+  font-size: 20px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+  margin-bottom: 4px;
+}
+
+.loader-brand span {
+  color: #e36128;
+}
+
+.loader-subtitle {
+  font-size: 12.5px;
+  color: #9c9284;
+  margin-bottom: 24px;
+}
+
+/* Status Audit Terminal Lines */
+.loader-terminal {
+  width: 100%;
+  background: #0d0b09;
+  border: 1px solid #261f19;
+  border-radius: 6px;
+  padding: 12px 14px;
+  text-align: left;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: #c4b9a8;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 22px;
+}
+
+.loader-terminal-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.terminal-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #e36128;
+}
+
+.terminal-dot.done {
+  background: #10b981;
+}
+
+/* Progress bar */
+.loader-progress-track {
+  width: 100%;
+  height: 4px;
+  background: #241d17;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.loader-progress-fill {
+  height: 100%;
+  background: #e36128;
+  border-radius: 2px;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.loader-progress-text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: #7d7263;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}

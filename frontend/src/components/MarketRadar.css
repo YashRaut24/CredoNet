@@ -1,0 +1,191 @@
+.radar-card {
+  position: relative;
+  background: #14110e;
+  border: 1px solid #332b23;
+  border-radius: var(--radius-xl);
+  padding: 28px;
+  min-height: 380px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.radar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  position: relative;
+  z-index: 2;
+}
+
+.radar-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.radar-stat-badge {
+  background: #1c1813;
+  border: 1px solid #3d3228;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  text-align: right;
+}
+
+.radar-stat-tag {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  display: block;
+}
+
+.radar-stat-growth {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent-primary);
+  display: block;
+  margin: 2px 0;
+}
+
+.radar-stat-skills {
+  font-size: 10px;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+}
+
+/* Radar Orbits Canvas (Clean Geometric Rings, No Gradients/Glows) */
+.radar-arena {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 320px;
+  height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.radar-ring {
+  position: absolute;
+  border-radius: 50%;
+  box-sizing: border-box;
+}
+
+.radar-ring-1 {
+  width: 140px;
+  height: 140px;
+  border: 1px solid #382e25;
+}
+
+.radar-ring-2 {
+  width: 220px;
+  height: 220px;
+  border: 1px dashed #2d251d;
+}
+
+.radar-ring-3 {
+  width: 300px;
+  height: 300px;
+  border: 1px solid #231c16;
+}
+
+/* Center Solid Core (No Gradients, No Glows) */
+.radar-core {
+  position: relative;
+  z-index: 3;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: var(--accent-primary);
+  border: 2px solid #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #ffffff;
+  pointer-events: auto;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.radar-core:hover {
+  transform: scale(1.03);
+}
+
+.core-tag {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.core-sub {
+  font-size: 9px;
+  font-weight: 600;
+  line-height: 1.15;
+  margin-top: 2px;
+}
+
+/* Bottom elements */
+.radar-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  position: relative;
+  z-index: 2;
+}
+
+.readiness-box {
+  background: #1c1813;
+  border: 1px solid #332b23;
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+}
+
+.readiness-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  display: block;
+  margin-bottom: 6px;
+}
+
+.readiness-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 14px;
+  margin-bottom: 6px;
+}
+
+.readiness-bar {
+  width: 4px;
+  background: var(--accent-primary);
+  border-radius: 1px;
+}
+
+.readiness-bar:nth-child(1) { height: 40%; }
+.readiness-bar:nth-child(2) { height: 65%; }
+.readiness-bar:nth-child(3) { height: 85%; }
+.readiness-bar:nth-child(4) { height: 100%; }
+.readiness-bar:nth-child(5) { height: 90%; }
+
+.readiness-value {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.radar-sub-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}

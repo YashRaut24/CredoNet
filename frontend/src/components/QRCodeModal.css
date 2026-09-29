@@ -1,0 +1,65 @@
+.qr-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 6, 5, 0.85);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.qr-modal {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-xl);
+  padding: 32px;
+  max-width: 400px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+}
+
+.qr-close-btn {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  color: var(--text-muted);
+  transition: color 0.2s;
+  padding: 4px;
+}
+
+.qr-close-btn:hover {
+  color: var(--text-highlight);
+}
+
+.qr-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-highlight);
+  margin-bottom: 6px;
+}
+
+.qr-description {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+}
+
+.qr-box-wrap {
+  padding: 16px;
+  background: #ffffff;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  margin-bottom: 24px;
+}
+
+.qr-actions {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}

@@ -1,0 +1,104 @@
+/* PassportPage.css */
+.passport-page {
+  padding: 40px 0 90px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.passport-hero-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-xl);
+  padding: 36px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+  box-shadow: var(--shadow-card);
+}
+
+.passport-identity-wrap {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.passport-avatar-shield {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-lg);
+  background: var(--accent-primary);
+  border: 1px solid var(--accent-hover);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.passport-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text-highlight);
+  letter-spacing: -0.01em;
+}
+
+.passport-address-chip {
+  font-family: var(--font-mono);
+  font-size: 13.5px;
+  color: var(--accent-light);
+  background: rgba(242, 108, 54, 0.1);
+  border: 1px solid rgba(242, 108, 54, 0.25);
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Skills Cloud */
+.skills-cloud-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.skills-cloud-header {
+  font-size: 13px;
+  font-family: var(--font-mono);
+  color: var(--accent-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+}
+
+.skills-chips-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.skill-chip {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-medium);
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+
+.skill-chip:hover {
+  border-color: var(--accent-primary);
+  color: #ffffff;
+  transform: translateY(-1px);
+}

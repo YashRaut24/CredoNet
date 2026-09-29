@@ -1,0 +1,390 @@
+/* CredoVaultCard.css - CredoNet Sovereign Credential Vault */
+
+.credo-vault-card {
+  width: 100%;
+  max-width: 550px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-neutral);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
+  position: relative;
+}
+
+/* Status Bar */
+.vault-status-bar {
+  background: var(--bg-surface-elevated);
+  border-bottom: 1px solid var(--border-neutral);
+  padding: 10px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.vault-protocol-tag {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--accent-primary);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.vault-serial-tag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+
+/* Main Plate Header */
+.vault-plate-header {
+  padding: 18px 20px;
+  display: flex;
+  gap: 16px;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-neutral);
+}
+
+.vault-sigil-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.vault-sigil-frame {
+  width: 70px;
+  height: 82px;
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-accent);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-primary);
+}
+
+.vault-state-pill {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  padding: 2px 7px;
+  border-radius: var(--radius-full);
+  font-size: 9px;
+  font-weight: 700;
+  color: #10b981;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.vault-state-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #10b981;
+}
+
+.vault-meta-zone {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.vault-origin-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.vault-sub-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.vault-holder-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-highlight);
+  letter-spacing: 0.02em;
+}
+
+.vault-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px 12px;
+}
+
+.vault-val-text {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+/* Tab Strip */
+.vault-tab-strip {
+  display: flex;
+  background: var(--bg-main);
+  border-bottom: 1px solid var(--border-neutral);
+  padding: 0 10px;
+}
+
+.vault-tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.vault-tab-btn:hover {
+  color: var(--text-secondary);
+}
+
+.vault-tab-btn.active {
+  color: var(--accent-primary);
+  border-bottom-color: var(--accent-primary);
+  background: var(--bg-surface);
+}
+
+/* Tab 1: Shelf */
+.vault-shelf {
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--bg-surface);
+}
+
+.vault-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-neutral);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+}
+
+.item-sigil-box {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-accent);
+  background: var(--bg-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.item-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.item-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.item-skill-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-highlight);
+}
+
+.item-status-tag {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--accent-primary);
+  border: 1px solid var(--border-accent);
+  background: var(--accent-muted);
+  padding: 1px 6px;
+  border-radius: 3px;
+  letter-spacing: 0.05em;
+}
+
+.item-meta-row {
+  font-size: 11px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.vault-dot {
+  opacity: 0.4;
+}
+
+.item-tag-code {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--accent-light);
+}
+
+/* Tab 2: Cryptographic Proof */
+.vault-data-block {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-neutral);
+  padding: 9px 12px;
+  border-radius: var(--radius-sm);
+  position: relative;
+}
+
+.data-title {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.data-code-val {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-highlight);
+  word-break: break-all;
+}
+
+.data-plain-val {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+
+.btn-copy-small {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  padding: 2px;
+}
+
+.btn-copy-small:hover {
+  color: var(--text-highlight);
+}
+
+/* Tab 3: QR Shelf */
+.vault-qr-shelf {
+  padding: 18px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  background: var(--bg-surface);
+}
+
+.vault-qr-frame {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-accent);
+  padding: 12px;
+  border-radius: var(--radius-md);
+}
+
+.qr-frame-label {
+  font-size: 9px;
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.vault-qr-info {
+  flex: 1;
+}
+
+/* Bottom Seal Plate */
+.vault-seal-footer {
+  background: var(--bg-surface-elevated);
+  border-top: 1px solid var(--border-neutral);
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.holographic-seal-badge {
+  display: flex;
+  flex-direction: column;
+  border: 1px dashed var(--border-accent);
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.seal-badge-heading {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--accent-primary);
+  letter-spacing: 0.08em;
+}
+
+.seal-badge-sub {
+  font-size: 8px;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+
+.vault-action-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent-primary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.vault-action-link:hover {
+  color: var(--accent-hover);
+  text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+  .vault-plate-header {
+    flex-direction: column;
+  }
+  .vault-sigil-frame {
+    width: 60px;
+    height: 70px;
+  }
+  .vault-metrics-grid {
+    grid-template-columns: 1fr;
+  }
+  .vault-qr-shelf {
+    flex-direction: column;
+    text-align: center;
+  }
+}
