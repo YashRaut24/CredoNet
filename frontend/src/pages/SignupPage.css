@@ -1,0 +1,74 @@
+/* SignupPage.css */
+@import "./LoginPage.css";
+
+.signup-card {
+  max-width: 560px;
+}
+
+.signup-role-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+@media (max-width: 500px) {
+  .signup-role-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.signup-role-option {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  padding: 12px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.signup-role-option:hover {
+  border-color: var(--accent-primary);
+  transform: translateY(-2px);
+}
+
+.signup-role-option.selected.student {
+  border-color: var(--accent-primary);
+  background: rgba(242, 108, 54, 0.12);
+  color: var(--accent-primary);
+  box-shadow: 0 0 0 1px var(--accent-primary);
+}
+
+.signup-role-option.selected.issuer {
+  border-color: #38bdf8;
+  background: rgba(56, 189, 248, 0.12);
+  color: #38bdf8;
+  box-shadow: 0 0 0 1px #38bdf8;
+}
+
+.signup-role-option.selected.employer {
+  border-color: #10b981;
+  background: rgba(16, 185, 129, 0.12);
+  color: #10b981;
+  box-shadow: 0 0 0 1px #10b981;
+}
+
+.role-opt-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-highlight);
+}
+
+.signup-role-option.selected .role-opt-title {
+  color: inherit;
+}
+
+.role-opt-sub {
+  font-size: 10.5px;
+  color: var(--text-muted);
+}

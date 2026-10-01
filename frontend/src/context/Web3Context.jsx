@@ -13,7 +13,7 @@ export function Web3Provider({ children }) {
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [contractOwner, setContractOwner] = useState(null);
 
-  // Read-only fallback provider (Monad Testnet RPC)
+// Read-only fallback provider (Monad Testnet RPC)
   const getReadOnlyProvider = useCallback(() => {
     return new ethers.JsonRpcProvider(MONAD_TESTNET_CONFIG.rpcUrl);
   }, []);
@@ -26,14 +26,19 @@ export function Web3Provider({ children }) {
 
   // Switch or Add Monad Testnet to wallet
   const switchToMonad = async () => {
-    if (!window.ethereum) throw new Error("No Web3 wallet found");
+    if (!window.ethereum) throw new Error("No Web3 wallet found. Please install MetaMask.");
     try {
       await window.ethereum.request({
         method: "wallet_switchEthereumChain",
         params: [{ chainId: MONAD_TESTNET_CONFIG.chainIdHex }],
       });
+      // Refresh network state
+      const browserProvider = new ethers.BrowserProvider(window.ethereum);
+      const network = await browserProvider.getNetwork();
+      setChainId(Number(network.chainId));
     } catch (switchError) {
-      if (switchError.code === 4902) {
+      // 4902 means chain has not been added yet
+      if (switchError.code === 4902 || switchError?.data?.originalError?.code === 4902) {
         await window.ethereum.request({
           method: "wallet_addEthereumChain",
           params: [
@@ -50,6 +55,9 @@ export function Web3Provider({ children }) {
             },
           ],
         });
+        const browserProvider = new ethers.BrowserProvider(window.ethereum);
+        const network = await browserProvider.getNetwork();
+        setChainId(Number(network.chainId));
       } else {
         throw switchError;
       }
@@ -165,9 +173,12 @@ export function Web3Provider({ children }) {
     account && contractOwner && account.toLowerCase() === contractOwner.toLowerCase()
   );
 
+  const isMonadChain = Number(chainId) === 10143;
+
   const value = {
     account,
     chainId,
+    isMonadChain,
     signer,
     isConnecting,
     error,

@@ -14,22 +14,22 @@ export function Footer() {
             <span className="footer-brand-title">CredoNet<span style={{ color: "#f26c36" }}>.</span></span>
           </div>
           <p className="footer-brand-desc">
-            Decentralized sovereign skill credential & academic ledger anchored on EVM blockchain smart contracts.
+            One portable passport for verified skills, projects, and achievements. Tamper-evident issuance and independent public verification powered by Monad.
           </p>
         </div>
 
         <ul className="footer-links">
           <li>
-            <Link to="/" className="footer-link">Explore</Link>
+            <Link to="/" className="footer-link">Home</Link>
           </li>
           <li>
-            <Link to="/dashboard" className="footer-link">My Vault</Link>
+            <Link to="/dashboard" className="footer-link">My Passport</Link>
           </li>
           <li>
             <Link to="/issuer" className="footer-link">Issuer Portal</Link>
           </li>
           <li>
-            <Link to="/verify/search" className="footer-link">Verify</Link>
+            <Link to="/verify/search" className="footer-link">Public Verification</Link>
           </li>
           <li>
             <a
@@ -39,7 +39,7 @@ export function Footer() {
               className="footer-link"
               style={{ display: "flex", alignItems: "center", gap: "4px" }}
             >
-              <span>EVM Explorer</span>
+              <span>Monad Explorer</span>
               <ExternalLink size={11} />
             </a>
           </li>
@@ -47,7 +47,7 @@ export function Footer() {
       </div>
 
       <div className="container footer-bottom">
-        <p>© 2026 CredoNet. Verifiable Skill & Academic Credential Ledger powered by EVM Smart Contracts.</p>
+        <p>© 2026 CredoNet. Built for Monad Web3 SkillBuildZ Buildathon. Authenticity secured on Monad Testnet.</p>
       </div>
     </footer>
   );

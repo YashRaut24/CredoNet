@@ -1,14 +1,63 @@
 const express = require("express");
 const cors = require("cors");
 const crypto = require("crypto");
+const mongoose = require("mongoose");
 const { ethers } = require("ethers");
 const { CONTRACT_ADDRESS, RPC_URL, CONTRACT_ABI } = require("./contractConfig");
+const { router: authRouter, seedDefaultUsers } = require("./routes/auth");
+
+// MongoDB Models
+const StudentProfile = require("./models/StudentProfile");
+const Project = require("./models/Project");
+const Endorsement = require("./models/Endorsement");
+const Metadata = require("./models/Metadata");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/credonet";
 
 app.use(cors());
 app.use(express.json());
+
+// Initialize Default Student Profile for Alex John (No dummy projects or endorsements)
+async function initDefaultStudentProfile() {
+  try {
+    const DEMO_ADDRESS = "0x71c92a8c943b8d62283e1c66289b5b38b71c4e92".toLowerCase();
+    await StudentProfile.updateMany({ name: "Alex Raut" }, { name: "Alex John" });
+    const existing = await StudentProfile.findOne({ walletAddress: DEMO_ADDRESS });
+    if (!existing) {
+      await StudentProfile.create({
+        walletAddress: DEMO_ADDRESS,
+        name: "Alex John",
+        avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
+        college: "Sardar Patel Institute of Technology",
+        degree: "B.E. Computer Engineering",
+        graduationYear: "2027",
+        bio: "Full-Stack & Web3 Developer focused on smart contract architecture, EVM distributed systems, and verifiable credentials.",
+        interests: ["Web Development", "Blockchain", "Distributed Systems", "Cryptography"],
+      });
+      console.log("[CredoNet Backend] Initialized profile for Alex John in MongoDB");
+    }
+  } catch (err) {
+    console.warn("[CredoNet Backend] Student profile initialization warning:", err.message);
+  }
+}
+
+// Initialize MongoDB (MERN Stack)
+async function connectDB() {
+  try {
+    await mongoose.connect(MONGO_URI);
+    console.log(`[CredoNet Backend] Connected to MongoDB at: ${MONGO_URI}`);
+    await seedDefaultUsers();
+    await initDefaultStudentProfile();
+  } catch (err) {
+    console.warn(`[CredoNet Backend] MongoDB connection warning: ${err.message}`);
+  }
+}
+connectDB();
+
+// Mount Authentication & Authorization Routes
+app.use("/api/auth", authRouter);
 
 // Initialize Ethereum Provider & Contract
 let provider;
@@ -26,9 +75,6 @@ function initBlockchain() {
 }
 
 initBlockchain();
-
-// In-memory metadata storage for easy mock decentralized IPFS retrieval
-const metadataStorage = new Map();
 
 // Helpers to format bigints and structs
 function formatCredential(cred) {
@@ -148,8 +194,12 @@ app.get("/api/credentials/:credentialId", async (req, res) => {
     const isValid = await contract.isValidCredential(credentialId);
     const formatted = formatCredential(rawCred);
 
-    // Fetch extra metadata if available
-    const extraMeta = metadataStorage.get(formatted.metadataHash) || null;
+    // Fetch extra metadata from MongoDB if available
+    let extraMeta = null;
+    if (formatted.metadataHash) {
+      const metaDoc = await Metadata.findOne({ hash: formatted.metadataHash });
+      if (metaDoc) extraMeta = metaDoc.payload;
+    }
 
     res.json({
       success: true,
@@ -238,25 +288,51 @@ app.get("/api/issuer/:address", async (req, res) => {
 });
 
 /**
- * Metadata Generation & Storage (Decentralized Hash Simulator)
+ * Metadata Generation & Storage (Decentralized Hash Simulator anchored in MongoDB)
+ * Supports both Verified Skills and Verified Projects
  */
-app.post("/api/metadata", (req, res) => {
+app.post("/api/metadata", async (req, res) => {
   try {
-    const { skill, description, studentName, grade, issuerName, tags } = req.body;
+    const { 
+      type, // "skill" | "project"
+      skill, 
+      projectName,
+      evidenceProject,
+      repoUrl,
+      liveUrl,
+      projectSkills,
+      skillLevel,
+      description, 
+      student,
+      issuer,
+      tags 
+    } = req.body;
+
+    const isProject = type === "project" || Boolean(projectName);
 
     const payload = {
-      protocol: "CredoNet v1.0",
-      skill: skill || "Verified Skill",
+      protocol: "SkillPassport v1.0",
+      type: isProject ? "project" : "skill",
+      title: isProject ? (projectName || skill || "Verified Capstone Project") : (skill || "Verified Competency"),
+      projectName: projectName || (isProject ? skill : ""),
+      evidenceProject: evidenceProject || null,
+      repoUrl: repoUrl || "",
+      liveUrl: liveUrl || "",
+      projectSkills: projectSkills || "",
+      skillLevel: skillLevel || "Advanced",
       description: description || "",
-      studentName: studentName || "Anonymous Learner",
-      grade: grade || "Mastery Passed",
-      issuerName: issuerName || "Authorized Institution",
-      tags: tags || [],
+      student: student || "0x0000000000000000000000000000000000000000",
+      issuer: issuer || "Authorized Institution",
+      tags: tags || (isProject ? ["PROJECT", "VERIFIED-BUILD"] : ["SKILL", "COMPETENCY"]),
       issuedAt: new Date().toISOString(),
     };
 
     const hash = "ipfs://Qm" + crypto.createHash("sha256").update(JSON.stringify(payload)).digest("hex").slice(0, 44);
-    metadataStorage.set(hash, payload);
+    await Metadata.findOneAndUpdate(
+      { hash },
+      { hash, payload },
+      { upsert: true, new: true, setDefaultsOnInsert: true }
+    );
 
     res.json({
       success: true,
@@ -268,10 +344,155 @@ app.post("/api/metadata", (req, res) => {
   }
 });
 
+/**
+ * Retrieve Stored Metadata by Hash from MongoDB
+ */
+app.get("/api/metadata/:hash", async (req, res) => {
+  try {
+    const { hash } = req.params;
+    const decodedHash = decodeURIComponent(hash);
+    const doc = await Metadata.findOne({ hash: { $in: [decodedHash, hash] } });
+
+    if (!doc) {
+      return res.status(404).json({ success: false, error: "Metadata record not found for this hash." });
+    }
+
+    res.json({
+      success: true,
+      metadataHash: decodedHash,
+      metadata: doc.payload,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+/**
+ * Student Profile Endpoints (Persisted in MongoDB)
+ */
+app.get("/api/profile/:address", async (req, res) => {
+  try {
+    const addr = (req.params.address || "").toLowerCase();
+    const doc = await StudentProfile.findOne({ walletAddress: addr });
+    const profile = doc ? {
+      name: doc.name || "",
+      avatar: doc.avatar || "",
+      college: doc.college || "",
+      degree: doc.degree || "",
+      graduationYear: doc.graduationYear || "",
+      bio: doc.bio || "",
+      interests: doc.interests || [],
+      wallet: req.params.address,
+    } : {
+      name: "",
+      avatar: "",
+      college: "",
+      degree: "",
+      graduationYear: "",
+      bio: "",
+      interests: [],
+      wallet: req.params.address,
+    };
+    res.json({ success: true, profile });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.post("/api/profile/:address", async (req, res) => {
+  try {
+    const addr = (req.params.address || "").toLowerCase();
+    const updated = await StudentProfile.findOneAndUpdate(
+      { walletAddress: addr },
+      { ...req.body, walletAddress: addr },
+      { upsert: true, new: true, setDefaultsOnInsert: true }
+    );
+    res.json({ success: true, profile: { ...updated.toObject(), wallet: req.params.address } });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+/**
+ * Student Project Portfolio Endpoints (Persisted in MongoDB)
+ */
+app.get("/api/projects/:address", async (req, res) => {
+  try {
+    const addr = (req.params.address || "").toLowerCase();
+    const projects = await Project.find({ walletAddress: addr }).sort({ createdAt: -1 });
+    res.json({ success: true, projects });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.post("/api/projects/:address", async (req, res) => {
+  try {
+    const addr = (req.params.address || "").toLowerCase();
+    const newProject = await Project.create({
+      walletAddress: addr,
+      projectId: "proj-" + Date.now(),
+      name: req.body.name || "Untitled Project",
+      description: req.body.description || "",
+      githubUrl: req.body.githubUrl || "",
+      demoUrl: req.body.demoUrl || "",
+      technologies: req.body.technologies || "",
+      skillsDemonstrated: req.body.skillsDemonstrated || "",
+    });
+    const projects = await Project.find({ walletAddress: addr }).sort({ createdAt: -1 });
+    res.json({ success: true, project: newProject, projects });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.delete("/api/projects/:address/:projectId", async (req, res) => {
+  try {
+    const addr = (req.params.address || "").toLowerCase();
+    await Project.deleteOne({ walletAddress: addr, projectId: req.params.projectId });
+    const projects = await Project.find({ walletAddress: addr }).sort({ createdAt: -1 });
+    res.json({ success: true, projects });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+/**
+ * Mentor Endorsement Endpoints (Persisted in MongoDB)
+ */
+app.get("/api/endorsements/:address", async (req, res) => {
+  try {
+    const addr = (req.params.address || "").toLowerCase();
+    const endorsements = await Endorsement.find({ walletAddress: addr }).sort({ createdAt: -1 });
+    res.json({ success: true, endorsements });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.post("/api/endorsements/:address", async (req, res) => {
+  try {
+    const addr = (req.params.address || "").toLowerCase();
+    const newEndorsement = await Endorsement.create({
+      walletAddress: addr,
+      endorsementId: "end-" + Date.now(),
+      skill: req.body.skill || "General Competency",
+      endorsementText: req.body.endorsementText || "",
+      endorserWallet: req.body.endorserWallet || "0x0000000000000000000000000000000000000000",
+      endorserName: req.body.endorserName || "Project Mentor",
+      date: new Date().toISOString().split("T")[0],
+    });
+    const endorsements = await Endorsement.find({ walletAddress: addr }).sort({ createdAt: -1 });
+    res.json({ success: true, endorsement: newEndorsement, endorsements });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 // Start Server
 app.listen(PORT, () => {
   console.log(`===============================================`);
-  console.log(`🛡️ CredoNet Backend Server Running on Port ${PORT}`);
+  console.log(`🛡️ SkillPassport Backend Server Running on Port ${PORT}`);
   console.log(`📡 URL: http://localhost:${PORT}`);
   console.log(`⚡ Integrated with Monad EVM Protocol`);
   console.log(`===============================================`);

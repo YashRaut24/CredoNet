@@ -8,9 +8,13 @@ import {
   Calendar, 
   QrCode, 
   ExternalLink,
-  AlertTriangle
+  AlertTriangle,
+  FolderGit2,
+  Award,
+  Info
 } from "lucide-react";
 import { QRCodeModal } from "./QRCodeModal";
+import { CredentialDetailModal } from "./CredentialDetailModal";
 import "./CredentialCard.css";
 
 export function CredentialCard({ 
@@ -20,6 +24,15 @@ export function CredentialCard({
   isRevoking = false 
 }) {
   const [showQR, setShowQR] = useState(false);
+  const [showDetail, setShowDetail] = useState(false);
+
+  const isProject = credential.skill?.startsWith("[Project]") || 
+                    credential.skill?.toLowerCase().startsWith("project:") ||
+                    credential.metadata?.type === "project";
+
+  const displayTitle = credential.skill
+    ? credential.skill.replace(/^\[Project\]\s*/i, "").replace(/^project:\s*/i, "")
+    : "Untitled Credential";
 
   const formattedDate = new Date(Number(credential.issuedAt) * 1000).toLocaleDateString("en-US", {
     year: "numeric",
@@ -28,26 +41,30 @@ export function CredentialCard({
   });
 
   const verifyUrl = `${window.location.origin}/verify/${credential.credentialId}`;
+  const evidenceName = credential.evidenceProject || credential.metadata?.evidenceProject;
 
   return (
     <>
       <div className="credential-card">
         {/* Top Info */}
         <div className="card-top">
-          <div>
-            <span className="card-category">Verified Skill Credential</span>
-            <h3 className="card-skill-title">{credential.skill}</h3>
+          <div className="card-top-info">
+            <span className={`card-category ${isProject ? "category-project" : "category-skill"}`} style={{ display: "inline-flex", alignItems: "center", gap: "5px" }}>
+              {isProject ? <FolderGit2 size={12} color="#38bdf8" /> : <Award size={12} color="#f26c36" />}
+              <span>{isProject ? "Verified Capstone Project" : "Verified Skill Credential"}</span>
+            </span>
+            <h3 className="card-skill-title">{displayTitle}</h3>
           </div>
-          <div>
+          <div className="card-top-status">
             {credential.revoked ? (
-              <span className="status-pill revoked">
+              <span className="status-pill revoked" title="Credential has been revoked">
                 <XCircle size={12} />
-                REVOKED
+                <span>REVOKED</span>
               </span>
             ) : (
-              <span className="status-pill valid">
+              <span className="status-pill valid" title="Credential is cryptographically valid">
                 <CheckCircle2 size={12} />
-                VALID
+                <span>VALID</span>
               </span>
             )}
           </div>
@@ -73,6 +90,17 @@ export function CredentialCard({
             </span>
           </div>
 
+          {evidenceName && (
+            <div className="card-row">
+              <span className="card-label">
+                <FolderGit2 size={13} color="#38bdf8" /> Evidence
+              </span>
+              <span className="card-value" style={{ color: "#38bdf8", fontWeight: "600" }}>
+                {evidenceName}
+              </span>
+            </div>
+          )}
+
           <div className="card-row">
             <span className="card-label">
               <Calendar size={13} color="#f26c36" /> Issued
@@ -83,9 +111,18 @@ export function CredentialCard({
 
         {/* Actions */}
         <div className="card-actions">
-          <div style={{ display: "flex", gap: "8px" }}>
+          <div className="card-action-group">
+            <button
+              onClick={() => setShowDetail(true)}
+              className="btn-card-action btn-detail-action"
+              title="View full cryptographic details"
+            >
+              <Info size={12} />
+              <span>Details</span>
+            </button>
+
             <Link to={`/verify/${credential.credentialId}`} className="btn-card-action btn-verify-link">
-              <span>Inspect</span>
+              <span>Verify</span>
               <ExternalLink size={12} />
             </Link>
 
@@ -104,6 +141,7 @@ export function CredentialCard({
               onClick={() => onRevoke(credential.credentialId)}
               disabled={isRevoking}
               className="btn-card-action btn-revoke"
+              title="Revoke credential on-chain"
             >
               <AlertTriangle size={12} />
               <span>{isRevoking ? "Revoking..." : "Revoke"}</span>
@@ -112,11 +150,18 @@ export function CredentialCard({
         </div>
       </div>
 
+      {showDetail && (
+        <CredentialDetailModal
+          credential={credential}
+          onClose={() => setShowDetail(false)}
+        />
+      )}
+
       {showQR && (
         <QRCodeModal
           url={verifyUrl}
           title={`Verify: ${credential.skill}`}
-          description={`Cryptographic proof for ${credential.student.slice(0, 6)}...${credential.student.slice(-4)} issued on Monad EVM.`}
+          description={`Cryptographic proof for ${credential.student.slice(0, 6)}...${credential.student.slice(-4)} verified on-chain via CredoNet.`}
           onClose={() => setShowQR(false)}
         />
       )}

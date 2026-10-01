@@ -47,12 +47,12 @@
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 28px;
+  gap: 18px;
   list-style: none;
 }
 
 .nav-link {
-  font-size: 13.5px;
+  font-size: 13px;
   font-weight: 500;
   color: var(--text-secondary);
   transition: color 0.2s ease;
@@ -130,6 +130,37 @@
   letter-spacing: 0.05em;
 }
 
+.btn-switch-monad {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.5);
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  font-weight: 600;
+  color: #f87171;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  animation: pulse-border 2s infinite ease-in-out;
+}
+
+.btn-switch-monad:hover {
+  background: rgba(239, 68, 68, 0.25);
+  border-color: #ef4444;
+  color: #ffffff;
+}
+
+@keyframes pulse-border {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0);
+  }
+}
+
 /* Mobile Toggle */
 .mobile-toggle {
   display: none;
@@ -145,3 +176,52 @@
     display: block;
   }
 }
+
+/* Persona Pill & Role Switcher in Navbar */
+.persona-nav-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: var(--radius-md);
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.persona-nav-pill.student {
+  background: rgba(242, 108, 54, 0.12);
+  border: 1px solid rgba(242, 108, 54, 0.35);
+  color: var(--accent-primary);
+}
+
+.persona-nav-pill.issuer {
+  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  color: #38bdf8;
+}
+
+.persona-nav-pill.employer {
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: #10b981;
+}
+
+.persona-nav-pill:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.15);
+}
+
+.persona-switch-hint {
+  font-size: 9.5px;
+  text-transform: uppercase;
+  font-family: var(--font-mono);
+  opacity: 0.75;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 1px 4px;
+  border-radius: 3px;
+  margin-left: 2px;
+}
+

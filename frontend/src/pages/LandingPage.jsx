@@ -20,7 +20,9 @@ import {
   CheckCircle, 
   Binary, 
   Cpu, 
-  Layers 
+  Layers,
+  FolderGit2,
+  LogIn 
 } from "lucide-react";
 import { useWeb3 } from "../context/Web3Context";
 import { CredoVaultCard } from "../components/CredoVaultCard";
@@ -57,12 +59,12 @@ export function LandingPage() {
 
   const sampleVaults = [
     {
-      role: "B.E. Computer Engineering Graduate",
+      role: "Blockchain & Smart Contract Engineer",
       candidate: "Rahul S. (Sem 7)",
       address: "0x71C92a8C943B8d62283e1c66289b5B38B71C4e92",
       credsCount: 3,
-      tags: ["B.E. Degree", "Distributed Systems", "Data Structures"],
-      badge: "ACADEMIC HONORS"
+      tags: ["CredoNet Capstone", "Distributed Systems", "Solidity Core"],
+      badge: "VERIFIED BUILDER"
     },
     {
       role: "Smart Contract Security Auditor",
@@ -89,57 +91,50 @@ export function LandingPage() {
         <div className="hero-content">
           <div className="hero-tagline">
             <span className="hero-tagline-dot">•</span>
-            <span>SOVEREIGN CREDENTIAL NETWORK • EVM SMART CONTRACTS</span>
+            <span>CRYPTOGRAPHIC CREDENTIAL PROTOCOL</span>
           </div>
 
           <h1 className="hero-title">
-            Your Sovereign <span className="editorial-italic">CredoVault</span> on Blockchain.
+            Own your achievements. <span className="editorial-italic">Verify your credentials.</span>
           </h1>
 
           <p className="hero-description">
-            CredoNet provides an unalterable, self-custodied <strong>CredoVault</strong> for your verified competencies, engineering diplomas, and academic degrees. Cryptographically anchored with tamper-proof signatures directly on EVM smart contracts.
+            One portable passport for your verified skills, projects and achievements. Trusted issuers issue credentials to your wallet, and employers independently verify them directly on-chain.
           </p>
 
           <div className="hero-actions">
-            {account ? (
-              <Link to="/dashboard" className="btn-primary">
-                <span>Access My Vault</span>
-                <ArrowRight size={15} />
-              </Link>
-            ) : (
-              <button onClick={connectWallet} disabled={isConnecting} className="btn-primary">
-                <span>{isConnecting ? "Connecting..." : "Connect Wallet to Open Vault"}</span>
-                <ArrowRight size={15} />
-              </button>
-            )}
-
-            <Link to="/verify/search" className="btn-secondary">
-              <Search size={14} />
-              <span>Verify a Credential</span>
+            <Link to="/signup" className="btn-primary">
+              <span>Create Verifiable Passport</span>
+              <ArrowRight size={15} />
             </Link>
 
-            <Link to="/issuer" className="btn-secondary">
-              <Building2 size={14} />
-              <span>Issuer Portal</span>
+            <Link to="/login" className="btn-secondary">
+              <LogIn size={14} />
+              <span>Sign In</span>
+            </Link>
+
+            <Link to="/vault/0x71C92a8C943B8d62283e1c66289b5B38B71C4e92" className="btn-secondary">
+              <Award size={14} />
+              <span>View Sample Passport</span>
             </Link>
           </div>
 
           <div className="hero-trust-row">
             <div className="trust-pill">
               <CheckCircle size={14} color="#f26c36" />
-              <span>100% Self-Custody</span>
+              <span>Student Ownership</span>
             </div>
             <div className="trust-pill">
               <Lock size={14} color="#f26c36" />
-              <span>Keccak-256 Hashes</span>
+              <span>Tamper-Proof Blockchain Proof</span>
             </div>
             <div className="trust-pill">
               <Zap size={14} color="#f26c36" />
-              <span>Sub-Second Reads</span>
+              <span>Sub-Second Verification</span>
             </div>
             <div className="trust-pill">
               <QrCode size={14} color="#f26c36" />
-              <span>Instant QR Verification</span>
+              <span>Portable QR Sharing</span>
             </div>
           </div>
         </div>
@@ -150,35 +145,150 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* Trust & Security Strip */}
-      <div className="trust-strip">
-        <div className="trust-strip-item">
-          <GraduationCap size={18} color="#f26c36" />
-          <span>Accredited Academic Degrees</span>
+      {/* 3 Dedicated Persona Portals */}
+      <section className="user-value-section" style={{ margin: "50px 0" }}>
+        <div style={{ textAlign: "center", marginBottom: "32px" }}>
+          <span style={{ fontSize: "11px", fontFamily: "var(--font-mono)", color: "var(--accent-primary)", fontWeight: "700", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+            THREE DEDICATED PORTALS
+          </span>
+          <h2 style={{ fontSize: "28px", fontWeight: "800", color: "var(--text-highlight)", marginTop: "6px" }}>
+            Experience CredoNet By Your Role
+          </h2>
+          <p style={{ fontSize: "14px", color: "var(--text-secondary)", maxWidth: "600px", margin: "8px auto 0 auto" }}>
+            Whether you are a student building proof of work, an accredited institution certifying talent, or an employer auditing credentials.
+          </p>
         </div>
-        <div className="trust-strip-item">
-          <ShieldCheck size={18} color="#f26c36" />
-          <span>Non-Falsifiable Credentials</span>
-        </div>
-        <div className="trust-strip-item">
-          <Lock size={18} color="#f26c36" />
-          <span>Sovereign Key-Bound Storage</span>
-        </div>
-        <div className="trust-strip-item">
-          <Building2 size={18} color="#f26c36" />
-          <span>Authorized Multi-Sig Authorities</span>
-        </div>
-      </div>
 
-      {/* How the CredoVault Works (The 4 Stages) */}
+        <div className="triad-grid">
+          {/* Persona 1: Student */}
+          <div className="triad-card" style={{ borderTop: "3px solid var(--accent-primary)", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+            <div>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <div className="triad-icon-wrap" style={{ background: "rgba(242, 108, 54, 0.15)", color: "var(--accent-primary)" }}>
+                  <Award size={22} />
+                </div>
+                <span style={{ fontSize: "10.5px", fontFamily: "var(--font-mono)", color: "var(--accent-primary)", fontWeight: "700", textTransform: "uppercase", background: "rgba(242, 108, 54, 0.1)", padding: "3px 8px", borderRadius: "var(--radius-sm)" }}>
+                  STUDENT / TALENT
+                </span>
+              </div>
+              <h3 className="triad-title" style={{ marginTop: "14px", fontSize: "18px" }}>Student Career Vault</h3>
+              <p style={{ fontSize: "13px", color: "var(--text-secondary)", lineHeight: "1.5", marginTop: "8px" }}>
+                Own your portable career passport. Add project evidence with GitHub links, collect verified credentials from authorized issuers, and unlock achievements.
+              </p>
+              <ul style={{ margin: "14px 0", paddingLeft: "18px", fontSize: "12.5px", color: "var(--text-secondary)", display: "flex", flexDirection: "column", gap: "6px" }}>
+                <li>Self-custody profile & portfolio projects</li>
+                <li>Evidence-linked skill verification</li>
+                <li>Real milestones & mentor endorsements</li>
+                <li>Shareable public link & QR code</li>
+              </ul>
+            </div>
+            <Link to="/signup" className="btn-primary" style={{ width: "100%", justifyContent: "center", padding: "10px", fontSize: "13px", marginTop: "12px" }}>
+              <span>Get Started as Student</span>
+              <ArrowRight size={14} />
+            </Link>
+          </div>
+
+          {/* Persona 2: Issuer */}
+          <div className="triad-card" style={{ borderTop: "3px solid #38bdf8", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+            <div>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <div className="triad-icon-wrap" style={{ background: "rgba(56, 189, 248, 0.15)", color: "#38bdf8" }}>
+                  <Building2 size={22} />
+                </div>
+                <span style={{ fontSize: "10.5px", fontFamily: "var(--font-mono)", color: "#38bdf8", fontWeight: "700", textTransform: "uppercase", background: "rgba(56, 189, 248, 0.1)", padding: "3px 8px", borderRadius: "var(--radius-sm)" }}>
+                  ACCREDITED ISSUER
+                </span>
+              </div>
+              <h3 className="triad-title" style={{ marginTop: "14px", fontSize: "18px" }}>Issuer Certification Portal</h3>
+              <p style={{ fontSize: "13px", color: "var(--text-secondary)", lineHeight: "1.5", marginTop: "8px" }}>
+                For universities, bootcamps, and hackathons. Review student project submissions, certify verified competencies, and anchor proof directly on-chain.
+              </p>
+              <ul style={{ margin: "14px 0", paddingLeft: "18px", fontSize: "12.5px", color: "var(--text-secondary)", display: "flex", flexDirection: "column", gap: "6px" }}>
+                <li>Review student portfolio evidence</li>
+                <li>Link capstone projects to verified skills</li>
+                <li>Permanent decentralized on-chain issuance</li>
+                <li>On-chain cryptographic revocation</li>
+              </ul>
+            </div>
+            <Link to="/signup" className="btn-secondary" style={{ width: "100%", justifyContent: "center", padding: "10px", fontSize: "13px", marginTop: "12px", borderColor: "rgba(56, 189, 248, 0.4)", color: "#38bdf8" }}>
+              <span>Register as Certifying Issuer</span>
+              <ArrowRight size={14} />
+            </Link>
+          </div>
+
+          {/* Persona 3: Employer */}
+          <div className="triad-card" style={{ borderTop: "3px solid #10b981", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+            <div>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <div className="triad-icon-wrap" style={{ background: "rgba(16, 185, 129, 0.15)", color: "#10b981" }}>
+                  <ShieldCheck size={22} />
+                </div>
+                <span style={{ fontSize: "10.5px", fontFamily: "var(--font-mono)", color: "#10b981", fontWeight: "700", textTransform: "uppercase", background: "rgba(16, 185, 129, 0.1)", padding: "3px 8px", borderRadius: "var(--radius-sm)" }}>
+                  EMPLOYER / AUDITOR
+                </span>
+              </div>
+              <h3 className="triad-title" style={{ marginTop: "14px", fontSize: "18px" }}>Employer Verification Hub</h3>
+              <p style={{ fontSize: "13px", color: "var(--text-secondary)", lineHeight: "1.5", marginTop: "8px" }}>
+                Zero-gas, zero-wallet verification. Scan candidate QR codes, inspect underlying GitHub repositories, and verify active validity directly from blockchain RPC.
+              </p>
+              <ul style={{ margin: "14px 0", paddingLeft: "18px", fontSize: "12.5px", color: "var(--text-secondary)", display: "flex", flexDirection: "column", gap: "6px" }}>
+                <li>Zero gas fees & no wallet needed</li>
+                <li>Inspect code behind claimed skills</li>
+                <li>Sub-second cryptographic verification</li>
+                <li>Instant detection of revoked credentials</li>
+              </ul>
+            </div>
+            <Link to="/signup" className="btn-secondary" style={{ width: "100%", justifyContent: "center", padding: "10px", fontSize: "13px", marginTop: "12px", borderColor: "rgba(16, 185, 129, 0.4)", color: "#10b981" }}>
+              <span>Register as Verified Employer</span>
+              <ArrowRight size={14} />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Problem & Solution Strip */}
+      <section className="problem-solution-section" style={{
+        padding: "32px",
+        background: "var(--bg-surface)",
+        border: "1px solid var(--border-medium)",
+        borderRadius: "var(--radius-lg)",
+        margin: "30px 0"
+      }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "30px" }}>
+          <div>
+            <span style={{ fontSize: "11px", fontFamily: "var(--font-mono)", color: "#f87171", fontWeight: "700", letterSpacing: "0.06em", textTransform: "uppercase" }}>
+              THE REAL PROBLEM
+            </span>
+            <h3 style={{ fontSize: "20px", fontWeight: "700", marginTop: "8px", color: "var(--text-highlight)" }}>
+              Proof Scattered Across Certificates & Portals
+            </h3>
+            <p style={{ fontSize: "13.5px", color: "var(--text-secondary)", lineHeight: "1.6", marginTop: "10px" }}>
+              Students collect achievements from universities, bootcamps, certification providers, hackathons and other organizations. Today, this proof is scattered across PDF certificates, emails, portals, and project links. When applying for jobs, students repeatedly submit unverified claims, and employers struggle to verify issuer identity, issue date, and revocation status.
+            </p>
+          </div>
+          <div>
+            <span style={{ fontSize: "11px", fontFamily: "var(--font-mono)", color: "#10b981", fontWeight: "700", letterSpacing: "0.06em", textTransform: "uppercase" }}>
+              THE SKILLPASSPORT SOLUTION
+            </span>
+            <h3 style={{ fontSize: "20px", fontWeight: "700", marginTop: "8px", color: "var(--text-highlight)" }}>
+              Portable Wallet-Based Passport on Monad
+            </h3>
+            <p style={{ fontSize: "13.5px", color: "var(--text-secondary)", lineHeight: "1.6", marginTop: "10px" }}>
+              SkillPassport gives students a portable wallet-based achievement passport. Trusted issuers issue credentials to the student's wallet on Monad. Blockchain provides tamper-evident proof that an authorized issuer issued a particular credential to the student's wallet and that it has not been revoked.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* How the Flow Works (The 4 Stages) */}
       <section className="passport-flow-section">
         <div className="section-meta-wrap">
-          <span className="section-label">System Architecture</span>
+          <span className="section-label">CORE PRODUCT FLOW</span>
           <h2 className="section-title">
-            How Your CredoVault Operates
+            How SkillPassport Works on Monad
           </h2>
           <p className="section-desc">
-            A deterministic, zero-fraud workflow connecting students, certifying authorities, and global recruiters on an unalterable blockchain ledger.
+            A tamper-evident pipeline connecting student wallets, recognized issuers, and public verification.
           </p>
         </div>
 
@@ -187,12 +297,12 @@ export function LandingPage() {
             <div className="flow-step-header">
               <span className="flow-step-num">01</span>
               <div className="flow-step-icon">
-                <Lock size={18} />
+                <Building2 size={18} />
               </div>
             </div>
-            <h3 className="flow-step-title">Vault Initialization</h3>
+            <h3 className="flow-step-title">Issuer Issues Credential</h3>
             <p className="flow-step-desc">
-              Connect your Web3 self-custody wallet (MetaMask / Rabby). Your unique sovereign CredoVault address is initialized on-chain without centralized passwords.
+              Authorized issuer connects wallet, inputs student wallet address & achievement, and records the credential on Monad.
             </p>
           </div>
 
@@ -200,12 +310,12 @@ export function LandingPage() {
             <div className="flow-step-header">
               <span className="flow-step-num">02</span>
               <div className="flow-step-icon">
-                <Building2 size={18} />
+                <Award size={18} />
               </div>
             </div>
-            <h3 className="flow-step-title">Authorized Issuance</h3>
+            <h3 className="flow-step-title">Student Owns Passport</h3>
             <p className="flow-step-desc">
-              Accredited universities, colleges, and training academies issue verifiable skill credentials directly into your CredoVault using role-authorized smart contract calls.
+              The credential becomes part of the student's portable SkillPassport bound to their self-custody wallet.
             </p>
           </div>
 
@@ -213,12 +323,12 @@ export function LandingPage() {
             <div className="flow-step-header">
               <span className="flow-step-num">03</span>
               <div className="flow-step-icon">
-                <ShieldCheck size={18} />
+                <QrCode size={18} />
               </div>
             </div>
-            <h3 className="flow-step-title">Cryptographic Anchoring</h3>
+            <h3 className="flow-step-title">Share Passport / QR</h3>
             <p className="flow-step-desc">
-              Each credential generates an immutable <code>keccak256</code> state hash bound to block timestamps and issuer keys, permanently preventing counterfeit records.
+              Student shares their public passport link or generates a QR code for recruiters and employers to scan.
             </p>
           </div>
 
@@ -226,12 +336,12 @@ export function LandingPage() {
             <div className="flow-step-header">
               <span className="flow-step-num">04</span>
               <div className="flow-step-icon">
-                <QrCode size={18} />
+                <ShieldCheck size={18} />
               </div>
             </div>
-            <h3 className="flow-step-title">Instant Verification</h3>
+            <h3 className="flow-step-title">Public Monad Verification</h3>
             <p className="flow-step-desc">
-              Recruiters, hiring teams, and institutions scan your Vault QR code or inspect your public link for instant mathematical proof of authenticity in &lt;1s.
+              Employer verifies credential directly against Monad smart contract without needing a wallet: VALID or REVOKED.
             </p>
           </div>
         </div>
@@ -317,7 +427,7 @@ export function LandingPage() {
             </div>
             <h3 className="category-title">Engineering Mastery</h3>
             <p className="category-desc">
-              Hands-on competencies in Solidity, smart contracts, distributed consensus, frontend frameworks, and cloud architecture.
+              Verified skills in Web Development, Python, Smart Contracts, Distributed Systems, and Modern Frameworks.
             </p>
             <div className="category-examples">
               <span>Solidity Core</span>
@@ -426,7 +536,7 @@ export function LandingPage() {
               </li>
               <li>
                 <CheckCircle2 size={14} color="#f26c36" />
-                <span>Verify actual competencies instead of embellished PDFs.</span>
+                <span>Verify real, authentic skills instead of unverified resumes.</span>
               </li>
             </ul>
           </div>

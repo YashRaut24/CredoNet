@@ -12,7 +12,11 @@ import {
   User, 
   ArrowLeft,
   Search,
-  Database
+  Database,
+  FolderGit2,
+  GitBranch,
+  Award,
+  Code2
 } from "lucide-react";
 import { useWeb3 } from "../context/Web3Context";
 import { CONTRACT_ADDRESS, MONAD_TESTNET_CONFIG } from "../config/contractConfig";
@@ -24,6 +28,7 @@ export function VerifyPage() {
   const { getReadOnlyContract } = useWeb3();
 
   const [credential, setCredential] = useState(null);
+  const [metadata, setMetadata] = useState(null);
   const [isValid, setIsValid] = useState(false);
   const [loading, setLoading] = useState(true);
   const [copiedField, setCopiedField] = useState(null);
@@ -46,7 +51,7 @@ export function VerifyPage() {
           contract.isValidCredential(credentialId),
         ]);
 
-        setCredential({
+        const formatted = {
           credentialId: rawCred.credentialId,
           student: rawCred.student,
           skill: rawCred.skill,
@@ -54,8 +59,22 @@ export function VerifyPage() {
           metadataHash: rawCred.metadataHash,
           issuedAt: rawCred.issuedAt.toString(),
           revoked: rawCred.revoked,
-        });
+        };
+        setCredential(formatted);
         setIsValid(validStatus);
+
+        // Fetch off-chain rich metadata if available
+        try {
+          const res = await fetch(`/api/metadata/${encodeURIComponent(formatted.metadataHash)}`);
+          if (res.ok) {
+            const data = await res.json();
+            if (data.metadata) {
+              setMetadata(data.metadata);
+            }
+          }
+        } catch (metaErr) {
+          console.warn("Could not fetch extended metadata:", metaErr);
+        }
       } catch (err) {
         console.error("Verification query error:", err);
       } finally {
@@ -126,34 +145,179 @@ export function VerifyPage() {
         ) : credential ? (
           <>
             {/* Header */}
-            <div className="verify-header">
-              <div className="verify-skill-wrap">
-                <span className="trust-badge" style={{ width: "fit-content" }}>
-                  <span className="trust-badge-dot" />
-                  Blockchain Credential Audit
-                </span>
-                <h2 className="verify-skill-title">{credential.skill}</h2>
-              </div>
+            {(() => {
+              const isProject = credential.skill?.startsWith("[Project]") || 
+                                credential.skill?.toLowerCase().startsWith("project:") || 
+                                metadata?.type === "project";
+              const displayTitle = credential.skill
+                ? credential.skill.replace(/^\[Project\]\s*/i, "").replace(/^project:\s*/i, "")
+                : "Untitled Record";
 
-              <div>
-                {credential.revoked ? (
-                  <span className="verify-status-badge revoked">
-                    <XCircle size={16} />
-                    <span>CRYPTOGRAPHICALLY REVOKED</span>
-                  </span>
-                ) : isValid ? (
-                  <span className="verify-status-badge valid">
-                    <CheckCircle2 size={16} />
-                    <span>VERIFIED ON-CHAIN (VALID)</span>
-                  </span>
-                ) : (
-                  <span className="verify-status-badge revoked">
-                    <XCircle size={16} />
-                    <span>UNVERIFIED / INVALID</span>
-                  </span>
-                )}
-              </div>
-            </div>
+              return (
+                <>
+                  <div className="verify-header">
+                    <div className="verify-skill-wrap">
+                      <span className="trust-badge" style={{ width: "fit-content", borderColor: isProject ? "rgba(56, 189, 248, 0.3)" : undefined }}>
+                        <span className="trust-badge-dot" style={{ background: isProject ? "#38bdf8" : undefined }} />
+                        {isProject ? "Verified Capstone Project Audit" : "Verified Skill Competency Audit"}
+                      </span>
+                      <h2 className="verify-skill-title">{displayTitle}</h2>
+                    </div>
+
+                    <div>
+                      {credential.revoked ? (
+                        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "4px" }}>
+                          <span className="verify-status-badge revoked">
+                            <XCircle size={16} />
+                            <span>✕ REVOKED</span>
+                          </span>
+                          <span style={{ fontSize: "11.5px", fontFamily: "var(--font-mono)", color: "#f43f5e", fontWeight: "600" }}>
+                            Verified from Monad blockchain
+                          </span>
+                        </div>
+                      ) : isValid ? (
+                        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "4px" }}>
+                          <span className="verify-status-badge valid">
+                            <CheckCircle2 size={16} />
+                            <span>✓ VALID</span>
+                          </span>
+                          <span style={{ fontSize: "11.5px", fontFamily: "var(--font-mono)", color: "#10b981", fontWeight: "600" }}>
+                            Verified from Monad blockchain
+                          </span>
+                        </div>
+                      ) : (
+                        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "4px" }}>
+                          <span className="verify-status-badge revoked">
+                            <XCircle size={16} />
+                            <span>✕ INVALID</span>
+                          </span>
+                          <span style={{ fontSize: "11.5px", fontFamily: "var(--font-mono)", color: "#f43f5e", fontWeight: "600" }}>
+                            Verified from Monad blockchain
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* If Project: Project Artifacts Panel */}
+                  {isProject && (
+                    <div style={{
+                      margin: "18px 0",
+                      padding: "18px",
+                      background: "rgba(56, 189, 248, 0.05)",
+                      border: "1px solid rgba(56, 189, 248, 0.2)",
+                      borderRadius: "var(--radius-md)",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "12px"
+                    }}>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "10px" }}>
+                        <span style={{ fontSize: "12px", fontFamily: "var(--font-mono)", color: "#38bdf8", fontWeight: "700", display: "flex", alignItems: "center", gap: "6px" }}>
+                          <FolderGit2 size={14} />
+                          VERIFIED PROJECT ARTIFACTS
+                        </span>
+
+                        <div style={{ display: "flex", gap: "10px" }}>
+                          {metadata?.repoUrl && (
+                            <a
+                              href={metadata.repoUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="btn-secondary"
+                              style={{ padding: "6px 12px", fontSize: "12px", color: "#38bdf8", borderColor: "rgba(56, 189, 248, 0.3)" }}
+                            >
+                              <GitBranch size={13} />
+                              <span>View Code Repository</span>
+                              <ExternalLink size={11} />
+                            </a>
+                          )}
+                          {metadata?.liveUrl && (
+                            <a
+                              href={metadata.liveUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="btn-secondary"
+                              style={{ padding: "6px 12px", fontSize: "12px" }}
+                            >
+                              <span>Live Deployment</span>
+                              <ExternalLink size={11} />
+                            </a>
+                          )}
+                        </div>
+                      </div>
+
+                      {metadata?.projectSkills && (
+                        <div>
+                          <span style={{ fontSize: "11px", color: "var(--text-muted)", display: "block", marginBottom: "4px" }}>
+                            ASSOCIATED TECH STACK & SKILLS
+                          </span>
+                          <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                            {metadata.projectSkills.split(",").map((s, idx) => (
+                              <span
+                                key={idx}
+                                style={{
+                                  padding: "3px 9px",
+                                  fontSize: "11px",
+                                  fontFamily: "var(--font-mono)",
+                                  background: "var(--bg-surface)",
+                                  border: "1px solid var(--border-medium)",
+                                  borderRadius: "4px",
+                                  color: "var(--text-highlight)"
+                                }}
+                              >
+                                {s.trim()}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {metadata?.description && (
+                        <div>
+                          <span style={{ fontSize: "11px", color: "var(--text-muted)", display: "block", marginBottom: "4px" }}>
+                            VERIFICATION SCOPE & AUDIT NOTES
+                          </span>
+                          <p style={{ fontSize: "13px", color: "var(--text-secondary)", lineHeight: "1.5" }}>
+                            {metadata.description}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* If Skill: Skill Details Panel */}
+                  {!isProject && metadata && (
+                    <div style={{
+                      margin: "18px 0",
+                      padding: "16px",
+                      background: "rgba(242, 108, 54, 0.05)",
+                      border: "1px solid rgba(242, 108, 54, 0.2)",
+                      borderRadius: "var(--radius-md)",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "10px"
+                    }}>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                        <span style={{ fontSize: "12px", fontFamily: "var(--font-mono)", color: "var(--accent-primary)", fontWeight: "700", display: "flex", alignItems: "center", gap: "6px" }}>
+                          <Award size={14} />
+                          COMPETENCY ASSESSMENT REPORT
+                        </span>
+                        {metadata.skillLevel && (
+                          <span style={{ fontSize: "11.5px", padding: "2px 8px", background: "var(--bg-surface)", border: "1px solid var(--border-medium)", borderRadius: "4px", color: "var(--accent-primary)", fontWeight: "600" }}>
+                            {metadata.skillLevel}
+                          </span>
+                        )}
+                      </div>
+                      {metadata.description && (
+                        <p style={{ fontSize: "13px", color: "var(--text-secondary)", lineHeight: "1.5" }}>
+                          {metadata.description}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </>
+              );
+            })()}
 
             {/* Audit Table */}
             <div className="audit-table">

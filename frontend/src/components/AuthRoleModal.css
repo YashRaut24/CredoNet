@@ -1,0 +1,270 @@
+/* AuthRoleModal.css */
+.auth-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 8, 7, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.auth-modal-container {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-xl);
+  width: 100%;
+  max-width: 980px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+  position: relative;
+  animation: modalScale 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalScale {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.auth-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 20px;
+}
+
+.auth-modal-tag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent-primary);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.auth-modal-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--text-highlight);
+  margin-top: 4px;
+  letter-spacing: -0.02em;
+}
+
+.auth-modal-desc {
+  font-size: 13.5px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+  line-height: 1.5;
+}
+
+.auth-modal-close {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-medium);
+  color: var(--text-secondary);
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.auth-modal-close:hover {
+  color: var(--text-highlight);
+  border-color: var(--text-secondary);
+}
+
+/* 3 Persona Cards Grid */
+.auth-persona-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+@media (max-width: 860px) {
+  .auth-persona-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.auth-persona-card {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 16px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  position: relative;
+}
+
+.auth-persona-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent-primary);
+  box-shadow: 0 10px 24px rgba(242, 108, 54, 0.12);
+}
+
+.auth-persona-card.active-role {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 1px var(--accent-primary), 0 10px 24px rgba(242, 108, 54, 0.15);
+}
+
+.auth-persona-card.issuer:hover,
+.auth-persona-card.issuer.active-role {
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 1px #38bdf8, 0 10px 24px rgba(56, 189, 248, 0.15);
+}
+
+.auth-persona-card.employer:hover,
+.auth-persona-card.employer.active-role {
+  border-color: #10b981;
+  box-shadow: 0 0 0 1px #10b981, 0 10px 24px rgba(16, 185, 129, 0.15);
+}
+
+.persona-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.persona-icon-wrap {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.persona-icon-wrap.student {
+  background: rgba(242, 108, 54, 0.15);
+  color: var(--accent-primary);
+  border: 1px solid rgba(242, 108, 54, 0.3);
+}
+
+.persona-icon-wrap.issuer {
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+}
+
+.persona-icon-wrap.employer {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.persona-badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+}
+
+.persona-badge.student {
+  color: var(--accent-primary);
+  background: rgba(242, 108, 54, 0.1);
+  border: 1px solid rgba(242, 108, 54, 0.25);
+}
+
+.persona-badge.issuer {
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+}
+
+.persona-badge.employer {
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.persona-name {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-highlight);
+  margin-top: 4px;
+}
+
+.persona-bio {
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.persona-features {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin: 8px 0;
+  padding: 0;
+}
+
+.persona-features li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.persona-cta {
+  width: 100%;
+  justify-content: center;
+  padding: 10px;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.persona-cta.issuer-btn {
+  border-color: rgba(56, 189, 248, 0.4);
+  color: #38bdf8;
+}
+
+.persona-cta.issuer-btn:hover {
+  background: rgba(56, 189, 248, 0.15);
+  border-color: #38bdf8;
+}
+
+.persona-cta.employer-btn {
+  border-color: rgba(16, 185, 129, 0.4);
+  color: #10b981;
+}
+
+.persona-cta.employer-btn:hover {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: #10b981;
+}
+
+.auth-modal-footer {
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 16px;
+  font-size: 12px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}

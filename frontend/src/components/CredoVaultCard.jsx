@@ -36,7 +36,7 @@ export function CredoVaultCard() {
       id: "cred-1",
       skill: "Solidity Core & EVM Architecture",
       issuer: "Web3 Engineering Council",
-      tag: "SMART CONTRACTS",
+      tag: "VERIFIED SKILL",
       status: "AUTHENTIC",
       date: "Aug 2026",
       icon: Cpu,
@@ -44,20 +44,20 @@ export function CredoVaultCard() {
     },
     {
       id: "cred-2",
-      skill: "B.E. Computer Engineering (Sem 7)",
+      skill: "[Project] CredoNet Protocol Architecture",
       issuer: "Autonomous Technical Institute",
-      tag: "ACADEMIC DEGREE",
-      status: "VERIFIED",
+      tag: "VERIFIED PROJECT",
+      status: "ON-CHAIN",
       date: "Sep 2026",
-      icon: Award,
+      icon: Layers,
       color: "#e36128"
     },
     {
       id: "cred-3",
       skill: "Distributed Consensus & Cryptography",
       issuer: "Consensus Architecture Lab",
-      tag: "SPECIALIZATION",
-      status: "ON-CHAIN",
+      tag: "VERIFIED SKILL",
+      status: "AUTHENTIC",
       date: "Jul 2026",
       icon: Lock,
       color: "#d95822"
@@ -70,10 +70,10 @@ export function CredoVaultCard() {
       <div className="vault-status-bar">
         <div className="vault-protocol-tag">
           <ShieldCheck size={15} />
-          <span>CREDONET SOVEREIGN VAULT</span>
+          <span>CREDONET VERIFIED VAULT</span>
         </div>
         <div className="vault-serial-tag">
-          <span>VAULT ID: {displayAddress.slice(0, 6)}...{displayAddress.slice(-4)}</span>
+          <span>ACCOUNT: {displayAddress.slice(0, 6)}...{displayAddress.slice(-4)}</span>
         </div>
       </div>
 
@@ -85,34 +85,34 @@ export function CredoVaultCard() {
           </div>
           <div className="vault-state-pill">
             <span className="vault-state-dot" />
-            <span>TAMPER-PROOF</span>
+            <span>AUTHENTIC</span>
           </div>
         </div>
 
         <div className="vault-meta-zone">
           <div className="vault-origin-row">
-            <span className="vault-sub-label">VAULT OWNER</span>
+            <span className="vault-sub-label">VAULT HOLDER</span>
             <h3 className="vault-holder-title">
-              {account ? "CONNECTED SCHOLAR WALLET" : "ALEXANDER M. • VERIFIED GRADUATE"}
+              {account ? "STUDENT ACCOUNT" : "ALEXANDER M. • VERIFIED LEARNER"}
             </h3>
           </div>
 
           <div className="vault-metrics-grid">
             <div>
-              <span className="vault-sub-label">SECURITY CLASS</span>
-              <span className="vault-val-text">SOVEREIGN SELF-CUSTODY</span>
+              <span className="vault-sub-label">SECURITY</span>
+              <span className="vault-val-text">DIRECT OWNERSHIP</span>
             </div>
             <div>
-              <span className="vault-sub-label">BLOCKCHAIN NETWORK</span>
-              <span className="vault-val-text">EVM / MONAD TESTNET</span>
+              <span className="vault-sub-label">NETWORK</span>
+              <span className="vault-val-text">MONAD BLOCKCHAIN</span>
             </div>
             <div>
-              <span className="vault-sub-label">HASH INTEGRITY</span>
-              <span className="vault-val-text">KECCAK-256 SIGNED</span>
+              <span className="vault-sub-label">PROTECTION</span>
+              <span className="vault-val-text">CRYPTOGRAPHIC PROOF</span>
             </div>
             <div>
-              <span className="vault-sub-label">VAULT CAPACITY</span>
-              <span className="vault-val-text">PERPETUAL ON-CHAIN</span>
+              <span className="vault-sub-label">STORAGE</span>
+              <span className="vault-val-text">PERMANENT LIFETIME</span>
             </div>
           </div>
         </div>
@@ -183,13 +183,13 @@ export function CredoVaultCard() {
             </button>
           </div>
           <div className="vault-data-block">
-            <span className="data-title">CredoNet Smart Contract</span>
+            <span className="data-title">Verified Smart Contract</span>
             <span className="data-code-val">0xc6BfB22D6B46346B113333b5513BDcD361488e6f</span>
           </div>
           <div className="vault-data-block">
-            <span className="data-title">Mathematical Validity Guarantee</span>
+            <span className="data-title">Authenticity Guarantee</span>
             <span className="data-plain-val">
-              Credentials are authenticated via ECDSA signatures and keccak256 hashes permanently stored in EVM state.
+              All credentials are cryptographically signed and permanently protected against tampering or forgery.
             </span>
           </div>
         </div>
@@ -200,14 +200,14 @@ export function CredoVaultCard() {
         <div className="vault-qr-shelf">
           <div className="vault-qr-frame">
             <QrCode size={68} color="#f26c36" />
-            <span className="qr-frame-label">Vault Verification Key</span>
+            <span className="qr-frame-label">Vault Verification QR</span>
           </div>
           <div className="vault-qr-info">
             <h4 style={{ fontSize: "14px", fontWeight: "600", color: "var(--text-highlight)", marginBottom: "4px" }}>
               Instant Recruiter Verification
             </h4>
             <p style={{ fontSize: "12px", color: "var(--text-secondary)", lineHeight: "1.5" }}>
-              Employers scan this sovereign QR code to mathematically verify all anchored credentials directly against EVM state in &lt;1 second.
+              Employers can scan this QR code to instantly verify all completed skills and projects in &lt;1 second for free.
             </p>
           </div>
         </div>
