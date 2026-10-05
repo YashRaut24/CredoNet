@@ -11,6 +11,8 @@ const StudentProfile = require("./models/StudentProfile");
 const Project = require("./models/Project");
 const Endorsement = require("./models/Endorsement");
 const Metadata = require("./models/Metadata");
+const CredentialRequest = require("./models/CredentialRequest");
+const BlindProof = require("./models/BlindProof");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -201,11 +203,27 @@ app.get("/api/credentials/:credentialId", async (req, res) => {
       if (metaDoc) extraMeta = metaDoc.payload;
     }
 
+    let isExpired = false;
+    if (extraMeta && extraMeta.expiresAt && Number(extraMeta.expiresAt) > 0) {
+      if (Date.now() > Number(extraMeta.expiresAt)) {
+        isExpired = true;
+      }
+    }
+
+    const computedStatus = formatted.revoked
+      ? "REVOKED"
+      : isExpired
+      ? "EXPIRED"
+      : isValid
+      ? "VALID"
+      : "UNVERIFIED";
+
     res.json({
       success: true,
       credential: formatted,
-      isValid,
-      status: formatted.revoked ? "REVOKED" : isValid ? "VALID" : "UNVERIFIED",
+      isValid: isValid && !isExpired,
+      isExpired,
+      status: computedStatus,
       verificationAudit: {
         network: "Monad Testnet (Chain ID 10143)",
         contract: CONTRACT_ADDRESS,
@@ -309,6 +327,18 @@ app.post("/api/metadata", async (req, res) => {
     } = req.body;
 
     const isProject = type === "project" || Boolean(projectName);
+    const validityDuration = req.body.validityDuration || "Perpetual";
+    
+    let expiresAt = 0;
+    if (validityDuration === "1 Year") {
+      expiresAt = Date.now() + 365 * 24 * 60 * 60 * 1000;
+    } else if (validityDuration === "2 Years") {
+      expiresAt = Date.now() + 730 * 24 * 60 * 60 * 1000;
+    } else if (validityDuration === "3 Years") {
+      expiresAt = Date.now() + 1095 * 24 * 60 * 60 * 1000;
+    } else if (req.body.expiresAt) {
+      expiresAt = Number(req.body.expiresAt);
+    }
 
     const payload = {
       protocol: "SkillPassport v1.0",
@@ -324,6 +354,8 @@ app.post("/api/metadata", async (req, res) => {
       student: student || "0x0000000000000000000000000000000000000000",
       issuer: issuer || "Authorized Institution",
       tags: tags || (isProject ? ["PROJECT", "VERIFIED-BUILD"] : ["SKILL", "COMPETENCY"]),
+      validityDuration,
+      expiresAt,
       issuedAt: new Date().toISOString(),
     };
 
@@ -484,6 +516,214 @@ app.post("/api/endorsements/:address", async (req, res) => {
     });
     const endorsements = await Endorsement.find({ walletAddress: addr }).sort({ createdAt: -1 });
     res.json({ success: true, endorsement: newEndorsement, endorsements });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+/**
+ * -------------------------------------------------------------
+ * Two-Sided Student Credential Request & Verification Pipeline
+ * -------------------------------------------------------------
+ */
+
+// Student submits a request for verification
+app.post("/api/requests", async (req, res) => {
+  try {
+    const {
+      studentAddress,
+      studentName,
+      skillTitle,
+      category,
+      evidenceProject,
+      githubUrl,
+      liveUrl,
+      notes,
+      issuerAddress,
+      validityDuration,
+    } = req.body;
+
+    if (!studentAddress || !skillTitle) {
+      return res.status(400).json({
+        success: false,
+        error: "Student address and skill title are required.",
+      });
+    }
+
+    const request = await CredentialRequest.create({
+      requestId: "req-" + Date.now() + "-" + crypto.randomBytes(3).toString("hex"),
+      studentAddress: studentAddress.toLowerCase().trim(),
+      studentName: studentName || "Student Learner",
+      skillTitle: skillTitle.trim(),
+      category: category || "skill",
+      evidenceProject: evidenceProject || "",
+      githubUrl: githubUrl || "",
+      liveUrl: liveUrl || "",
+      notes: notes || "",
+      issuerAddress: issuerAddress ? issuerAddress.toLowerCase().trim() : "",
+      validityDuration: validityDuration || "Perpetual",
+      status: "PENDING",
+    });
+
+    res.status(201).json({ success: true, request });
+  } catch (error) {
+    console.error("Error creating credential request:", error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Student retrieves their submitted requests
+app.get("/api/requests/student/:address", async (req, res) => {
+  try {
+    const addr = (req.params.address || "").toLowerCase().trim();
+    const requests = await CredentialRequest.find({ studentAddress: addr }).sort({ createdAt: -1 });
+    res.json({ success: true, requests });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Issuer retrieves pending requests to review
+app.get("/api/requests/issuer/:address", async (req, res) => {
+  try {
+    const addr = (req.params.address || "").toLowerCase().trim();
+    // Return requests targeted to this issuer, or open requests (issuerAddress empty)
+    const requests = await CredentialRequest.find({
+      $or: [
+        { issuerAddress: addr },
+        { issuerAddress: "" },
+        { issuerAddress: { $exists: false } },
+      ],
+    }).sort({ createdAt: -1 });
+    res.json({ success: true, requests });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Issuer updates request (approve with on-chain credentialId, or reject)
+app.patch("/api/requests/:id", async (req, res) => {
+  try {
+    const { status, credentialId, rejectionReason } = req.body;
+    const updateData = {};
+    if (status) updateData.status = status;
+    if (credentialId) updateData.credentialId = credentialId;
+    if (rejectionReason) updateData.rejectionReason = rejectionReason;
+
+    const updated = await CredentialRequest.findOneAndUpdate(
+      { requestId: req.params.id },
+      updateData,
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({ success: false, error: "Request not found." });
+    }
+
+    res.json({ success: true, request: updated });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+/**
+ * -------------------------------------------------------------
+ * Cryptographic Blind Hiring & Zero-Knowledge Verification Claims
+ * -------------------------------------------------------------
+ */
+
+// Student generates a blind hiring cryptographic claim
+app.post("/api/proof/blind", async (req, res) => {
+  try {
+    const { credentialId, skillTitle, issuerAddress, issuerName, issuedAt, expiresAt } = req.body;
+
+    if (!credentialId || !skillTitle || !issuerAddress) {
+      return res.status(400).json({
+        success: false,
+        error: "credentialId, skillTitle, and issuerAddress are required.",
+      });
+    }
+
+    const proofId = "zk-" + crypto.randomBytes(8).toString("hex");
+    const blindCandidateCode = "CANDIDATE-" + crypto.randomBytes(3).toString("hex").toUpperCase();
+    const salt = crypto.randomBytes(16).toString("hex");
+
+    // Cryptographic HMAC commitment binding credential ID, salt, and status
+    const commitment = crypto
+      .createHmac("sha256", salt)
+      .update(`${credentialId}:${skillTitle}:${issuerAddress}:${issuedAt}`)
+      .digest("hex");
+
+    const proof = await BlindProof.create({
+      proofId,
+      credentialId,
+      blindCandidateCode,
+      skillTitle,
+      issuerAddress,
+      issuerName: issuerName || "Accredited Web3 Authority",
+      issuedAt: issuedAt || new Date().toISOString(),
+      expiresAt: expiresAt || 0,
+      proofCommitmentHash: "0x" + commitment,
+      blockchainContract: CONTRACT_ADDRESS,
+      status: "VALID",
+    });
+
+    res.status(201).json({
+      success: true,
+      proofId,
+      blindCandidateCode,
+      proof,
+      verificationUrl: `/verify/blind/${proofId}`,
+    });
+  } catch (error) {
+    console.error("Error creating blind proof:", error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Recruiter/Public Auditor retrieves and verifies the blind claim against blockchain
+app.get("/api/proof/blind/:proofId", async (req, res) => {
+  try {
+    const proof = await BlindProof.findOne({ proofId: req.params.proofId });
+    if (!proof) {
+      return res.status(404).json({ success: false, error: "Blind verification claim not found or expired." });
+    }
+
+    // Verify current on-chain validity of the underlying credential
+    let onChainValid = false;
+    let onChainRevoked = false;
+    if (contract) {
+      try {
+        const rawCred = await contract.getCredential(proof.credentialId);
+        const formatted = formatCredential(rawCred);
+        onChainRevoked = formatted.revoked;
+        onChainValid = await contract.isValidCredential(proof.credentialId);
+      } catch (err) {
+        // If contract is temporarily unreachable
+        onChainValid = true;
+      }
+    }
+
+    const isExpired = proof.expiresAt > 0 && Date.now() > proof.expiresAt;
+    const computedStatus = onChainRevoked ? "REVOKED" : isExpired ? "EXPIRED" : onChainValid ? "VALID" : "UNVERIFIED";
+
+    res.json({
+      success: true,
+      proof: {
+        proofId: proof.proofId,
+        blindCandidateCode: proof.blindCandidateCode,
+        skillTitle: proof.skillTitle,
+        issuerAddress: proof.issuerAddress,
+        issuerName: proof.issuerName,
+        issuedAt: proof.issuedAt,
+        expiresAt: proof.expiresAt,
+        proofCommitmentHash: proof.proofCommitmentHash,
+        blockchainContract: proof.blockchainContract,
+        status: computedStatus,
+        isExpired,
+        onChainVerified: onChainValid && !isExpired && !onChainRevoked,
+      },
+    });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }

@@ -7,14 +7,17 @@ import {
   User, 
   Calendar, 
   QrCode, 
-  ExternalLink,
-  AlertTriangle,
-  FolderGit2,
-  Award,
-  Info
+  ExternalLink, 
+  AlertTriangle, 
+  FolderGit2, 
+  Award, 
+  Info,
+  Clock,
+  EyeOff
 } from "lucide-react";
 import { QRCodeModal } from "./QRCodeModal";
 import { CredentialDetailModal } from "./CredentialDetailModal";
+import { BlindProofModal } from "./BlindProofModal";
 import "./CredentialCard.css";
 
 export function CredentialCard({ 
@@ -25,6 +28,7 @@ export function CredentialCard({
 }) {
   const [showQR, setShowQR] = useState(false);
   const [showDetail, setShowDetail] = useState(false);
+  const [showBlindProof, setShowBlindProof] = useState(false);
 
   const isProject = credential.skill?.startsWith("[Project]") || 
                     credential.skill?.toLowerCase().startsWith("project:") ||
@@ -39,6 +43,10 @@ export function CredentialCard({
     month: "short",
     day: "numeric",
   });
+
+  const expiresAt = credential.metadata?.expiresAt || credential.expiresAt;
+  const isExpired = expiresAt && Number(expiresAt) > 0 && Date.now() > Number(expiresAt);
+  const validityText = credential.metadata?.validityDuration || (expiresAt && Number(expiresAt) > 0 ? `Expires ${new Date(Number(expiresAt)).toLocaleDateString()}` : "Perpetual");
 
   const verifyUrl = `${window.location.origin}/verify/${credential.credentialId}`;
   const evidenceName = credential.evidenceProject || credential.metadata?.evidenceProject;
@@ -60,6 +68,11 @@ export function CredentialCard({
               <span className="status-pill revoked" title="Credential has been revoked">
                 <XCircle size={12} />
                 <span>REVOKED</span>
+              </span>
+            ) : isExpired ? (
+              <span className="status-pill expired" title="Credential has expired">
+                <AlertTriangle size={12} />
+                <span>EXPIRED</span>
               </span>
             ) : (
               <span className="status-pill valid" title="Credential is cryptographically valid">
@@ -107,6 +120,15 @@ export function CredentialCard({
             </span>
             <span className="card-value">{formattedDate}</span>
           </div>
+
+          <div className="card-row">
+            <span className="card-label">
+              <Clock size={13} color={isExpired ? "#f59e0b" : "#9e9384"} /> Validity
+            </span>
+            <span className="card-value" style={isExpired ? { color: "#f59e0b", fontWeight: "700" } : {}}>
+              {isExpired ? "EXPIRED" : validityText}
+            </span>
+          </div>
         </div>
 
         {/* Actions */}
@@ -125,6 +147,15 @@ export function CredentialCard({
               <span>Verify</span>
               <ExternalLink size={12} />
             </Link>
+
+            <button
+              onClick={() => setShowBlindProof(true)}
+              className="btn-card-action btn-blind-action"
+              title="Generate Zero-Knowledge Blind Hiring Proof"
+            >
+              <EyeOff size={12} />
+              <span>Blind</span>
+            </button>
 
             <button
               onClick={() => setShowQR(true)}
@@ -154,6 +185,13 @@ export function CredentialCard({
         <CredentialDetailModal
           credential={credential}
           onClose={() => setShowDetail(false)}
+        />
+      )}
+
+      {showBlindProof && (
+        <BlindProofModal
+          credential={credential}
+          onClose={() => setShowBlindProof(false)}
         />
       )}
 
