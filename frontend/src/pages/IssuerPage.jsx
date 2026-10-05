@@ -23,7 +23,11 @@ import {
   Calendar,
   Eye,
   Check,
-  Globe
+  Globe,
+  Users,
+  Inbox,
+  Clock,
+  Send
 } from "lucide-react";
 import { useWeb3 } from "../context/Web3Context";
 import { CredentialCard } from "../components/CredentialCard";
@@ -72,6 +76,21 @@ export function IssuerPage() {
   const [historySearch, setHistorySearch] = useState("");
   const [historyFilter, setHistoryFilter] = useState("all"); // "all" | "skill" | "project"
 
+  // Validity Lifecycle State
+  const [validityDuration, setValidityDuration] = useState("Perpetual");
+
+  // Student Claims Queue States
+  const [claims, setClaims] = useState([]);
+  const [loadingClaims, setLoadingClaims] = useState(false);
+  const [activeClaimId, setActiveClaimId] = useState(null);
+
+  // Institutional Batch Issuance States
+  const [batchTitle, setBatchTitle] = useState("");
+  const [batchAddresses, setBatchAddresses] = useState("");
+  const [batchValidity, setBatchValidity] = useState("Perpetual");
+  const [isBatchMinting, setIsBatchMinting] = useState(false);
+  const [batchProgress, setBatchProgress] = useState(null);
+
   // Governance & System States
   const [authInput, setAuthInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -104,9 +123,27 @@ export function IssuerPage() {
     }
   };
 
+  // Load student claims
+  const loadClaims = async () => {
+    if (!account) return;
+    setLoadingClaims(true);
+    try {
+      const res = await fetch(`/api/requests/issuer/${account}`);
+      if (res.ok) {
+        const data = await res.json();
+        setClaims(data);
+      }
+    } catch (err) {
+      console.warn("Could not load claims:", err);
+    } finally {
+      setLoadingClaims(false);
+    }
+  };
+
   useEffect(() => {
     if (account) {
       loadIssued();
+      loadClaims();
     }
   }, [account]);
 
@@ -235,6 +272,7 @@ export function IssuerPage() {
               liveUrl: liveUrl.trim(),
               projectSkills: projectSkills.trim(),
               description: description.trim(),
+              validityDuration: validityDuration,
               student: studentAddress.trim(),
               issuer: account,
             }
@@ -244,6 +282,7 @@ export function IssuerPage() {
               skillLevel,
               evidenceProject: resolvedEvidenceProject,
               description: description.trim(),
+              validityDuration: validityDuration,
               student: studentAddress.trim(),
               issuer: account,
             };
@@ -309,6 +348,26 @@ export function IssuerPage() {
       setRepoUrl("");
       setLiveUrl("");
       setDescription("");
+
+      // If completing an active student claim, mark it approved
+      if (activeClaimId) {
+        try {
+          await fetch(`/api/requests/${activeClaimId}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              status: "APPROVED",
+              credentialId: issuedCredId,
+              issuerNotes: "Verified and minted on-chain by accredited issuer"
+            })
+          });
+          setActiveClaimId(null);
+          loadClaims();
+        } catch (claimErr) {
+          console.warn("Could not update claim status:", claimErr);
+        }
+      }
+
       loadIssued();
     } catch (err) {
       console.error("Issuance failed:", err);
@@ -316,6 +375,141 @@ export function IssuerPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Accept Claim into Issuance Form
+  const handleAcceptClaim = (claim) => {
+    setActiveClaimId(claim.id);
+    setStudentAddress(claim.studentAddress);
+    if (claim.category === "Project") {
+      setIssueType("project");
+      setProjectName(claim.skillTitle);
+      setDescription(claim.description || "");
+      if (claim.evidenceGithubUrl) setRepoUrl(claim.evidenceGithubUrl);
+    } else {
+      setIssueType("skill");
+      setSkillTitle(claim.skillTitle);
+      setDescription(claim.description || "");
+      if (claim.evidenceProject) setEvidenceProject(claim.evidenceProject);
+    }
+    window.scrollTo({ top: 350, behavior: "smooth" });
+  };
+
+  // Reject Claim
+  const handleRejectClaim = async (claimId) => {
+    const reason = window.prompt("Reason for rejecting this claim (optional):", "Evidence repository inaccessible or incomplete requirement");
+    if (reason === null) return;
+    try {
+      const res = await fetch(`/api/requests/${claimId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          status: "REJECTED",
+          issuerNotes: reason
+        })
+      });
+      if (res.ok) {
+        loadClaims();
+      }
+    } catch (err) {
+      console.warn("Error rejecting claim:", err);
+    }
+  };
+
+  // Batch Issuance Handler
+  const handleBatchIssue = async (e) => {
+    e.preventDefault();
+    if (!account) {
+      connectWallet();
+      return;
+    }
+    if (!isMonadChain) {
+      switchToMonad();
+      return;
+    }
+    if (!isAuthorized) {
+      setStatusMsg({ type: "error", text: "Wallet not authorized to issue credentials." });
+      return;
+    }
+
+    const lines = batchAddresses.split(/[\n,]+/).map(s => s.trim()).filter(Boolean);
+    const validAddrs = lines.filter(a => ethers.isAddress(a));
+    if (validAddrs.length === 0) {
+      setStatusMsg({ type: "error", text: "No valid recipient wallet addresses provided. Please enter at least one 0x... address." });
+      return;
+    }
+
+    const finalBatchTitle = batchTitle.trim() || "Institutional Degree & Certification";
+    setIsBatchMinting(true);
+    setBatchProgress({ current: 0, total: validAddrs.length, logs: [] });
+
+    const contract = getContractWithSigner();
+    const updatedLogs = [];
+
+    for (let i = 0; i < validAddrs.length; i++) {
+      const recipient = validAddrs[i];
+      try {
+        let metadataHash = "ipfs://QmBatchHash";
+        try {
+          const metaRes = await fetch("/api/metadata", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              type: "batch_convocation",
+              skill: finalBatchTitle,
+              validityDuration: batchValidity,
+              student: recipient,
+              issuer: account,
+              description: `Conferred via Institutional Batch Convocation to ${recipient}`
+            })
+          });
+          const metaData = await metaRes.json();
+          if (metaData.metadataHash) metadataHash = metaData.metadataHash;
+        } catch (e) {}
+
+        const tx = await contract.issueCredential(recipient, finalBatchTitle, metadataHash);
+        const receipt = await tx.wait();
+
+        let issuedCredId = null;
+        if (receipt && receipt.logs) {
+          for (const log of receipt.logs) {
+            try {
+              const parsedLog = contract.interface.parseLog(log);
+              if (parsedLog && parsedLog.name === "CredentialIssued") {
+                issuedCredId = parsedLog.args.credentialId;
+                break;
+              }
+            } catch (e) {}
+          }
+        }
+
+        updatedLogs.push({
+          recipient,
+          status: "SUCCESS",
+          txHash: tx.hash,
+          credentialId: issuedCredId
+        });
+      } catch (err) {
+        updatedLogs.push({
+          recipient,
+          status: "FAILED",
+          error: err.reason || err.message || "Transaction failed"
+        });
+      }
+
+      setBatchProgress({
+        current: i + 1,
+        total: validAddrs.length,
+        logs: [...updatedLogs]
+      });
+    }
+
+    setIsBatchMinting(false);
+    loadIssued();
+    setStatusMsg({
+      type: "success",
+      text: `Batch convocation completed! Minted on-chain credentials for ${updatedLogs.filter(l => l.status === "SUCCESS").length} of ${validAddrs.length} recipients on Monad.`
+    });
   };
 
   // Revoke Credential
@@ -676,8 +870,169 @@ export function IssuerPage() {
               <FolderGit2 size={15} />
               <span>Project Verification</span>
             </button>
+
+            <button
+              type="button"
+              onClick={() => setIssueType("batch")}
+              className={`mode-tab-button ${issueType === "batch" ? "active-skill" : ""}`}
+            >
+              <Users size={15} />
+              <span>Batch Convocation</span>
+            </button>
           </div>
 
+          {activeClaimId && (
+            <div style={{
+              margin: "12px 0 16px",
+              padding: "12px 16px",
+              background: "rgba(242, 108, 54, 0.12)",
+              border: "1px solid rgba(242, 108, 54, 0.35)",
+              borderRadius: "var(--radius-md)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: "10px"
+            }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "12.5px", color: "var(--text-highlight)" }}>
+                <Inbox size={15} color="var(--accent-primary)" />
+                <span>Processing Student Claim <strong>#{activeClaimId.slice(0, 8)}...</strong>. On issuance, this claim will automatically be marked Approved & linked to the generated Monad Credential ID.</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => { setActiveClaimId(null); setStudentAddress(""); setSkillTitle(""); setProjectName(""); setDescription(""); }}
+                style={{ background: "none", border: "none", color: "#f87171", fontSize: "11.5px", cursor: "pointer", textDecoration: "underline" }}
+              >
+                Clear Claim
+              </button>
+            </div>
+          )}
+
+          {issueType === "batch" ? (
+            /* BATCH ISSUANCE FORM */
+            <form onSubmit={handleBatchIssue} style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
+              <div className="field-box">
+                <div className="field-label-row">
+                  <span>Batch Degree / Certification Title *</span>
+                  <span className="field-badge">Convocation Cohort</span>
+                </div>
+                <input
+                  type="text"
+                  placeholder="e.g. B.Tech Computer Science & Engineering - Class of 2026"
+                  value={batchTitle}
+                  onChange={(e) => setBatchTitle(e.target.value)}
+                  disabled={isBatchMinting || !isAuthorized}
+                  className="field-input"
+                  required
+                />
+              </div>
+
+              <div className="field-box">
+                <div className="field-label-row">
+                  <span>Validity Period</span>
+                  <span className="field-badge" style={{ background: "rgba(242, 108, 54, 0.12)", color: "var(--accent-primary)" }}>
+                    Lifecycle
+                  </span>
+                </div>
+                <select
+                  value={batchValidity}
+                  onChange={(e) => setBatchValidity(e.target.value)}
+                  disabled={isBatchMinting || !isAuthorized}
+                  className="field-input"
+                  style={{ background: "var(--bg-primary)" }}
+                >
+                  <option value="Perpetual">Perpetual (No Expiration - Lifetime Degree)</option>
+                  <option value="1 Year">1 Year Validity (Annual Compliance)</option>
+                  <option value="2 Years">2 Years Validity (Standard Tech Recertification)</option>
+                  <option value="3 Years">3 Years Validity (Professional License)</option>
+                </select>
+              </div>
+
+              <div className="field-box">
+                <div className="field-label-row">
+                  <span>Student Wallet Addresses (One per line or comma-separated) *</span>
+                  <button
+                    type="button"
+                    onClick={() => setBatchAddresses("0x71C92a8C943B8d62283e1c66289b5B38B71C4e92\n0x90F79bf6EB2c4f870365E785982E1f101E93b906")}
+                    style={{ background: "none", border: "none", color: "var(--accent-primary)", fontSize: "11px", cursor: "pointer", textDecoration: "underline" }}
+                  >
+                    Load Sample Cohort (2 Wallets)
+                  </button>
+                </div>
+                <textarea
+                  rows={5}
+                  placeholder={"0x71C92a8C943B8d62283e1c66289b5B38B71C4e92\n0x90F79bf6EB2c4f870365E785982E1f101E93b906"}
+                  value={batchAddresses}
+                  onChange={(e) => setBatchAddresses(e.target.value)}
+                  disabled={isBatchMinting || !isAuthorized}
+                  className="field-input mono"
+                  required
+                />
+                <span style={{ fontSize: "11.5px", color: "var(--text-muted)", marginTop: "4px" }}>
+                  Each student wallet will receive an independent, soulbound, verifiable credential on Monad.
+                </span>
+              </div>
+
+              {batchProgress && (
+                <div style={{
+                  padding: "16px",
+                  background: "var(--bg-secondary)",
+                  borderRadius: "var(--radius-md)",
+                  border: "1px solid var(--border-medium)"
+                }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                    <span style={{ fontSize: "13px", fontWeight: "600", color: "var(--text-highlight)" }}>
+                      Minting Progress: {batchProgress.current} / {batchProgress.total} Complete
+                    </span>
+                    {isBatchMinting && <RefreshCw size={14} className="spin" color="var(--accent-primary)" />}
+                  </div>
+
+                  <div style={{
+                    width: "100%",
+                    height: "6px",
+                    background: "var(--bg-primary)",
+                    borderRadius: "3px",
+                    overflow: "hidden",
+                    marginBottom: "10px"
+                  }}>
+                    <div style={{
+                      width: `${(batchProgress.current / batchProgress.total) * 100}%`,
+                      height: "100%",
+                      background: "var(--accent-primary)",
+                      transition: "width 0.3s ease"
+                    }} />
+                  </div>
+
+                  <div style={{ display: "flex", flexDirection: "column", gap: "6px", maxHeight: "140px", overflowY: "auto", fontSize: "12px", fontFamily: "var(--font-mono)" }}>
+                    {batchProgress.logs.map((log, lIdx) => (
+                      <div key={lIdx} style={{ display: "flex", justifyContent: "space-between", color: log.status === "SUCCESS" ? "#10b981" : "#ef4444" }}>
+                        <span>{log.recipient.slice(0, 10)}...{log.recipient.slice(-6)}</span>
+                        <span>{log.status === "SUCCESS" ? `✓ Minted #${log.credentialId ? log.credentialId.slice(0, 6) : "OK"}` : `✗ ${log.error}`}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={isBatchMinting || !isAuthorized}
+                className="btn-primary"
+                style={{ padding: "14px", width: "100%", fontSize: "14.5px" }}
+              >
+                {isBatchMinting ? (
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
+                    <RefreshCw size={16} className="spin" />
+                    <span>Minting Cohort on Monad ({batchProgress?.current || 0}/{batchProgress?.total || 0})...</span>
+                  </span>
+                ) : (
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
+                    <Users size={16} />
+                    <span>Execute Institutional Batch Issuance on Monad</span>
+                  </span>
+                )}
+              </button>
+            </form>
+          ) : (
           <form onSubmit={handleIssue} style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
             {/* Student Wallet Address */}
             <div className="field-box">
@@ -869,6 +1224,31 @@ export function IssuerPage() {
               </>
             )}
 
+            {/* Validity Duration Dropdown */}
+            <div className="field-box">
+              <div className="field-label-row">
+                <span>Credential Validity Duration</span>
+                <span className="field-badge" style={{ background: "rgba(242, 108, 54, 0.12)", color: "var(--accent-primary)" }}>
+                  Lifecycle
+                </span>
+              </div>
+              <select
+                value={validityDuration}
+                onChange={(e) => setValidityDuration(e.target.value)}
+                disabled={loading || !isAuthorized}
+                className="field-input"
+                style={{ background: "var(--bg-primary)" }}
+              >
+                <option value="Perpetual">Perpetual (No Expiration - Lifetime Achievement)</option>
+                <option value="1 Year">1 Year Validity (Annual Compliance / Recertification)</option>
+                <option value="2 Years">2 Years Validity (Standard Tech Certification)</option>
+                <option value="3 Years">3 Years Validity (Professional License)</option>
+              </select>
+              <p style={{ fontSize: "11.5px", color: "var(--text-muted)", marginTop: "4px" }}>
+                Enforces time-bound authenticity. Verification engines automatically flag expired credentials on-chain.
+              </p>
+            </div>
+
             <div className="field-box">
               <div className="field-label-row">
                 <span>{issueType === "project" ? "Project Verification Notes" : "Certification Remarks"}</span>
@@ -952,6 +1332,7 @@ export function IssuerPage() {
               </button>
             )}
           </form>
+          )}
         </div>
 
         {/* Right: Live Interactive Certificate Preview */}
@@ -1050,6 +1431,139 @@ export function IssuerPage() {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* 2.5 Student Claims Review Queue */}
+      <div style={{
+        background: "var(--bg-surface)",
+        border: "1px solid var(--border-medium)",
+        borderRadius: "var(--radius-xl)",
+        padding: "24px 30px",
+        display: "flex",
+        flexDirection: "column",
+        gap: "18px"
+      }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "10px" }}>
+          <div>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <Inbox size={20} color="var(--accent-primary)" />
+              <h3 style={{ fontSize: "18px", fontWeight: "700", color: "var(--text-highlight)" }}>
+                Incoming Student Claims Queue
+              </h3>
+              <span style={{
+                padding: "2px 8px",
+                background: claims.filter(c => c.status === "PENDING").length > 0 ? "rgba(245, 158, 11, 0.15)" : "var(--bg-secondary)",
+                color: claims.filter(c => c.status === "PENDING").length > 0 ? "#f59e0b" : "var(--text-muted)",
+                borderRadius: "10px",
+                fontSize: "12px",
+                fontFamily: "var(--font-mono)",
+                fontWeight: "600"
+              }}>
+                {claims.filter(c => c.status === "PENDING").length} Pending Review
+              </span>
+            </div>
+            <p style={{ fontSize: "13px", color: "var(--text-secondary)", marginTop: "4px" }}>
+              Students submitting project and skill verification claims with GitHub repository evidence for institutional accreditation.
+            </p>
+          </div>
+
+          <button onClick={loadClaims} disabled={loadingClaims} className="btn-secondary" style={{ padding: "6px 12px", fontSize: "12px" }}>
+            <RefreshCw size={12} className={loadingClaims ? "spin" : ""} />
+            <span>Refresh Queue</span>
+          </button>
+        </div>
+
+        {claims.filter(c => c.status === "PENDING").length > 0 ? (
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(360px, 1fr))", gap: "16px" }}>
+            {claims.filter(c => c.status === "PENDING").map((claim) => (
+              <div
+                key={claim.id}
+                style={{
+                  padding: "16px 18px",
+                  background: "var(--bg-secondary)",
+                  border: "1px solid var(--border-subtle)",
+                  borderRadius: "var(--radius-md)",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                  gap: "12px"
+                }}
+              >
+                <div>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "8px" }}>
+                    <h4 style={{ fontSize: "15px", fontWeight: "700", color: "var(--text-highlight)" }}>
+                      {claim.skillTitle}
+                    </h4>
+                    <span style={{
+                      fontSize: "10.5px",
+                      fontFamily: "var(--font-mono)",
+                      padding: "2px 6px",
+                      background: "rgba(242, 108, 54, 0.1)",
+                      color: "var(--accent-primary)",
+                      borderRadius: "4px"
+                    }}>
+                      {claim.category}
+                    </span>
+                  </div>
+
+                  <p style={{ fontSize: "12.5px", color: "var(--text-secondary)", marginTop: "6px", lineHeight: "1.4" }}>
+                    {claim.description}
+                  </p>
+
+                  <div style={{ marginTop: "10px", display: "flex", flexDirection: "column", gap: "4px", fontSize: "11.5px" }}>
+                    <div style={{ color: "var(--text-muted)" }}>
+                      Student: <span style={{ fontFamily: "var(--font-mono)", color: "var(--text-highlight)" }}>{claim.studentAddress.slice(0, 8)}...{claim.studentAddress.slice(-6)}</span>
+                    </div>
+                    {claim.evidenceProject && (
+                      <div style={{ color: "var(--text-muted)" }}>
+                        Project: <span style={{ color: "#38bdf8", fontWeight: "600" }}>{claim.evidenceProject}</span>
+                      </div>
+                    )}
+                    {claim.evidenceGithubUrl && (
+                      <div>
+                        <a href={claim.evidenceGithubUrl} target="_blank" rel="noopener noreferrer" style={{ color: "var(--accent-primary)", display: "inline-flex", alignItems: "center", gap: "4px" }}>
+                          <span>GitHub Repo</span>
+                          <ExternalLink size={10} />
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div style={{ display: "flex", gap: "8px", paddingTop: "10px", borderTop: "1px solid var(--border-subtle)" }}>
+                  <button
+                    type="button"
+                    onClick={() => handleAcceptClaim(claim)}
+                    className="btn-primary"
+                    style={{ flex: 1, padding: "6px 12px", fontSize: "12px" }}
+                  >
+                    <span>Accept & Pre-fill Form</span>
+                    <ArrowRight size={12} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleRejectClaim(claim.id)}
+                    className="btn-secondary"
+                    style={{ padding: "6px 12px", fontSize: "12px", color: "#f87171" }}
+                  >
+                    <span>Reject</span>
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div style={{
+            padding: "20px",
+            textAlign: "center",
+            background: "var(--bg-secondary)",
+            borderRadius: "var(--radius-md)",
+            color: "var(--text-muted)",
+            fontSize: "13px"
+          }}>
+            No pending student verification claims in queue. Students can submit evidence claims directly from their dashboard.
+          </div>
+        )}
       </div>
 
       {/* 3. Activity Table / History Section */}
