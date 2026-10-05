@@ -24,11 +24,14 @@ import {
   MessageSquare,
   Lock,
   ArrowRight,
-  Code2
+  Code2,
+  Send,
+  Inbox
 } from "lucide-react";
 import { useWeb3 } from "../context/Web3Context";
 import { CredentialCard } from "../components/CredentialCard";
 import { QRCodeModal } from "../components/QRCodeModal";
+import { RequestCredentialModal } from "../components/RequestCredentialModal";
 import { 
   getStudentProfile, 
   saveStudentProfile, 
@@ -51,8 +54,12 @@ export function DashboardPage() {
   const [copied, setCopied] = useState(false);
   const [showQR, setShowQR] = useState(false);
 
-  // Tab State: "overview" | "skills" | "projects" | "credentials" | "achievements" | "endorsements"
+  // Tab State: "overview" | "skills" | "projects" | "credentials" | "requests" | "achievements" | "endorsements"
   const [activeTab, setActiveTab] = useState("overview");
+
+  // Requests state
+  const [requests, setRequests] = useState([]);
+  const [isRequestingCredential, setIsRequestingCredential] = useState(false);
 
   // Off-chain Student Data States
   const [profile, setProfile] = useState({
@@ -113,6 +120,20 @@ export function DashboardPage() {
     }
   };
 
+  // Load student verification requests
+  const loadStudentRequests = async () => {
+    if (!account) return;
+    try {
+      const res = await fetch(`http://localhost:5000/api/requests/student/${account}`);
+      if (res.ok) {
+        const data = await res.json();
+        setRequests(data);
+      }
+    } catch (err) {
+      console.warn("Could not load student requests:", err);
+    }
+  };
+
   // Load off-chain student data
   const loadOffChainData = async () => {
     if (!account) return;
@@ -126,6 +147,7 @@ export function DashboardPage() {
       setProfileForm(prof);
       setProjects(projs);
       setEndorsements(ends);
+      await loadStudentRequests();
     } catch (e) {
       console.warn("Error loading student data:", e);
     }
@@ -292,6 +314,11 @@ export function DashboardPage() {
         </div>
 
         <div className="profile-actions">
+          <button onClick={() => setIsRequestingCredential(true)} className="btn-primary" style={{ padding: "8px 16px", fontSize: "13px" }}>
+            <Send size={13} />
+            <span>Request Credential</span>
+          </button>
+
           <button onClick={() => setShowQR(true)} className="btn-secondary">
             <QrCode size={14} />
             <span>Generate QR</span>
@@ -363,6 +390,7 @@ export function DashboardPage() {
           { id: "skills", label: "Skills & Evidence", count: evidenceSkillMap.length },
           { id: "projects", label: "Projects Portfolio", count: projects.length },
           { id: "credentials", label: "Monad Credentials", count: credentials.length },
+          { id: "requests", label: "Verification Claims", count: requests.length },
           { id: "achievements", label: "Achievements", count: achievements.filter(a => a.unlocked).length },
           { id: "endorsements", label: "Mentor Endorsements", count: endorsements.length },
         ].map((tab) => (
@@ -756,6 +784,184 @@ export function DashboardPage() {
         </div>
       )}
 
+      {/* 8b. TAB: VERIFICATION CLAIMS & REQUESTS */}
+      {activeTab === "requests" && (
+        <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "10px" }}>
+            <div>
+              <h3 style={{ fontSize: "18px", fontWeight: "700", color: "var(--text-highlight)" }}>
+                Student Verification Claims & Requests
+              </h3>
+              <p style={{ fontSize: "13px", color: "var(--text-secondary)", marginTop: "2px" }}>
+                Submit proof of project completion or skill mastery to authorized institutional issuers for on-chain certification.
+              </p>
+            </div>
+            <button onClick={() => setIsRequestingCredential(true)} className="btn-primary" style={{ padding: "8px 16px", fontSize: "13px" }}>
+              <PlusCircle size={14} />
+              <span>Submit New Claim</span>
+            </button>
+          </div>
+
+          {requests.length > 0 ? (
+            <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+              {requests.map((req) => (
+                <div
+                  key={req.id}
+                  style={{
+                    padding: "18px",
+                    background: "var(--bg-surface)",
+                    border: "1px solid var(--border-medium)",
+                    borderRadius: "var(--radius-md)",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "12px"
+                  }}
+                >
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "10px" }}>
+                    <div>
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                        <h4 style={{ fontSize: "16px", fontWeight: "700", color: "var(--text-highlight)" }}>
+                          {req.skillTitle}
+                        </h4>
+                        <span style={{
+                          fontSize: "11px",
+                          fontFamily: "var(--font-mono)",
+                          padding: "2px 8px",
+                          background: "var(--bg-secondary)",
+                          border: "1px solid var(--border-subtle)",
+                          borderRadius: "4px",
+                          color: "var(--accent-primary)"
+                        }}>
+                          {req.category}
+                        </span>
+                      </div>
+                      <p style={{ fontSize: "13px", color: "var(--text-secondary)", marginTop: "6px", lineHeight: "1.4" }}>
+                        {req.description}
+                      </p>
+                    </div>
+
+                    <div>
+                      {req.status === "PENDING" && (
+                        <span style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "5px",
+                          padding: "4px 10px",
+                          background: "rgba(245, 158, 11, 0.12)",
+                          border: "1px solid rgba(245, 158, 11, 0.35)",
+                          borderRadius: "4px",
+                          fontSize: "11.5px",
+                          fontWeight: "600",
+                          color: "#f59e0b"
+                        }}>
+                          <Inbox size={12} />
+                          <span>PENDING ISSUER REVIEW</span>
+                        </span>
+                      )}
+                      {req.status === "APPROVED" && (
+                        <span style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "5px",
+                          padding: "4px 10px",
+                          background: "rgba(16, 185, 129, 0.12)",
+                          border: "1px solid rgba(16, 185, 129, 0.35)",
+                          borderRadius: "4px",
+                          fontSize: "11.5px",
+                          fontWeight: "600",
+                          color: "#10b981"
+                        }}>
+                          <CheckCircle2 size={12} />
+                          <span>APPROVED & MINTED</span>
+                        </span>
+                      )}
+                      {req.status === "REJECTED" && (
+                        <span style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "5px",
+                          padding: "4px 10px",
+                          background: "rgba(239, 68, 68, 0.12)",
+                          border: "1px solid rgba(239, 68, 68, 0.35)",
+                          borderRadius: "4px",
+                          fontSize: "11.5px",
+                          fontWeight: "600",
+                          color: "#ef4444"
+                        }}>
+                          <XCircle size={12} />
+                          <span>REJECTED</span>
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Evidence & Issuer Details */}
+                  <div style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+                    gap: "10px",
+                    padding: "10px 14px",
+                    background: "var(--bg-secondary)",
+                    borderRadius: "var(--radius-sm)",
+                    border: "1px solid var(--border-subtle)",
+                    fontSize: "12px"
+                  }}>
+                    {req.evidenceProject && (
+                      <div>
+                        <span style={{ color: "var(--text-muted)", display: "block" }}>EVIDENCE PROJECT:</span>
+                        <span style={{ color: "#38bdf8", fontWeight: "600" }}>{req.evidenceProject}</span>
+                      </div>
+                    )}
+                    {req.evidenceGithubUrl && (
+                      <div>
+                        <span style={{ color: "var(--text-muted)", display: "block" }}>GITHUB REPOSITORY:</span>
+                        <a href={req.evidenceGithubUrl} target="_blank" rel="noopener noreferrer" style={{ color: "var(--accent-primary)", display: "inline-flex", alignItems: "center", gap: "4px" }}>
+                          <span>{req.evidenceGithubUrl.replace("https://github.com/", "")}</span>
+                          <ExternalLink size={11} />
+                        </a>
+                      </div>
+                    )}
+                    <div>
+                      <span style={{ color: "var(--text-muted)", display: "block" }}>TARGETED ISSUER:</span>
+                      <span style={{ fontFamily: "var(--font-mono)", color: "var(--text-secondary)" }}>
+                        {req.issuerAddress.slice(0, 8)}...{req.issuerAddress.slice(-6)}
+                      </span>
+                    </div>
+                    {req.credentialId && (
+                      <div>
+                        <span style={{ color: "var(--text-muted)", display: "block" }}>ON-CHAIN CREDENTIAL:</span>
+                        <Link to={`/verify/${req.credentialId}`} style={{ color: "#10b981", fontWeight: "600", display: "inline-flex", alignItems: "center", gap: "4px" }}>
+                          <span>View #{req.credentialId.slice(0, 8)}...</span>
+                          <ExternalLink size={11} />
+                        </Link>
+                      </div>
+                    )}
+                  </div>
+
+                  {req.issuerNotes && (
+                    <div style={{ fontSize: "12px", color: "var(--text-secondary)", fontStyle: "italic" }}>
+                      Issuer Notes: "{req.issuerNotes}"
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="empty-credentials-box">
+              <Inbox size={30} color="var(--accent-primary)" />
+              <h4>No verification claims submitted yet</h4>
+              <p style={{ fontSize: "13px", color: "var(--text-muted)", maxWidth: "480px" }}>
+                Built an awesome project or finished a course? Submit a verification claim with your GitHub proof to an authorized issuer for blockchain certification.
+              </p>
+              <button onClick={() => setIsRequestingCredential(true)} className="btn-primary" style={{ marginTop: "8px" }}>
+                <Send size={13} />
+                <span>Submit Verification Claim</span>
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* 9. TAB: ACHIEVEMENTS */}
       {activeTab === "achievements" && (
         <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
@@ -1131,6 +1337,19 @@ export function DashboardPage() {
           title="Share Student Passport"
           description={`Scan to inspect verified skills, projects, and Monad credentials bound to ${account.slice(0, 6)}...${account.slice(-4)}.`}
           onClose={() => setShowQR(false)}
+        />
+      )}
+
+      {/* REQUEST CREDENTIAL MODAL */}
+      {isRequestingCredential && (
+        <RequestCredentialModal
+          isOpen={isRequestingCredential}
+          onClose={() => setIsRequestingCredential(false)}
+          studentAddress={account}
+          onRequestSubmitted={() => {
+            loadStudentRequests();
+            setActiveTab("requests");
+          }}
         />
       )}
     </div>
