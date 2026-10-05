@@ -14,6 +14,7 @@ import { LoginPage } from "./pages/LoginPage";
 import { SignupPage } from "./pages/SignupPage";
 import { HowItWorksPage } from "./pages/HowItWorksPage";
 import { ProtocolPage } from "./pages/ProtocolPage";
+import { BlindVerifyPage } from "./pages/BlindVerifyPage";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { AuthRoleModal } from "./components/AuthRoleModal";
 import "./App.css";
@@ -84,6 +85,7 @@ export function App() {
           <Route path="/vault/:address" element={<PassportPage />} />
           <Route path="/passport/:address" element={<PassportPage />} />
           <Route path="/verify/:credentialId" element={<VerifyPage />} />
+          <Route path="/verify/blind/:proofId" element={<BlindVerifyPage />} />
           <Route path="/verify/search" element={<VerifySearchPage />} />
 
           {/* Fallback route */}
