@@ -15,6 +15,8 @@ import {
   Clock,
   EyeOff
 } from "lucide-react";
+import { useWeb3 } from "../context/Web3Context";
+import { useRole, PERSONAS } from "../context/RoleContext";
 import { QRCodeModal } from "./QRCodeModal";
 import { CredentialDetailModal } from "./CredentialDetailModal";
 import { BlindProofModal } from "./BlindProofModal";
@@ -24,11 +26,23 @@ export function CredentialCard({
   credential, 
   isIssuerView = false, 
   onRevoke, 
-  isRevoking = false 
+  isRevoking = false,
+  allowBlind
 }) {
+  const { account } = useWeb3();
+  const { user } = useRole();
   const [showQR, setShowQR] = useState(false);
   const [showDetail, setShowDetail] = useState(false);
   const [showBlindProof, setShowBlindProof] = useState(false);
+
+  // Blind Hiring Proof is a self-sovereign candidate privacy feature.
+  // It is ONLY visible to the student who owns this wallet address or when explicitly on their own dashboard.
+  const isCandidateOwner = Boolean(
+    allowBlind ?? (
+      (account && credential?.student && account.toLowerCase() === credential.student.toLowerCase()) ||
+      (user && (user.role === "student" || user.role === PERSONAS?.STUDENT) && user.walletAddress && credential?.student && user.walletAddress.toLowerCase() === credential.student.toLowerCase())
+    )
+  );
 
   const isProject = credential.skill?.startsWith("[Project]") || 
                     credential.skill?.toLowerCase().startsWith("project:") ||
@@ -148,14 +162,16 @@ export function CredentialCard({
               <ExternalLink size={12} />
             </Link>
 
-            <button
-              onClick={() => setShowBlindProof(true)}
-              className="btn-card-action btn-blind-action"
-              title="Generate Zero-Knowledge Blind Hiring Proof"
-            >
-              <EyeOff size={12} />
-              <span>Blind</span>
-            </button>
+            {isCandidateOwner && (
+              <button
+                onClick={() => setShowBlindProof(true)}
+                className="btn-card-action btn-blind-action"
+                title="Generate Zero-Knowledge Blind Hiring Proof"
+              >
+                <EyeOff size={12} />
+                <span>Blind</span>
+              </button>
+            )}
 
             <button
               onClick={() => setShowQR(true)}

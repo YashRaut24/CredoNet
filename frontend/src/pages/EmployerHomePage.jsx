@@ -43,12 +43,22 @@ export function EmployerHomePage() {
     }
   };
 
+  const [directoryFilter, setDirectoryFilter] = useState("all");
+  const [filterText, setFilterText] = useState("");
+
   const sampleProfiles = [
     {
       name: "Alex John",
       address: "0x71C92a8C943B8d62283e1c66289b5B38B71C4e92",
       role: "Distributed Systems & Solidity Engineer",
       skills: ["Solidity", "Smart Contract Security", "React.js", "Full Stack Development"],
+      verifiedCount: 2,
+    },
+    {
+      name: "XYZ Certified Candidate",
+      address: "0x21626cDb67f0114D0F6a7dBC1140B7C0A9101864",
+      role: "EVM Mobile & Smart Contract Engineer",
+      skills: ["Android Developer", "Solidity & Smart Contracts", "EVM Consensus"],
       verifiedCount: 2,
     },
     {
@@ -66,6 +76,19 @@ export function EmployerHomePage() {
       verifiedCount: 4,
     }
   ];
+
+  const filteredCandidates = sampleProfiles.filter((c) => {
+    const matchesFilter =
+      directoryFilter === "all" ||
+      c.skills.some((s) => s.toLowerCase().includes(directoryFilter.toLowerCase()));
+    const matchesText =
+      !filterText.trim() ||
+      c.name.toLowerCase().includes(filterText.toLowerCase()) ||
+      c.role.toLowerCase().includes(filterText.toLowerCase()) ||
+      c.address.toLowerCase().includes(filterText.toLowerCase()) ||
+      c.skills.some((s) => s.toLowerCase().includes(filterText.toLowerCase()));
+    return matchesFilter && matchesText;
+  });
 
   return (
     <div className="employer-home-container">
@@ -265,51 +288,156 @@ export function EmployerHomePage() {
         </div>
       </section>
 
-      {/* Featured Verified Candidates Preview */}
-      <section className="featured-candidates-section">
-        <div className="section-header-row">
+      {/* Verified Candidates Pipeline & Talent Directory */}
+      <section id="talent-directory" className="featured-candidates-section" style={{ scrollMarginTop: "90px" }}>
+        <div className="section-header-row" style={{ flexWrap: "wrap", gap: "14px" }}>
           <div>
-            <h3 className="section-title" style={{ fontSize: "20px" }}>Featured Pre-Verified Engineers</h3>
-            <p className="section-desc" style={{ marginBottom: 0 }}>Candidates with active on-chain credentials verified on Monad Testnet.</p>
+            <h3 className="section-title" style={{ fontSize: "22px", display: "flex", alignItems: "center", gap: "10px" }}>
+              <Users size={22} color="#a855f7" />
+              <span>Pre-Verified Engineering Talent Directory</span>
+            </h3>
+            <p className="section-desc" style={{ marginBottom: 0 }}>
+              Browse engineering candidates with on-chain credentials verified on the EVM Monad network.
+            </p>
           </div>
-          <Link to="/employer" className="btn-link-all">
-            <span>View All in Directory</span>
-            <ArrowRight size={14} />
-          </Link>
+
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <span style={{ fontSize: "12px", fontFamily: "var(--font-mono)", color: "var(--text-muted)" }}>
+              Showing {filteredCandidates.length} of {sampleProfiles.length} Candidates
+            </span>
+          </div>
         </div>
 
-        <div className="candidates-grid">
-          {sampleProfiles.map((candidate, idx) => (
-            <div key={idx} className="candidate-preview-card">
-              <div className="candidate-card-top">
-                <div className="candidate-avatar">
-                  {candidate.name.split(" ").map(n => n[0]).join("")}
-                </div>
-                <div className="candidate-info">
-                  <h4 className="candidate-name">{candidate.name}</h4>
-                  <span className="candidate-role">{candidate.role}</span>
-                </div>
-              </div>
-
-              <div className="candidate-skills-wrap">
-                {candidate.skills.map((s, sIdx) => (
-                  <span key={sIdx} className="candidate-skill-tag">{s}</span>
-                ))}
-              </div>
-
-              <div className="candidate-card-bottom">
-                <span className="verified-badge">
-                  <ShieldCheck size={12} color="#10b981" />
-                  <span>{candidate.verifiedCount} Verified Credentials</span>
-                </span>
-                <Link to={`/vault/${candidate.address}`} className="btn-view-candidate">
-                  <span>View Passport</span>
-                  <ExternalLink size={12} />
-                </Link>
-              </div>
+        {/* Directory Controls: Search & Skill Filter Pills */}
+        <div style={{
+          margin: "18px 0 24px",
+          padding: "16px 20px",
+          background: "var(--bg-surface)",
+          border: "1px solid var(--border-medium)",
+          borderRadius: "var(--radius-md)",
+          display: "flex",
+          flexDirection: "column",
+          gap: "14px"
+        }}>
+          <div style={{ display: "flex", gap: "12px", alignItems: "center", flexWrap: "wrap" }}>
+            <div style={{
+              flex: 1,
+              minWidth: "240px",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              background: "var(--bg-secondary)",
+              border: "1px solid var(--border-subtle)",
+              borderRadius: "var(--radius-sm)",
+              padding: "8px 14px"
+            }}>
+              <Search size={15} color="var(--text-muted)" />
+              <input
+                type="text"
+                placeholder="Filter by candidate name, skill, or wallet address..."
+                value={filterText}
+                onChange={(e) => setFilterText(e.target.value)}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  outline: "none",
+                  color: "var(--text-primary)",
+                  fontSize: "13px",
+                  width: "100%"
+                }}
+              />
+              {filterText && (
+                <button
+                  type="button"
+                  onClick={() => setFilterText("")}
+                  style={{ background: "none", border: "none", color: "var(--text-muted)", cursor: "pointer", fontSize: "12px" }}
+                >
+                  Clear
+                </button>
+              )}
             </div>
-          ))}
+          </div>
+
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+            <span style={{ fontSize: "11.5px", color: "var(--text-muted)", fontWeight: "600", textTransform: "uppercase" }}>Skill Filter:</span>
+            {["all", "Solidity", "Android Developer", "Smart Contract Security", "Distributed Systems", "Zero-Knowledge", "Backend"].map((cat) => (
+              <button
+                key={cat}
+                type="button"
+                onClick={() => setDirectoryFilter(cat)}
+                style={{
+                  padding: "4px 10px",
+                  borderRadius: "14px",
+                  fontSize: "11.5px",
+                  fontFamily: "var(--font-mono)",
+                  cursor: "pointer",
+                  border: directoryFilter === cat ? "1px solid #a855f7" : "1px solid var(--border-subtle)",
+                  background: directoryFilter === cat ? "rgba(168, 85, 247, 0.18)" : "var(--bg-secondary)",
+                  color: directoryFilter === cat ? "#c084fc" : "var(--text-secondary)",
+                  fontWeight: directoryFilter === cat ? "700" : "500",
+                  transition: "all 0.15s ease"
+                }}
+              >
+                {cat === "all" ? "All Skills" : cat}
+              </button>
+            ))}
+          </div>
         </div>
+
+        {filteredCandidates.length > 0 ? (
+          <div className="candidates-grid">
+            {filteredCandidates.map((candidate, idx) => (
+              <div key={idx} className="candidate-preview-card">
+                <div className="candidate-card-top">
+                  <div className="candidate-avatar">
+                    {candidate.name.split(" ").map(n => n[0]).join("")}
+                  </div>
+                  <div className="candidate-info">
+                    <h4 className="candidate-name">{candidate.name}</h4>
+                    <span className="candidate-role">{candidate.role}</span>
+                  </div>
+                </div>
+
+                <div className="candidate-skills-wrap">
+                  {candidate.skills.map((s, sIdx) => (
+                    <span key={sIdx} className="candidate-skill-tag">{s}</span>
+                  ))}
+                </div>
+
+                <div className="candidate-card-bottom" style={{ flexWrap: "wrap", gap: "8px" }}>
+                  <span className="verified-badge">
+                    <ShieldCheck size={12} color="#10b981" />
+                    <span>{candidate.verifiedCount} Verified Credentials</span>
+                  </span>
+                  <div style={{ display: "flex", gap: "8px" }}>
+                    <Link to={`/vault/${candidate.address}`} className="btn-view-candidate">
+                      <span>View Passport</span>
+                      <ExternalLink size={12} />
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div style={{
+            padding: "36px",
+            textAlign: "center",
+            background: "var(--bg-surface)",
+            border: "1px solid var(--border-medium)",
+            borderRadius: "var(--radius-md)",
+            color: "var(--text-muted)"
+          }}>
+            <p style={{ fontSize: "14px", marginBottom: "8px" }}>No candidate matches your current filter.</p>
+            <button
+              onClick={() => { setDirectoryFilter("all"); setFilterText(""); }}
+              className="btn-secondary"
+              style={{ padding: "6px 14px", fontSize: "12px" }}
+            >
+              Reset Filters
+            </button>
+          </div>
+        )}
       </section>
     </div>
   );

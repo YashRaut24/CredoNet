@@ -10,6 +10,8 @@ import { IssuerPage } from "./pages/IssuerPage";
 import { PassportPage } from "./pages/PassportPage";
 import { VerifyPage } from "./pages/VerifyPage";
 import { VerifySearchPage } from "./pages/VerifySearchPage";
+import { EmployerHomePage } from "./pages/EmployerHomePage";
+import { TalentDirectoryPage } from "./pages/TalentDirectoryPage";
 import { LoginPage } from "./pages/LoginPage";
 import { SignupPage } from "./pages/SignupPage";
 import { HowItWorksPage } from "./pages/HowItWorksPage";
@@ -76,7 +78,15 @@ export function App() {
             path="/employer"
             element={
               <ProtectedRoute allowedRoles={["employer"]}>
-                <VerifySearchPage />
+                <TalentDirectoryPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/talent-directory"
+            element={
+              <ProtectedRoute allowedRoles={["employer"]}>
+                <TalentDirectoryPage />
               </ProtectedRoute>
             }
           />

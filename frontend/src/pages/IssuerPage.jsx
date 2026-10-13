@@ -131,10 +131,20 @@ export function IssuerPage() {
       const res = await fetch(`/api/requests/issuer/${account}`);
       if (res.ok) {
         const data = await res.json();
-        setClaims(data);
+        const claimsList = Array.isArray(data)
+          ? data
+          : Array.isArray(data?.requests)
+          ? data.requests
+          : Array.isArray(data?.claims)
+          ? data.claims
+          : [];
+        setClaims(claimsList);
+      } else {
+        setClaims([]);
       }
     } catch (err) {
       console.warn("Could not load claims:", err);
+      setClaims([]);
     } finally {
       setLoadingClaims(false);
     }
@@ -379,17 +389,18 @@ export function IssuerPage() {
 
   // Accept Claim into Issuance Form
   const handleAcceptClaim = (claim) => {
-    setActiveClaimId(claim.id);
-    setStudentAddress(claim.studentAddress);
-    if (claim.category === "Project") {
+    const claimId = claim.requestId || claim.id || claim._id;
+    setActiveClaimId(claimId);
+    setStudentAddress(claim.studentAddress || "");
+    if (claim.category === "Project" || claim.category === "project") {
       setIssueType("project");
-      setProjectName(claim.skillTitle);
-      setDescription(claim.description || "");
-      if (claim.evidenceGithubUrl) setRepoUrl(claim.evidenceGithubUrl);
+      setProjectName(claim.skillTitle || "");
+      setDescription(claim.description || claim.notes || "");
+      if (claim.evidenceGithubUrl || claim.githubUrl) setRepoUrl(claim.evidenceGithubUrl || claim.githubUrl);
     } else {
       setIssueType("skill");
-      setSkillTitle(claim.skillTitle);
-      setDescription(claim.description || "");
+      setSkillTitle(claim.skillTitle || "");
+      setDescription(claim.description || claim.notes || "");
       if (claim.evidenceProject) setEvidenceProject(claim.evidenceProject);
     }
     window.scrollTo({ top: 350, behavior: "smooth" });
@@ -405,6 +416,7 @@ export function IssuerPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           status: "REJECTED",
+          rejectionReason: reason,
           issuerNotes: reason
         })
       });
@@ -578,6 +590,8 @@ export function IssuerPage() {
   const activeIssuedCount = issuedList.filter(c => !c.revoked).length;
   const projectIssuedCount = issuedList.filter(c => c.skill?.startsWith("[Project]") && !c.revoked).length;
   const skillIssuedCount = activeIssuedCount - projectIssuedCount;
+  const safeClaims = Array.isArray(claims) ? claims : [];
+  const pendingClaims = safeClaims.filter(c => c && c.status === "PENDING");
 
   // Filtered History
   const filteredIssued = issuedList.filter(c => {
@@ -1452,14 +1466,14 @@ export function IssuerPage() {
               </h3>
               <span style={{
                 padding: "2px 8px",
-                background: claims.filter(c => c.status === "PENDING").length > 0 ? "rgba(245, 158, 11, 0.15)" : "var(--bg-secondary)",
-                color: claims.filter(c => c.status === "PENDING").length > 0 ? "#f59e0b" : "var(--text-muted)",
+                background: pendingClaims.length > 0 ? "rgba(245, 158, 11, 0.15)" : "var(--bg-secondary)",
+                color: pendingClaims.length > 0 ? "#f59e0b" : "var(--text-muted)",
                 borderRadius: "10px",
                 fontSize: "12px",
                 fontFamily: "var(--font-mono)",
                 fontWeight: "600"
               }}>
-                {claims.filter(c => c.status === "PENDING").length} Pending Review
+                {pendingClaims.length} Pending Review
               </span>
             </div>
             <p style={{ fontSize: "13px", color: "var(--text-secondary)", marginTop: "4px" }}>
@@ -1473,84 +1487,88 @@ export function IssuerPage() {
           </button>
         </div>
 
-        {claims.filter(c => c.status === "PENDING").length > 0 ? (
+        {pendingClaims.length > 0 ? (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(360px, 1fr))", gap: "16px" }}>
-            {claims.filter(c => c.status === "PENDING").map((claim) => (
-              <div
-                key={claim.id}
-                style={{
-                  padding: "16px 18px",
-                  background: "var(--bg-secondary)",
-                  border: "1px solid var(--border-subtle)",
-                  borderRadius: "var(--radius-md)",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                  gap: "12px"
-                }}
-              >
-                <div>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "8px" }}>
-                    <h4 style={{ fontSize: "15px", fontWeight: "700", color: "var(--text-highlight)" }}>
-                      {claim.skillTitle}
-                    </h4>
-                    <span style={{
-                      fontSize: "10.5px",
-                      fontFamily: "var(--font-mono)",
-                      padding: "2px 6px",
-                      background: "rgba(242, 108, 54, 0.1)",
-                      color: "var(--accent-primary)",
-                      borderRadius: "4px"
-                    }}>
-                      {claim.category}
-                    </span>
-                  </div>
-
-                  <p style={{ fontSize: "12.5px", color: "var(--text-secondary)", marginTop: "6px", lineHeight: "1.4" }}>
-                    {claim.description}
-                  </p>
-
-                  <div style={{ marginTop: "10px", display: "flex", flexDirection: "column", gap: "4px", fontSize: "11.5px" }}>
-                    <div style={{ color: "var(--text-muted)" }}>
-                      Student: <span style={{ fontFamily: "var(--font-mono)", color: "var(--text-highlight)" }}>{claim.studentAddress.slice(0, 8)}...{claim.studentAddress.slice(-6)}</span>
+            {pendingClaims.map((claim, idx) => {
+              const claimKey = claim.requestId || claim.id || claim._id || idx;
+              const githubLink = claim.evidenceGithubUrl || claim.githubUrl;
+              return (
+                <div
+                  key={claimKey}
+                  style={{
+                    padding: "16px 18px",
+                    background: "var(--bg-secondary)",
+                    border: "1px solid var(--border-subtle)",
+                    borderRadius: "var(--radius-md)",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                    gap: "12px"
+                  }}
+                >
+                  <div>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "8px" }}>
+                      <h4 style={{ fontSize: "15px", fontWeight: "700", color: "var(--text-highlight)" }}>
+                        {claim.skillTitle}
+                      </h4>
+                      <span style={{
+                        fontSize: "10.5px",
+                        fontFamily: "var(--font-mono)",
+                        padding: "2px 6px",
+                        background: "rgba(242, 108, 54, 0.1)",
+                        color: "var(--accent-primary)",
+                        borderRadius: "4px"
+                      }}>
+                        {claim.category}
+                      </span>
                     </div>
-                    {claim.evidenceProject && (
+
+                    <p style={{ fontSize: "12.5px", color: "var(--text-secondary)", marginTop: "6px", lineHeight: "1.4" }}>
+                      {claim.description || claim.notes || "No description provided."}
+                    </p>
+
+                    <div style={{ marginTop: "10px", display: "flex", flexDirection: "column", gap: "4px", fontSize: "11.5px" }}>
                       <div style={{ color: "var(--text-muted)" }}>
-                        Project: <span style={{ color: "#38bdf8", fontWeight: "600" }}>{claim.evidenceProject}</span>
+                        Student: <span style={{ fontFamily: "var(--font-mono)", color: "var(--text-highlight)" }}>{claim.studentAddress ? `${claim.studentAddress.slice(0, 8)}...${claim.studentAddress.slice(-6)}` : "Unknown"}</span>
                       </div>
-                    )}
-                    {claim.evidenceGithubUrl && (
-                      <div>
-                        <a href={claim.evidenceGithubUrl} target="_blank" rel="noopener noreferrer" style={{ color: "var(--accent-primary)", display: "inline-flex", alignItems: "center", gap: "4px" }}>
-                          <span>GitHub Repo</span>
-                          <ExternalLink size={10} />
-                        </a>
-                      </div>
-                    )}
+                      {claim.evidenceProject && (
+                        <div style={{ color: "var(--text-muted)" }}>
+                          Project: <span style={{ color: "#38bdf8", fontWeight: "600" }}>{claim.evidenceProject}</span>
+                        </div>
+                      )}
+                      {githubLink && (
+                        <div>
+                          <a href={githubLink} target="_blank" rel="noopener noreferrer" style={{ color: "var(--accent-primary)", display: "inline-flex", alignItems: "center", gap: "4px" }}>
+                            <span>GitHub Repo</span>
+                            <ExternalLink size={10} />
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div style={{ display: "flex", gap: "8px", paddingTop: "10px", borderTop: "1px solid var(--border-subtle)" }}>
+                    <button
+                      type="button"
+                      onClick={() => handleAcceptClaim(claim)}
+                      className="btn-primary"
+                      style={{ flex: 1, padding: "6px 12px", fontSize: "12px" }}
+                    >
+                      <span>Accept & Pre-fill Form</span>
+                      <ArrowRight size={12} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleRejectClaim(claim.requestId || claim.id || claim._id)}
+                      className="btn-secondary"
+                      style={{ padding: "6px 12px", fontSize: "12px", color: "#f87171" }}
+                    >
+                      <span>Reject</span>
+                    </button>
                   </div>
                 </div>
-
-                <div style={{ display: "flex", gap: "8px", paddingTop: "10px", borderTop: "1px solid var(--border-subtle)" }}>
-                  <button
-                    type="button"
-                    onClick={() => handleAcceptClaim(claim)}
-                    className="btn-primary"
-                    style={{ flex: 1, padding: "6px 12px", fontSize: "12px" }}
-                  >
-                    <span>Accept & Pre-fill Form</span>
-                    <ArrowRight size={12} />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleRejectClaim(claim.id)}
-                    className="btn-secondary"
-                    style={{ padding: "6px 12px", fontSize: "12px", color: "#f87171" }}
-                  >
-                    <span>Reject</span>
-                  </button>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         ) : (
           <div style={{

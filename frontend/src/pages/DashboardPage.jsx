@@ -124,13 +124,23 @@ export function DashboardPage() {
   const loadStudentRequests = async () => {
     if (!account) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/requests/student/${account}`);
+      const res = await fetch(`/api/requests/student/${account}`);
       if (res.ok) {
         const data = await res.json();
-        setRequests(data);
+        const list = Array.isArray(data)
+          ? data
+          : Array.isArray(data?.requests)
+          ? data.requests
+          : Array.isArray(data?.claims)
+          ? data.claims
+          : [];
+        setRequests(list);
+      } else {
+        setRequests([]);
       }
     } catch (err) {
       console.warn("Could not load student requests:", err);
+      setRequests([]);
     }
   };
 
@@ -769,7 +779,7 @@ export function DashboardPage() {
           {credentials.length > 0 ? (
             <div className="credentials-grid">
               {credentials.map((cred) => (
-                <CredentialCard key={cred.credentialId} credential={cred} />
+                <CredentialCard key={cred.credentialId} credential={cred} allowBlind={true} />
               ))}
             </div>
           ) : (
