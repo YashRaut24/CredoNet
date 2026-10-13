@@ -9,8 +9,8 @@ const DEFAULT_PROFILE = {
   college: "Sardar Patel Institute of Technology",
   degree: "B.E. Computer Engineering",
   graduationYear: "2027",
-  bio: "Full-Stack & Web3 Developer focused on smart contract architecture, EVM distributed systems, and verifiable credentials.",
-  interests: ["Web Development", "Blockchain", "Distributed Systems", "Cryptography"],
+  bio: "Full-Stack Software Developer focused on modern web platforms, distributed systems, and verifiable credentials.",
+  interests: ["Web Development", "Cloud Architecture", "Distributed Systems", "Software Security"],
 };
 
 // Profile
@@ -202,7 +202,7 @@ export function calculateAchievements({ credentials = [], projects = [], endorse
 
   const hasWeb3Tech = projects.some(p => {
     const text = `${p.technologies} ${p.skillsDemonstrated} ${p.name}`.toLowerCase();
-    return text.includes("solidity") || text.includes("web3") || text.includes("blockchain") || text.includes("monad") || text.includes("ethers");
+    return text.includes("solidity") || text.includes("web3") || text.includes("blockchain") || text.includes("ethers");
   }) || validCreds.some(c => {
     const text = c.skill.toLowerCase();
     return text.includes("solidity") || text.includes("web3") || text.includes("blockchain");
@@ -212,10 +212,10 @@ export function calculateAchievements({ credentials = [], projects = [], endorse
     {
       id: "first_credential",
       title: "First Verified Credential",
-      description: "Received your first cryptographically signed credential from an authorized issuer on Monad.",
+      description: "Received your first officially certified credential from an authorized institutional issuer.",
       icon: "🏆",
       unlocked: validCreds.length >= 1,
-      requirement: "1 Verified Credential on Monad",
+      requirement: "1 Verified Credential",
       current: `${validCreds.length}/1`,
     },
     {
@@ -229,11 +229,11 @@ export function calculateAchievements({ credentials = [], projects = [], endorse
     },
     {
       id: "web3_builder",
-      title: "Web3 Builder",
-      description: "Demonstrated skills or projects built on EVM smart contract architecture.",
-      icon: "⛓️",
+      title: "Systems Builder",
+      description: "Demonstrated skills or projects built on modern software architecture.",
+      icon: "⚙️",
       unlocked: hasWeb3Tech,
-      requirement: "Solidity/Web3 Project or Credential",
+      requirement: "Software Project or Credential",
       current: hasWeb3Tech ? "Unlocked" : "Locked",
     },
     {

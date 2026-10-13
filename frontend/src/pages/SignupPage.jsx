@@ -98,7 +98,7 @@ export function SignupPage() {
               >
                 <Building2 size={18} />
                 <span className="role-opt-title">Issuer (Admin)</span>
-                <span className="role-opt-sub">Certify on Monad</span>
+                <span className="role-opt-sub">Certify & Issue</span>
               </div>
 
               <div 
@@ -181,7 +181,7 @@ export function SignupPage() {
           {/* Wallet Address (Optional) */}
           {role !== PERSONAS.EMPLOYER && (
             <div className="auth-field">
-              <label>EVM Wallet Address (Optional)</label>
+              <label>Wallet Address (Optional)</label>
               <div className="auth-input-wrap">
                 <Wallet size={16} className="auth-input-icon" />
                 <input

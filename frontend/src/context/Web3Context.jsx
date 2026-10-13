@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
 import { ethers } from "ethers";
 import { CONTRACT_ADDRESS, CONTRACT_ABI, MONAD_TESTNET_CONFIG } from "../config/contractConfig";
 
@@ -46,7 +46,7 @@ export function Web3Provider({ children }) {
               chainId: MONAD_TESTNET_CONFIG.chainIdHex,
               chainName: MONAD_TESTNET_CONFIG.chainName,
               nativeCurrency: {
-                name: "Monad",
+                name: "CredoNet",
                 symbol: MONAD_TESTNET_CONFIG.symbol,
                 decimals: MONAD_TESTNET_CONFIG.decimals,
               },
@@ -123,45 +123,66 @@ export function Web3Provider({ children }) {
     }
   }, [getReadOnlyContract]);
 
-  // Listen to account & chain changes
+  // Keep a stable ref to refreshAccountStatus
+  const refreshStatusRef = useRef(refreshAccountStatus);
   useEffect(() => {
-    if (window.ethereum) {
-      window.ethereum.on("accountsChanged", (accounts) => {
-        if (accounts.length === 0) {
-          disconnectWallet();
-        } else {
-          setAccount(accounts[0]);
-          refreshAccountStatus(accounts[0]);
-        }
-      });
+    refreshStatusRef.current = refreshAccountStatus;
+  }, [refreshAccountStatus]);
 
-      window.ethereum.on("chainChanged", (chainHex) => {
-        setChainId(parseInt(chainHex, 16));
-      });
-    }
+  // Listen to account & chain changes (Binds ONCE on mount)
+  useEffect(() => {
+    if (!window.ethereum) return;
 
-    // Attempt passive check if already authorized
-    if (window.ethereum) {
-      const checkCurrent = async () => {
-        try {
+    let isMounted = true;
+
+    const handleAccountsChanged = (accounts) => {
+      if (!isMounted) return;
+      if (!accounts || accounts.length === 0) {
+        disconnectWallet();
+      } else {
+        setAccount(accounts[0]);
+        refreshStatusRef.current(accounts[0]);
+      }
+    };
+
+    const handleChainChanged = (chainHex) => {
+      if (!isMounted) return;
+      setChainId(parseInt(chainHex, 16));
+    };
+
+    window.ethereum.on("accountsChanged", handleAccountsChanged);
+    window.ethereum.on("chainChanged", handleChainChanged);
+
+    // Attempt passive check on mount
+    const checkCurrent = async () => {
+      try {
+        const accounts = await window.ethereum.request({ method: "eth_accounts" });
+        if (accounts && accounts.length > 0 && isMounted) {
           const provider = new ethers.BrowserProvider(window.ethereum);
-          const accounts = await provider.listAccounts();
-          if (accounts.length > 0) {
-            const acc = accounts[0].address;
-            const currentSigner = await provider.getSigner();
-            const network = await provider.getNetwork();
+          const acc = accounts[0];
+          const currentSigner = await provider.getSigner();
+          const network = await provider.getNetwork();
+          if (isMounted) {
             setAccount(acc);
             setSigner(currentSigner);
             setChainId(Number(network.chainId));
-            refreshAccountStatus(acc);
+            refreshStatusRef.current(acc);
           }
-        } catch (e) {
-          // Passive check ignore
         }
-      };
-      checkCurrent();
-    }
-  }, [refreshAccountStatus]);
+      } catch (e) {
+        // Passive check ignore
+      }
+    };
+    checkCurrent();
+
+    return () => {
+      isMounted = false;
+      if (window.ethereum?.removeListener) {
+        window.ethereum.removeListener("accountsChanged", handleAccountsChanged);
+        window.ethereum.removeListener("chainChanged", handleChainChanged);
+      }
+    };
+  }, []);
 
   // Contract Methods
   const getContractWithSigner = () => {

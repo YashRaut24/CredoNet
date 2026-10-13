@@ -41,10 +41,10 @@ export function InitialLoader({ onComplete }) {
   }, [onComplete]);
 
   const steps = [
-    "Connecting to Blockchain EVM Consensus Node...",
-    "Auditing Solidity Smart Contract Bytecode (0xc6Bf...8e6f)...",
-    "Validating Cryptographic Ledger Signatures...",
-    "Zero-Fraud Blockchain Protocol Initialized.",
+    "Connecting to Official Institutional Network...",
+    "Syncing Official Credential Registry...",
+    "Validating Institutional Digital Signatures...",
+    "Official Verification Network Ready.",
   ];
 
   return (
@@ -57,7 +57,7 @@ export function InitialLoader({ onComplete }) {
         </div>
 
         <h2 className="loader-brand">CredoNet<span>.</span></h2>
-        <p className="loader-subtitle">Decentralized Sovereign Credential Vault</p>
+        <p className="loader-subtitle">Official Student Credential & Verification Hub</p>
 
         <div className="loader-terminal">
           {steps.map((text, idx) => (

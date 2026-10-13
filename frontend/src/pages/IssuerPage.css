@@ -86,6 +86,7 @@
   display: flex;
   align-items: center;
   gap: 14px;
+  flex-wrap: wrap;
 }
 
 .issuer-stat-chip {
@@ -156,7 +157,7 @@
 /* Mode Switcher Buttons */
 .studio-mode-toggle {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(4, 1fr);
   gap: 8px;
   background: var(--bg-primary);
   padding: 5px;
@@ -164,20 +165,49 @@
   border: 1px solid var(--border-medium);
 }
 
+@media (max-width: 900px) {
+  .studio-mode-toggle {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .issuer-top-bar {
+    padding: 16px;
+    gap: 14px;
+  }
+  .issuer-stats-bar {
+    width: 100%;
+    gap: 8px;
+  }
+  .issuer-stat-chip {
+    flex: 1 1 calc(50% - 8px);
+    min-width: 70px;
+    padding: 6px 12px;
+  }
+  .studio-mode-toggle {
+    grid-template-columns: 1fr;
+  }
+  .issuer-card-panel {
+    padding: 18px;
+  }
+}
+
 .mode-tab-button {
-  padding: 11px 16px;
+  padding: 11px 14px;
   border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
   background: transparent;
   color: var(--text-secondary);
   border: 1px solid transparent;
+  white-space: nowrap;
 }
 
 .mode-tab-button:hover {
@@ -196,6 +226,146 @@
   border-color: #38bdf8;
   color: #38bdf8;
   box-shadow: var(--shadow-sm);
+}
+
+.mode-tab-button.active-certificate {
+  background: var(--bg-surface-elevated);
+  border-color: #10b981;
+  color: #10b981;
+  box-shadow: var(--shadow-sm);
+}
+
+.mode-tab-button.active-batch {
+  background: var(--bg-surface-elevated);
+  border-color: #e36128;
+  color: #e36128;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Certificate Document Upload Dropzone */
+.certificate-upload-dropzone {
+  display: block;
+  border: 2px dashed var(--border-medium);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  background: var(--bg-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.certificate-upload-dropzone:hover {
+  border-color: var(--accent-primary);
+  background: var(--bg-surface);
+}
+
+.certificate-file-input-hidden {
+  display: none;
+}
+
+.certificate-upload-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.certificate-upload-title {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.certificate-upload-subtext {
+  font-size: 11.5px;
+  color: var(--text-muted);
+}
+
+/* Certificate Uploaded File Card */
+.certificate-file-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  gap: 14px;
+}
+
+.certificate-file-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.certificate-file-icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.certificate-file-thumb {
+  width: 44px;
+  height: 44px;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  flex-shrink: 0;
+}
+
+.certificate-file-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.certificate-file-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.certificate-file-size {
+  font-size: 11.5px;
+  color: var(--text-muted);
+}
+
+.certificate-file-hash {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: #10b981;
+}
+
+.certificate-remove-btn {
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  border-radius: var(--radius-sm);
+  padding: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.certificate-remove-btn:hover {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: #ef4444;
+  color: #ef4444;
 }
 
 /* Form Groups */
@@ -361,6 +531,12 @@ textarea.field-input {
   color: #38bdf8;
   background: rgba(56, 189, 248, 0.1);
   border: 1px solid rgba(56, 189, 248, 0.25);
+}
+
+.preview-category-tag.certificate {
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.25);
 }
 
 .preview-title-large {

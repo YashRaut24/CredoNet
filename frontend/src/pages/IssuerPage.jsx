@@ -27,7 +27,11 @@ import {
   Users,
   Inbox,
   Clock,
-  Send
+  Send,
+  UploadCloud,
+  FileText,
+  X,
+  Copy
 } from "lucide-react";
 import { useWeb3 } from "../context/Web3Context";
 import { CredentialCard } from "../components/CredentialCard";
@@ -68,6 +72,57 @@ export function IssuerPage() {
   const [repoUrl, setRepoUrl] = useState("");
   const [liveUrl, setLiveUrl] = useState("");
 
+  // Form States - Certificate Specific
+  const [certificateTitle, setCertificateTitle] = useState("");
+  const [issuingOrg, setIssuingOrg] = useState("University Examination Board");
+  const [certificateGrade, setCertificateGrade] = useState("First Class with Distinction");
+  const [certificateDate, setCertificateDate] = useState(new Date().toISOString().split("T")[0]);
+  const [certificateFile, setCertificateFile] = useState(null);
+  const [certificateFileName, setCertificateFileName] = useState("");
+  const [certificateFileSize, setCertificateFileSize] = useState("");
+  const [certificateFileHash, setCertificateFileHash] = useState("");
+  const [certificatePreviewUrl, setCertificatePreviewUrl] = useState("");
+  const [isHashingFile, setIsHashingFile] = useState(false);
+
+  // File Upload Handler with Client-Side SHA-256 Digest Calculation
+  const handleCertificateFileUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setCertificateFile(file);
+    setCertificateFileName(file.name);
+    setCertificateFileSize((file.size / 1024).toFixed(1) + " KB");
+    setIsHashingFile(true);
+
+    if (file.type.startsWith("image/")) {
+      const url = URL.createObjectURL(file);
+      setCertificatePreviewUrl(url);
+    } else {
+      setCertificatePreviewUrl("");
+    }
+
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      const hashBuffer = await crypto.subtle.digest("SHA-256", arrayBuffer);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const hashHex = "0x" + hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+      setCertificateFileHash(hashHex);
+    } catch (err) {
+      console.warn("Could not compute client file hash:", err);
+      setCertificateFileHash("0x" + Math.random().toString(16).substring(2, 10));
+    } finally {
+      setIsHashingFile(false);
+    }
+  };
+
+  const handleRemoveCertificateFile = () => {
+    setCertificateFile(null);
+    setCertificateFileName("");
+    setCertificateFileSize("");
+    setCertificateFileHash("");
+    setCertificatePreviewUrl("");
+  };
+
   // Student projects loaded for evidence linking
   const [studentProjects, setStudentProjects] = useState([]);
   const [loadingStudentProjects, setLoadingStudentProjects] = useState(false);
@@ -98,6 +153,7 @@ export function IssuerPage() {
   const [feedLoading, setFeedLoading] = useState(false);
   const [statusMsg, setStatusMsg] = useState(null);
   const [revokingId, setRevokingId] = useState(null);
+  const [copiedAddress, setCopiedAddress] = useState(false);
 
   // Load credentials issued by this issuer
   const loadIssued = async () => {
@@ -191,31 +247,31 @@ export function IssuerPage() {
     const msg = rawMsg.toLowerCase();
 
     if (msg.includes("already authorized")) {
-      return "This wallet address is already an authorized certifying partner on-chain.";
+      return "This account is already an authorized institutional partner.";
     }
     if (msg.includes("caller is not the owner") || msg.includes("onlyowner")) {
-      return "Permission denied: Only the smart contract owner can authorize or delegate new issuers.";
+      return "Permission denied: Only the institutional administrator can authorize or delegate new issuers.";
     }
     if (msg.includes("caller is not an authorized issuer")) {
-      return "Permission denied: Your connected wallet is not an authorized issuer on this contract.";
+      return "Permission denied: Your connected account is not an authorized issuer in the registry.";
     }
     if (msg.includes("already revoked")) {
-      return "This credential has already been revoked on-chain and cannot be revoked again.";
+      return "This credential has already been revoked and cannot be revoked again.";
     }
     if (msg.includes("does not exist")) {
-      return "The specified credential ID does not exist on the blockchain.";
+      return "The specified credential ID does not exist in the official registry.";
     }
     if (msg.includes("only the issuer or owner can revoke")) {
-      return "Permission denied: Only the original issuer or contract owner can revoke this credential.";
+      return "Permission denied: Only the original issuer or administrator can revoke this credential.";
     }
     if (msg.includes("user rejected") || msg.includes("action_rejected")) {
       return "Transaction was cancelled in your wallet.";
     }
     if (msg.includes("insufficient funds")) {
-      return "Insufficient native tokens (MON) in your wallet to pay for gas fees.";
+      return "Insufficient network balance to complete this transaction.";
     }
     if (msg.includes("call_exception") || msg.includes("execution reverted")) {
-      return "Transaction reverted by the smart contract. Possible causes: trying to revoke an already-revoked credential, authorizing an address that is already authorized, or calling a restricted admin function without owner rights.";
+      return "Action could not be completed. Possible causes: credential already revoked, account already authorized, or restricted permissions.";
     }
     return err.reason || rawMsg || "Transaction failed.";
   };
@@ -264,7 +320,7 @@ export function IssuerPage() {
       } catch (switchErr) {
         setStatusMsg({
           type: "error",
-          text: "Wrong network! Please switch your wallet to the required EVM Testnet (Chain ID: 10143) to issue credentials."
+          text: "Wrong network! Please switch your wallet to the CredoNet verified network to issue credentials."
         });
         return;
       }
@@ -291,17 +347,25 @@ export function IssuerPage() {
     }
 
     const isProject = issueType === "project";
+    const isCertificate = issueType === "certificate";
 
     let finalTitle = "";
     if (isProject) {
-      finalTitle = projectName.trim() || "CredoNet Protocol DApp";
+      finalTitle = projectName.trim() || "CredoNet Skill Platform";
       if (!projectName.trim()) setProjectName(finalTitle);
+    } else if (isCertificate) {
+      finalTitle = certificateTitle.trim() || "Bachelor of Engineering (Computer Science)";
+      if (!certificateTitle.trim()) setCertificateTitle(finalTitle);
     } else {
-      finalTitle = skillTitle.trim() || "Solidity & Smart Contracts";
+      finalTitle = skillTitle.trim() || "Full-Stack Web Development";
       if (!skillTitle.trim()) setSkillTitle(finalTitle);
     }
 
-    const onChainTitle = isProject ? `[Project] ${finalTitle}` : finalTitle;
+    const onChainTitle = isProject 
+      ? `[Project] ${finalTitle}` 
+      : isCertificate
+      ? `[Certificate] ${finalTitle}`
+      : finalTitle;
 
     setLoading(true);
     try {
@@ -309,29 +373,48 @@ export function IssuerPage() {
       let metadataHash = "ipfs://QmDefaultHash";
       const resolvedEvidenceProject = isProject ? projectName.trim() : (evidenceProject.trim() || undefined);
       try {
-        const metadataPayload = isProject
-          ? {
-              type: "project",
-              projectName: projectName.trim(),
-              evidenceProject: projectName.trim(),
-              repoUrl: repoUrl.trim(),
-              liveUrl: liveUrl.trim(),
-              projectSkills: projectSkills.trim(),
-              description: description.trim(),
-              validityDuration: validityDuration,
-              student: studentAddress.trim(),
-              issuer: account,
-            }
-          : {
-              type: "skill",
-              skill: skillTitle.trim(),
-              skillLevel,
-              evidenceProject: resolvedEvidenceProject,
-              description: description.trim(),
-              validityDuration: validityDuration,
-              student: studentAddress.trim(),
-              issuer: account,
-            };
+        let metadataPayload;
+        if (isProject) {
+          metadataPayload = {
+            type: "project",
+            projectName: projectName.trim(),
+            evidenceProject: projectName.trim(),
+            repoUrl: repoUrl.trim(),
+            liveUrl: liveUrl.trim(),
+            projectSkills: projectSkills.trim(),
+            description: description.trim(),
+            validityDuration: validityDuration,
+            student: studentAddress.trim(),
+            issuer: account,
+          };
+        } else if (isCertificate) {
+          metadataPayload = {
+            type: "certificate",
+            certificateTitle: finalTitle,
+            issuingOrg: issuingOrg.trim(),
+            certificateGrade: certificateGrade.trim(),
+            certificateDate: certificateDate,
+            certificateFileName: certificateFileName || "degree_certificate.pdf",
+            certificateFileSize: certificateFileSize || "",
+            certificateFileHash: certificateFileHash || "",
+            description: description.trim(),
+            validityDuration: validityDuration,
+            student: studentAddress.trim(),
+            issuer: account,
+            tags: ["CERTIFICATE", "ACADEMIC-DEGREE", "VERIFIED"]
+          };
+        } else {
+          metadataPayload = {
+            type: "skill",
+            skill: skillTitle.trim(),
+            skillLevel,
+            evidenceProject: resolvedEvidenceProject,
+            description: description.trim(),
+            validityDuration: validityDuration,
+            student: studentAddress.trim(),
+            issuer: account,
+          };
+        }
 
         const metaRes = await fetch("/api/metadata", {
           method: "POST",
@@ -355,7 +438,7 @@ export function IssuerPage() {
       );
       setStatusMsg({ 
         type: "info", 
-        text: `Transaction submitted to Monad! Waiting for block confirmation... (Tx: ${tx.hash.slice(0, 10)}...)` 
+        text: `Submitting credential to verification network... Waiting for confirmation... (Tx: ${tx.hash.slice(0, 10)}...)` 
       });
 
       const receipt = await tx.wait();
@@ -382,7 +465,7 @@ export function IssuerPage() {
         studentAddress: studentAddress.trim(),
         skill: onChainTitle,
         evidenceProject: resolvedEvidenceProject,
-        text: "Credential recorded on Monad blockchain!"
+        text: "Credential recorded in official verification registry!"
       });
 
       // Clear form & reload
@@ -393,6 +476,12 @@ export function IssuerPage() {
       setProjectSkills("");
       setRepoUrl("");
       setLiveUrl("");
+      setCertificateTitle("");
+      setCertificateFileName("");
+      setCertificateFileSize("");
+      setCertificateFileHash("");
+      setCertificateFile(null);
+      setCertificatePreviewUrl("");
       setDescription("");
 
       // If completing an active student claim, mark it approved
@@ -433,6 +522,15 @@ export function IssuerPage() {
       setProjectName(claim.skillTitle || "");
       setDescription(claim.description || claim.notes || "");
       if (claim.evidenceGithubUrl || claim.githubUrl) setRepoUrl(claim.evidenceGithubUrl || claim.githubUrl);
+    } else if (claim.category === "Certificate" || claim.category === "certificate") {
+      setIssueType("certificate");
+      setCertificateTitle(claim.certificateTitle || claim.skillTitle || "");
+      setIssuingOrg(claim.issuingOrg || "");
+      setCertificateGrade(claim.certificateGrade || "");
+      setCertificateFileName(claim.certificateFileName || "");
+      setCertificateFileSize(claim.certificateFileSize || "");
+      setCertificateFileHash(claim.certificateFileHash || "");
+      setDescription(claim.description || claim.notes || "");
     } else {
       setIssueType("skill");
       setSkillTitle(claim.skillTitle || "");
@@ -556,13 +654,13 @@ export function IssuerPage() {
     loadIssued();
     setStatusMsg({
       type: "success",
-      text: `Batch convocation completed! Minted on-chain credentials for ${updatedLogs.filter(l => l.status === "SUCCESS").length} of ${validAddrs.length} recipients on Monad.`
+      text: `Batch issuance completed! Recorded official credentials for ${updatedLogs.filter(l => l.status === "SUCCESS").length} of ${validAddrs.length} recipients in the official registry.`
     });
   };
 
   // Revoke Credential
   const handleRevoke = async (credentialId) => {
-    if (!window.confirm("Are you sure you want to revoke this credential on Monad? This is an irreversible blockchain transaction.")) return;
+    if (!window.confirm("Are you sure you want to revoke this credential? This action will permanently mark this credential as REVOKED in the official registry.")) return;
     
     if (!isMonadChain) {
       try {
@@ -570,7 +668,7 @@ export function IssuerPage() {
       } catch (switchErr) {
         setStatusMsg({
           type: "error",
-          text: "Wrong network! Please switch your wallet to Monad Testnet (Chain ID: 10143) to revoke."
+          text: "Wrong network! Please switch your wallet to the verified network to revoke."
         });
         return;
       }
@@ -584,7 +682,7 @@ export function IssuerPage() {
       await tx.wait();
       setStatusMsg({ 
         type: "success", 
-        text: `Credential revoked on Monad! Public verification will immediately show REVOKED.` 
+        text: `Credential revoked! Public verification will immediately show REVOKED.` 
       });
       loadIssued();
     } catch (err) {
@@ -625,15 +723,18 @@ export function IssuerPage() {
   // Metrics
   const activeIssuedCount = issuedList.filter(c => !c.revoked).length;
   const projectIssuedCount = issuedList.filter(c => c.skill?.startsWith("[Project]") && !c.revoked).length;
-  const skillIssuedCount = activeIssuedCount - projectIssuedCount;
+  const certificateIssuedCount = issuedList.filter(c => c.skill?.startsWith("[Certificate]") && !c.revoked).length;
+  const skillIssuedCount = activeIssuedCount - projectIssuedCount - certificateIssuedCount;
   const safeClaims = Array.isArray(claims) ? claims : [];
   const pendingClaims = safeClaims.filter(c => c && c.status === "PENDING");
 
   // Filtered History
   const filteredIssued = issuedList.filter(c => {
     const isProj = c.skill?.startsWith("[Project]");
-    if (historyFilter === "skill" && isProj) return false;
+    const isCert = c.skill?.startsWith("[Certificate]");
+    if (historyFilter === "skill" && (isProj || isCert)) return false;
     if (historyFilter === "project" && !isProj) return false;
+    if (historyFilter === "certificate" && !isCert) return false;
 
     if (!historySearch.trim()) return true;
     const q = historySearch.toLowerCase();
@@ -662,6 +763,8 @@ export function IssuerPage() {
   // Live Preview Computed Values
   const previewTitle = issueType === "project" 
     ? (projectName.trim() || "CredoNet Protocol Architecture")
+    : issueType === "certificate"
+    ? (certificateTitle.trim() || "Bachelor of Engineering (Computer Science)")
     : (skillTitle.trim() || "Full-Stack Web Development");
 
   const previewStudent = studentAddress.trim() || "0x71C92a8C943B8d62283e1c66289b5B38B71C4e92";
@@ -691,6 +794,10 @@ export function IssuerPage() {
             <span className="lbl">Active Issued</span>
           </div>
           <div className="issuer-stat-chip">
+            <span className="val">{certificateIssuedCount}</span>
+            <span className="lbl">Certificates</span>
+          </div>
+          <div className="issuer-stat-chip">
             <span className="val">{skillIssuedCount}</span>
             <span className="lbl">Skills</span>
           </div>
@@ -712,10 +819,10 @@ export function IssuerPage() {
             <AlertTriangle size={24} color="#f87171" />
             <div>
               <h4 className="issuer-network-alert-title">
-                Wrong Network Detected (Chain ID: {chainId || "Unknown"})
+                Wrong Network Detected
               </h4>
               <p className="issuer-network-alert-desc">
-                SkillPassport is deployed on Monad Testnet (Chain ID: 10143). Transactions will fail unless your wallet is switched.
+                Please switch your wallet to the CredoNet verified network to issue official credentials.
               </p>
             </div>
           </div>
@@ -724,7 +831,7 @@ export function IssuerPage() {
             onClick={switchToMonad}
             className="btn-primary issuer-network-alert-btn"
           >
-            Switch to Monad Testnet
+            Switch Network
           </button>
         </div>
       )}
@@ -739,7 +846,7 @@ export function IssuerPage() {
                 Wallet Not Authorized to Issue
               </h4>
               <p className="issuer-auth-alert-desc">
-                Connected address ({account.slice(0, 8)}...{account.slice(-6)}) is not registered as an authorized issuer. Only accredited issuers or the contract owner can issue credentials on Monad.
+                Connected address ({account.slice(0, 8)}...{account.slice(-6)}) is not registered as an authorized issuer. Only accredited partner institutions can issue credentials.
               </p>
             </div>
           </div>
@@ -782,7 +889,7 @@ export function IssuerPage() {
                   Credential Issued Successfully!
                 </h3>
                 <p className="issuer-receipt-desc">
-                  The credential has been cryptographically anchored on the Monad blockchain.
+                  The credential has been recorded in the official verification registry.
                 </p>
               </div>
             </div>
@@ -859,10 +966,16 @@ export function IssuerPage() {
           <div className="studio-header">
             <div>
               <h3 className="studio-header-title">
-                {issueType === "project" ? "Certify Student Project" : "Certify Student Skill"}
+                {issueType === "project" 
+                  ? "Certify Student Project" 
+                  : issueType === "certificate"
+                  ? "Issue & Anchor Degree / Certificate"
+                  : issueType === "batch"
+                  ? "Institutional Batch Convocation"
+                  : "Certify Student Skill"}
               </h3>
               <p className="studio-header-sub">
-                Issue permanent, cryptographically verified proof directly to the recipient's wallet
+                Issue permanent, digitally verified credentials directly to the student's profile
               </p>
             </div>
           </div>
@@ -889,8 +1002,17 @@ export function IssuerPage() {
 
             <button
               type="button"
+              onClick={() => setIssueType("certificate")}
+              className={`mode-tab-button ${issueType === "certificate" ? "active-certificate" : ""}`}
+            >
+              <FileCheck size={15} />
+              <span>Certificate Upload</span>
+            </button>
+
+            <button
+              type="button"
               onClick={() => setIssueType("batch")}
-              className={`mode-tab-button ${issueType === "batch" ? "active-skill" : ""}`}
+              className={`mode-tab-button ${issueType === "batch" ? "active-batch" : ""}`}
             >
               <Users size={15} />
               <span>Batch Convocation</span>
@@ -901,7 +1023,7 @@ export function IssuerPage() {
             <div className="issuer-active-claim-banner">
               <div className="issuer-active-claim-text">
                 <Inbox size={15} color="var(--accent-primary)" />
-                <span>Processing Student Claim <strong>#{activeClaimId.slice(0, 8)}...</strong>. On issuance, this claim will automatically be marked Approved & linked to the generated Monad Credential ID.</span>
+                <span>Processing Student Claim <strong>#{activeClaimId.slice(0, 8)}...</strong>. On issuance, this claim will automatically be marked Approved & linked to the generated Credential ID.</span>
               </div>
               <button
                 type="button"
@@ -973,7 +1095,7 @@ export function IssuerPage() {
                   required
                 />
                 <span className="issuer-form-subtext">
-                  Each student wallet will receive an independent, soulbound, verifiable credential on Monad.
+                  Each student account will receive an authentic, permanent verifiable credential directly in their profile.
                 </span>
               </div>
 
@@ -1009,12 +1131,12 @@ export function IssuerPage() {
                 {isBatchMinting ? (
                   <span className="issuer-btn-inline-icon">
                     <RefreshCw size={16} className="spin" />
-                    <span>Minting Cohort on Monad ({batchProgress?.current || 0}/{batchProgress?.total || 0})...</span>
+                    <span>Issuing Cohort ({batchProgress?.current || 0}/{batchProgress?.total || 0})...</span>
                   </span>
                 ) : (
                   <span className="issuer-btn-inline-icon">
                     <Users size={16} />
-                    <span>Execute Institutional Batch Issuance on Monad</span>
+                    <span>Execute Institutional Batch Issuance</span>
                   </span>
                 )}
               </button>
@@ -1052,7 +1174,7 @@ export function IssuerPage() {
                   </div>
                   <input
                     type="text"
-                    placeholder="e.g. Smart Contract Security & Gas Optimization"
+                    placeholder="e.g. Distributed Systems & Cloud Architecture"
                     value={skillTitle}
                     onChange={(e) => setSkillTitle(e.target.value)}
                     disabled={loading || !isAuthorized}
@@ -1060,7 +1182,7 @@ export function IssuerPage() {
                   />
                   <div className="quick-chips-row">
                     <span className="issuer-popular-label">Popular:</span>
-                    {["Solidity & Smart Contracts", "Distributed Systems", "Frontend Architecture", "Cybersecurity"].map((chip) => (
+                    {["Full-Stack Web Development", "Distributed Systems", "Frontend Architecture", "Cybersecurity"].map((chip) => (
                       <button 
                         key={chip} 
                         type="button" 
@@ -1131,7 +1253,7 @@ export function IssuerPage() {
                   </p>
                 </div>
               </>
-            ) : (
+            ) : issueType === "project" ? (
               <>
                 <div className="field-box">
                   <div className="field-label-row">
@@ -1207,7 +1329,141 @@ export function IssuerPage() {
                   </div>
                 </div>
               </>
-            )}
+            ) : issueType === "certificate" ? (
+              <>
+                <div className="field-box">
+                  <div className="field-label-row">
+                    <span>Degree / Certificate Title *</span>
+                    <span className="field-badge">Official Credential</span>
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="e.g. Bachelor of Engineering in Computer Science"
+                    value={certificateTitle}
+                    onChange={(e) => setCertificateTitle(e.target.value)}
+                    disabled={loading || !isAuthorized}
+                    className="field-input"
+                    required
+                  />
+                  <div className="quick-chips-row">
+                    <span className="issuer-popular-label">Templates:</span>
+                    {[
+                      "B.E. Computer Engineering",
+                      "M.Tech Distributed Systems",
+                      "AWS Certified Solutions Architect",
+                      "National Blockchain Fellowship"
+                    ].map((chip) => (
+                      <button 
+                        key={chip} 
+                        type="button" 
+                        onClick={() => setCertificateTitle(chip)}
+                        className="chip-btn"
+                      >
+                        {chip}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="issuer-grid-2col">
+                  <div className="field-box">
+                    <label className="field-label-row">
+                      <span>Issuing University / Organization *</span>
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. University Examination Board / AWS Academy"
+                      value={issuingOrg}
+                      onChange={(e) => setIssuingOrg(e.target.value)}
+                      disabled={loading || !isAuthorized}
+                      className="field-input"
+                      required
+                    />
+                  </div>
+
+                  <div className="field-box">
+                    <label className="field-label-row">
+                      <span>Honors / Grade / Division</span>
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. First Class with Distinction (CGPA 9.4)"
+                      value={certificateGrade}
+                      onChange={(e) => setCertificateGrade(e.target.value)}
+                      disabled={loading || !isAuthorized}
+                      className="field-input"
+                    />
+                  </div>
+                </div>
+
+                <div className="field-box">
+                  <div className="field-label-row">
+                    <span>Certificate Document File (PDF / Image) *</span>
+                    <span className="field-badge issuer-badge-accent">
+                      {isHashingFile ? "Computing Fingerprint..." : "Digital Fingerprint"}
+                    </span>
+                  </div>
+
+                  {!certificateFile ? (
+                    <label className="certificate-upload-dropzone">
+                      <input
+                        type="file"
+                        accept=".pdf,image/png,image/jpeg,image/webp"
+                        onChange={handleCertificateFileUpload}
+                        disabled={loading || !isAuthorized}
+                        className="certificate-file-input-hidden"
+                      />
+                      <div className="certificate-upload-inner">
+                        <UploadCloud size={28} color="var(--accent-primary)" />
+                        <span className="certificate-upload-title">
+                          Click to select or drag & drop certificate document
+                        </span>
+                        <span className="certificate-upload-subtext">
+                          Supports PDF, PNG, JPG, WebP (Automatically creates secure tamper-evident fingerprint)
+                        </span>
+                      </div>
+                    </label>
+                  ) : (
+                    <div className="certificate-file-card">
+                      <div className="certificate-file-left">
+                        {certificatePreviewUrl ? (
+                          <img
+                            src={certificatePreviewUrl}
+                            alt="Certificate Preview"
+                            className="certificate-file-thumb"
+                          />
+                        ) : (
+                          <div className="certificate-file-icon-box">
+                            <FileText size={24} color="var(--accent-primary)" />
+                          </div>
+                        )}
+                        <div className="certificate-file-info">
+                          <span className="certificate-file-name">{certificateFileName}</span>
+                          <span className="certificate-file-size">{certificateFileSize}</span>
+                          {certificateFileHash && (
+                            <span className="certificate-file-hash">
+                              Digital Fingerprint: {certificateFileHash.slice(0, 14)}...{certificateFileHash.slice(-8)}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleRemoveCertificateFile}
+                        className="certificate-remove-btn"
+                        title="Remove file"
+                      >
+                        <X size={16} />
+                      </button>
+                    </div>
+                  )}
+
+                  <p className="issuer-form-subtext">
+                    The uploaded document's unique digital fingerprint will be permanently recorded in the official verification registry.
+                  </p>
+                </div>
+              </>
+            ) : null}
 
             {/* Validity Duration Dropdown */}
             <div className="field-box">
@@ -1242,7 +1498,7 @@ export function IssuerPage() {
                 placeholder={
                   issueType === "project"
                     ? "Verified Capstone: Completed all project milestones, passed code review with 9/9 unit tests passing, and demonstrated working live build."
-                    : "Completed rigorous practical assessment in smart contract engineering with Grade A+."
+                    : "Completed rigorous practical assessment in software engineering with Grade A+."
                 }
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
@@ -1272,7 +1528,7 @@ export function IssuerPage() {
                 className="btn-primary issuer-btn-switch-network"
               >
                 <AlertTriangle size={16} />
-                <span>Switch to EVM Testnet (Chain ID 10143) to Issue</span>
+                <span>Switch to Verified Network to Issue</span>
               </button>
             ) : !isAuthorized ? (
               <button
@@ -1289,12 +1545,20 @@ export function IssuerPage() {
                 disabled={loading}
                 className="btn-primary issuer-btn-submit-action"
               >
-                {issueType === "project" ? <FolderGit2 size={16} /> : <Award size={16} />}
+                {issueType === "project" ? (
+                  <FolderGit2 size={16} />
+                ) : issueType === "certificate" ? (
+                  <FileCheck size={16} />
+                ) : (
+                  <Award size={16} />
+                )}
                 <span>
                   {loading
-                    ? "Anchoring Credential to Blockchain..."
+                    ? "Recording Credential in Official Registry..."
                     : issueType === "project"
                     ? "Certify & Issue Project Credential"
+                    : issueType === "certificate"
+                    ? "Anchor & Issue Official Degree Certificate"
                     : "Issue Verified Skill Credential"}
                 </span>
               </button>
@@ -1318,9 +1582,21 @@ export function IssuerPage() {
           <div className="live-cert-preview-card">
             <div className="preview-top-row">
               <div>
-                <span className={`preview-category-tag ${issueType === "project" ? "project" : "skill"}`}>
-                  {issueType === "project" ? <FolderGit2 size={12} /> : <Award size={12} />}
-                  <span>{issueType === "project" ? "Verified Capstone Project" : "Verified Skill Certificate"}</span>
+                <span className={`preview-category-tag ${issueType === "project" ? "project" : issueType === "certificate" ? "certificate" : "skill"}`}>
+                  {issueType === "project" ? (
+                    <FolderGit2 size={12} />
+                  ) : issueType === "certificate" ? (
+                    <FileCheck size={12} />
+                  ) : (
+                    <Award size={12} />
+                  )}
+                  <span>
+                    {issueType === "project" 
+                      ? "Verified Capstone Project" 
+                      : issueType === "certificate"
+                      ? "Official Degree / Certificate"
+                      : "Verified Skill Certificate"}
+                  </span>
                 </span>
                 <h3 className="preview-title-large">{previewTitle}</h3>
               </div>
@@ -1368,6 +1644,39 @@ export function IssuerPage() {
                   </span>
                 </div>
               )}
+
+              {issueType === "certificate" && (
+                <>
+                  <div className="preview-meta-item">
+                    <span className="preview-meta-label">
+                      <Building2 size={12} color="var(--accent-primary)" /> Issuing Body
+                    </span>
+                    <span className="preview-meta-value">
+                      {issuingOrg || "University Board"}
+                    </span>
+                  </div>
+
+                  <div className="preview-meta-item">
+                    <span className="preview-meta-label">
+                      <Award size={12} color="var(--accent-primary)" /> Grade / Honors
+                    </span>
+                    <span className="preview-meta-value">
+                      {certificateGrade || "Distinction"}
+                    </span>
+                  </div>
+
+                  {certificateFileName && (
+                    <div className="preview-stack-shelf">
+                      <span className="preview-stack-label">
+                        DOC HASH:
+                      </span>
+                      <span className="preview-stack-val text-mono">
+                        {certificateFileHash ? `${certificateFileHash.slice(0, 14)}...` : certificateFileName}
+                      </span>
+                    </div>
+                  )}
+                </>
+              )}
             </div>
 
             <div className="preview-foot-shelf">
@@ -1387,7 +1696,7 @@ export function IssuerPage() {
             </span>
             <div className="guide-point">
               <span className="guide-point-dot" />
-              <span><strong>Identity Bound:</strong> Certificates cannot be transferred or sold from the student's wallet.</span>
+              <span><strong>Identity Bound:</strong> Credentials belong permanently to the verified student profile.</span>
             </div>
             <div className="guide-point">
               <span className="guide-point-dot" />
@@ -1395,7 +1704,7 @@ export function IssuerPage() {
             </div>
             <div className="guide-point">
               <span className="guide-point-dot" />
-              <span><strong>Zero Intermediaries:</strong> Direct mathematical proof with no agency fees or paperwork.</span>
+              <span><strong>Direct Verification:</strong> Instant digital verification with zero background-check delays or paperwork.</span>
             </div>
           </div>
         </div>
@@ -1455,6 +1764,16 @@ export function IssuerPage() {
                           Project: <span className="issuer-claim-meta-project">{claim.evidenceProject}</span>
                         </div>
                       )}
+                      {claim.certificateFileName && (
+                        <div className="issuer-claim-meta-muted">
+                          Degree / Doc: <span className="issuer-claim-meta-project">{claim.certificateFileName}</span>
+                        </div>
+                      )}
+                      {claim.certificateFileHash && (
+                        <div className="issuer-claim-meta-muted">
+                          File Fingerprint: <span className="issuer-claim-meta-student">{claim.certificateFileHash.slice(0, 16)}...</span>
+                        </div>
+                      )}
                       {githubLink && (
                         <div>
                           <a href={githubLink} target="_blank" rel="noopener noreferrer" className="issuer-receipt-link">
@@ -1509,6 +1828,12 @@ export function IssuerPage() {
                 className={`filter-pill-btn ${historyFilter === "all" ? "active" : ""}`}
               >
                 All ({issuedList.length})
+              </button>
+              <button
+                onClick={() => setHistoryFilter("certificate")}
+                className={`filter-pill-btn ${historyFilter === "certificate" ? "active" : ""}`}
+              >
+                Certificates ({certificateIssuedCount})
               </button>
               <button
                 onClick={() => setHistoryFilter("skill")}

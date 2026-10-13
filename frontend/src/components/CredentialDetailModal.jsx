@@ -35,8 +35,9 @@ export function CredentialDetailModal({ credential, onClose }) {
   });
 
   const isProject = credential.skill?.startsWith("[Project]") || credential.skill?.toLowerCase().startsWith("project:");
+  const isCertificate = credential.skill?.startsWith("[Certificate]") || credential.skill?.toLowerCase().startsWith("certificate:");
   const displayTitle = credential.skill
-    ? credential.skill.replace(/^\[Project\]\s*/i, "").replace(/^project:\s*/i, "")
+    ? credential.skill.replace(/^\[(Project|Certificate)\]\s*/i, "").replace(/^(project|certificate):\s*/i, "")
     : "Credential";
 
   return (
@@ -45,11 +46,17 @@ export function CredentialDetailModal({ credential, onClose }) {
         {/* Header */}
         <div className="modal-header">
           <div className="modal-header-left">
-            <div className="modal-icon-wrap">
-              <ShieldCheck size={20} color="var(--accent-primary)" />
+            <div className={`modal-icon-wrap ${isCertificate ? "certificate-icon-wrap" : ""}`}>
+              {isCertificate ? (
+                <FileCheck size={20} color="#10b981" />
+              ) : (
+                <ShieldCheck size={20} color="var(--accent-primary)" />
+              )}
             </div>
             <div>
-              <span className="modal-tag">Official Monad EVM Credential</span>
+              <span className={`modal-tag ${isCertificate ? "certificate-tag" : ""}`}>
+                {isCertificate ? "Official Academic Degree / Certificate" : "Official Verified Credential"}
+              </span>
               <h3 className="modal-title">{displayTitle}</h3>
             </div>
           </div>
@@ -69,12 +76,12 @@ export function CredentialDetailModal({ credential, onClose }) {
             ) : (
               <span className="verify-status-badge valid">
                 <CheckCircle2 size={14} />
-                <span>✓ VALID ON MONAD</span>
+                <span>✓ AUTHENTIC & ACTIVE</span>
               </span>
             )}
           </div>
           <span className="modal-anchor-hint">
-            Anchor: Monad Testnet (10143)
+            Network: Verified Registry
           </span>
         </div>
 
@@ -91,6 +98,26 @@ export function CredentialDetailModal({ credential, onClose }) {
                 <p className="modal-evidence-title">
                   {credential.evidenceProject}
                 </p>
+              </div>
+            </div>
+          )}
+
+          {/* Linked Degree Document (if certificate) */}
+          {isCertificate && (
+            <div className="modal-evidence-box certificate-modal-evidence-box">
+              <FileCheck size={18} color="#10b981" />
+              <div>
+                <span className="modal-evidence-tag certificate-evidence-tag">
+                  ACCREDITED DEGREE / CERTIFICATE ARTIFACT
+                </span>
+                <p className="modal-evidence-title">
+                  {credential.certificateFileName || displayTitle}
+                </p>
+                {credential.certificateFileHash && (
+                  <span className="modal-evidence-hash">
+                    Digital Fingerprint: {credential.certificateFileHash}
+                  </span>
+                )}
               </div>
             </div>
           )}
@@ -148,7 +175,7 @@ export function CredentialDetailModal({ credential, onClose }) {
 
             <div className="audit-row">
               <span className="audit-label">
-                <ShieldCheck size={14} color="var(--accent-primary)" /> Smart Contract
+                <ShieldCheck size={14} color="var(--accent-primary)" /> Official Registry Contract
               </span>
               <a
                 href={`${MONAD_TESTNET_CONFIG.explorerUrl}/address/${CONTRACT_ADDRESS}`}
@@ -173,7 +200,7 @@ export function CredentialDetailModal({ credential, onClose }) {
             className="btn-primary modal-verify-btn"
           >
             <ShieldCheck size={14} />
-            <span>Verify on Monad</span>
+            <span>Verify Credential</span>
             <ExternalLink size={13} />
           </Link>
         </div>

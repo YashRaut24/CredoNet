@@ -328,6 +328,7 @@ app.post("/api/metadata", async (req, res) => {
     } = req.body;
 
     const isProject = type === "project" || Boolean(projectName);
+    const isCertificate = type === "certificate";
     const validityDuration = req.body.validityDuration || "Perpetual";
     
     let expiresAt = 0;
@@ -343,10 +344,21 @@ app.post("/api/metadata", async (req, res) => {
 
     const payload = {
       protocol: "SkillPassport v1.0",
-      type: isProject ? "project" : "skill",
-      title: isProject ? (projectName || skill || "Verified Capstone Project") : (skill || "Verified Competency"),
+      type: isProject ? "project" : isCertificate ? "certificate" : "skill",
+      title: isProject 
+        ? (projectName || skill || "Verified Capstone Project") 
+        : isCertificate
+        ? (req.body.certificateTitle || skill || "Official Degree Certificate")
+        : (skill || "Verified Competency"),
       projectName: projectName || (isProject ? skill : ""),
       evidenceProject: evidenceProject || null,
+      certificateTitle: req.body.certificateTitle || "",
+      issuingOrg: req.body.issuingOrg || "",
+      certificateGrade: req.body.certificateGrade || "",
+      certificateDate: req.body.certificateDate || "",
+      certificateFileName: req.body.certificateFileName || "",
+      certificateFileSize: req.body.certificateFileSize || "",
+      certificateFileHash: req.body.certificateFileHash || "",
       repoUrl: repoUrl || "",
       liveUrl: liveUrl || "",
       projectSkills: projectSkills || "",
@@ -354,7 +366,7 @@ app.post("/api/metadata", async (req, res) => {
       description: description || "",
       student: student || "0x0000000000000000000000000000000000000000",
       issuer: issuer || "Authorized Institution",
-      tags: tags || (isProject ? ["PROJECT", "VERIFIED-BUILD"] : ["SKILL", "COMPETENCY"]),
+      tags: tags || (isProject ? ["PROJECT", "VERIFIED-BUILD"] : isCertificate ? ["CERTIFICATE", "DEGREE-ACCREDITED"] : ["SKILL", "COMPETENCY"]),
       validityDuration,
       expiresAt,
       issuedAt: new Date().toISOString(),
@@ -652,6 +664,12 @@ app.post("/api/requests", async (req, res) => {
       studentName,
       skillTitle,
       category,
+      certificateTitle,
+      issuingOrg,
+      certificateGrade,
+      certificateFileName,
+      certificateFileSize,
+      certificateFileHash,
       evidenceProject,
       githubUrl,
       liveUrl,
@@ -673,6 +691,12 @@ app.post("/api/requests", async (req, res) => {
       studentName: studentName || "Student Learner",
       skillTitle: skillTitle.trim(),
       category: category || "skill",
+      certificateTitle: certificateTitle || "",
+      issuingOrg: issuingOrg || "",
+      certificateGrade: certificateGrade || "",
+      certificateFileName: certificateFileName || "",
+      certificateFileSize: certificateFileSize || "",
+      certificateFileHash: certificateFileHash || "",
       evidenceProject: evidenceProject || "",
       githubUrl: githubUrl || "",
       liveUrl: liveUrl || "",

@@ -147,13 +147,13 @@ export function Navbar() {
                 {isMonadChain ? (
                   <div className="network-badge">
                     <span className="network-dot" />
-                    <span>EVM Testnet (10143)</span>
+                    <span>Verified Network</span>
                   </div>
                 ) : (
                   <button
                     onClick={switchToMonad}
                     className="btn-switch-monad"
-                    title="Your wallet is on the wrong network. Click to switch to the supported EVM Testnet."
+                    title="Your wallet is on a different network. Click to switch to the supported verification network."
                   >
                     <AlertTriangle size={13} />
                     <span>Switch Network</span>
@@ -161,9 +161,9 @@ export function Navbar() {
                 )}
 
                 {isAuthorized && (
-                  <div className="issuer-tag" title="Authorized Issuer on SkillPassport Contract">
+                  <div className="issuer-tag" title="Authorized Institutional Certifying Authority">
                     <CheckCircle size={11} />
-                    <span>Issuer ✓</span>
+                    <span>Verified Issuer ✓</span>
                   </div>
                 )}
 

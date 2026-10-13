@@ -68,29 +68,29 @@ export function EmployerHomePage() {
     {
       name: "Alex John",
       address: "0x71C92a8C943B8d62283e1c66289b5B38B71C4e92",
-      role: "Distributed Systems & Solidity Engineer",
-      skills: ["Solidity", "Smart Contract Security", "React.js", "Full Stack Development"],
+      role: "Distributed Systems & Full Stack Engineer",
+      skills: ["React.js", "Node.js", "System Architecture", "Full Stack Development"],
       verifiedCount: 2,
     },
     {
       name: "XYZ Certified Candidate",
       address: "0x21626cDb67f0114D0F6a7dBC1140B7C0A9101864",
-      role: "EVM Mobile & Smart Contract Engineer",
-      skills: ["Android Developer", "Solidity & Smart Contracts", "EVM Consensus"],
+      role: "Mobile & Web Application Engineer",
+      skills: ["Android Developer", "JavaScript", "API Integration", "Kotlin"],
       verifiedCount: 2,
     },
     {
       name: "Priya Sharma",
       address: "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
-      role: "Backend & Web3 Architect",
-      skills: ["Go", "Node.js", "EVM Optimization", "PostgreSQL"],
+      role: "Backend & Cloud Systems Architect",
+      skills: ["Go", "Node.js", "System Optimization", "PostgreSQL"],
       verifiedCount: 3,
     },
     {
       name: "Marcus Vance",
       address: "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
-      role: "Zero-Knowledge & Cryptography Specialist",
-      skills: ["Circom", "ZK-SNARKs", "Rust", "Ethereum L1/L2"],
+      role: "Cloud Security & Infrastructure Specialist",
+      skills: ["Cloud Security", "API Security", "Rust", "DevOps & CI/CD"],
       verifiedCount: 4,
     }
   ];
@@ -108,7 +108,12 @@ export function EmployerHomePage() {
   const filteredCandidates = allCandidates.filter((c) => {
     const matchesFilter =
       directoryFilter === "all" ||
-      c.skills.some((s) => s.toLowerCase().includes(directoryFilter.toLowerCase()));
+      (directoryFilter === "certificate"
+        ? Boolean(
+            (c.role && (c.role.toLowerCase().includes("degree") || c.role.toLowerCase().includes("b.e") || c.role.toLowerCase().includes("engineer"))) ||
+            c.skills.some((s) => s.toLowerCase().includes("cert") || s.toLowerCase().includes("degree"))
+          )
+        : c.skills.some((s) => s.toLowerCase().includes(directoryFilter.toLowerCase())));
     const matchesText =
       !filterText.trim() ||
       c.name.toLowerCase().includes(filterText.toLowerCase()) ||
@@ -130,7 +135,7 @@ export function EmployerHomePage() {
             </span>
             <span className="employer-verified-pill">
               <ShieldCheck size={13} color="#10b981" />
-              <span>100% Cryptographic Verification</span>
+              <span>100% Verified Credentials</span>
             </span>
           </div>
 
@@ -140,7 +145,7 @@ export function EmployerHomePage() {
           </h1>
 
           <p className="employer-hero-subtitle">
-            Eliminate resume fraud completely. Hire top engineering talent with on-chain credentials cryptographically signed by accredited universities, academies, and technical institutions.
+            Eliminate resume fraud completely. Hire top engineering talent with credentials certified and signed by accredited universities and technical institutions.
           </p>
 
           {/* Quick Verifier Search Input */}
@@ -170,19 +175,19 @@ export function EmployerHomePage() {
         <div className="employer-guarantee-card">
           <div className="guarantee-card-header">
             <Lock size={18} color="#a855f7" />
-            <span>Cryptographic Verification Guarantee</span>
+            <span>Official Verification Guarantee</span>
           </div>
           <p className="guarantee-card-text">
-            Traditional resumes rely on unverified claims. CredoNet credentials cannot be fabricated, forged, or edited by students. Every skill is signed with an authorized institution's private key.
+            Traditional resumes rely on unverified claims. CredoNet credentials cannot be fabricated, forged, or edited by candidates. Every skill carries an official institutional digital signature.
           </p>
           <div className="guarantee-specs">
             <div className="spec-item">
               <span className="spec-dot" />
-              <span>Tamper-evident ECDSA signature validation</span>
+              <span>Tamper-proof digital institutional signatures</span>
             </div>
             <div className="spec-item">
               <span className="spec-dot" />
-              <span>Real-time revocation check against decentralized consensus</span>
+              <span>Instant verification against the official institutional registry</span>
             </div>
             <div className="spec-item">
               <span className="spec-dot" />
@@ -234,7 +239,7 @@ export function EmployerHomePage() {
           </div>
           <div className="stat-details">
             <span className="stat-number">&lt; 500ms</span>
-            <span className="stat-label">Monad Verification Latency</span>
+            <span className="stat-label">Instant Verification Speed</span>
           </div>
         </div>
       </section>
@@ -242,7 +247,7 @@ export function EmployerHomePage() {
       {/* Employer Actions */}
       <section className="employer-features-section">
         <h2 className="section-title">Employer Verification & Discovery Tools</h2>
-        <p className="section-desc">Streamline your hiring workflow with mathematical certainty.</p>
+        <p className="section-desc">Streamline your hiring workflow with instant, reliable credential verification.</p>
 
         <div className="features-grid">
           {/* Card 1: Verifier Search */}
@@ -253,12 +258,12 @@ export function EmployerHomePage() {
               </div>
               <span className="feature-status-tag">Audit Tool</span>
             </div>
-            <h3 className="feature-card-title">Cryptographic Candidate Verifier</h3>
+            <h3 className="feature-card-title">Instant Candidate Verifier</h3>
             <p className="feature-card-desc">
-              Lookup any candidate by wallet address or Credential ID. CredoNet pulls raw on-chain state directly from Monad smart contracts to verify authenticity and revocation status.
+              Lookup any candidate by address or Credential ID. CredoNet checks the tamper-proof registry directly to verify authenticity and revocation status.
             </p>
             <ul className="feature-points">
-              <li><CheckCircle2 size={13} color="#10b981" /> Instant cryptographic validity check</li>
+              <li><CheckCircle2 size={13} color="#10b981" /> Instant validity check</li>
               <li><CheckCircle2 size={13} color="#10b981" /> Verified issuer identity & issue date</li>
               <li><CheckCircle2 size={13} color="#10b981" /> Revocation status confirmation</li>
             </ul>
@@ -278,7 +283,7 @@ export function EmployerHomePage() {
             </div>
             <h3 className="feature-card-title">Pre-Verified Talent Pipeline</h3>
             <p className="feature-card-desc">
-              Search engineering candidates filtered by certified skills (Solidity, Distributed Systems, Rust, Web3). View verified project code repositories and issuer citations.
+              Search engineering candidates filtered by certified skills (React, Node, Distributed Systems, Python). View verified project code repositories and issuer citations.
             </p>
             <ul className="feature-points">
               <li><CheckCircle2 size={13} color="#10b981" /> Filter by skill taxonomy & tech stack</li>
@@ -299,14 +304,14 @@ export function EmployerHomePage() {
               </div>
               <span className="feature-status-tag">Architecture</span>
             </div>
-            <h3 className="feature-card-title">Monad EVM Trust Architecture</h3>
+            <h3 className="feature-card-title">Tamper-Proof Trust Architecture</h3>
             <p className="feature-card-desc">
-              CredoNet runs on Monad EVM contract <code>0xc6BfB22D6B46346B113333b5513BDcD361488e6f</code>. Smart contract state ensures no single entity can tamper with academic credentials.
+              CredoNet operates on an official tamper-proof verification registry. This official registry ensures no single entity can alter academic credentials or certifications after issuance.
             </p>
             <ul className="feature-points">
-              <li><CheckCircle2 size={13} color="#10b981" /> Decentralized consensus on Monad</li>
-              <li><CheckCircle2 size={13} color="#10b981" /> Exportable cryptographic audit logs</li>
-              <li><CheckCircle2 size={13} color="#10b981" /> Zero reliance on PDF certificates</li>
+              <li><CheckCircle2 size={13} color="#10b981" /> Tamper-proof institutional verification</li>
+              <li><CheckCircle2 size={13} color="#10b981" /> Exportable background audit dossiers</li>
+              <li><CheckCircle2 size={13} color="#10b981" /> Zero reliance on easily forged paper certificates</li>
             </ul>
             <Link to="/verify/0x71c92a8c943b8d62283e1c66289b5b38b71c4e92-1" className="btn-feature-cta secondary">
               <span>View Sample Audit Report</span>
@@ -325,7 +330,7 @@ export function EmployerHomePage() {
               <span>Pre-Verified Engineering Talent Directory</span>
             </h3>
             <p className="section-desc">
-              Browse engineering candidates with on-chain credentials verified on the EVM Monad network.
+              Browse engineering candidates with verified credentials certified in the official registry.
             </p>
           </div>
 
@@ -362,14 +367,14 @@ export function EmployerHomePage() {
 
           <div className="directory-filter-row">
             <span className="directory-filter-label">Skill Filter:</span>
-            {["all", "Solidity", "Android Developer", "Smart Contract Security", "Distributed Systems", "Zero-Knowledge", "Backend"].map((cat) => (
+            {["all", "certificate", "React.js", "Android Developer", "Node.js", "Cloud Security", "Backend"].map((cat) => (
               <button
                 key={cat}
                 type="button"
                 onClick={() => setDirectoryFilter(cat)}
                 className={`directory-pill-btn ${directoryFilter === cat ? "active" : ""}`}
               >
-                {cat === "all" ? "All Skills" : cat}
+                {cat === "all" ? "All Skills" : cat === "certificate" ? "Degrees & Certificates" : cat}
               </button>
             ))}
           </div>

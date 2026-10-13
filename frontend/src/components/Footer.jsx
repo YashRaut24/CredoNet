@@ -14,7 +14,7 @@ export function Footer() {
             <span className="footer-brand-title">CredoNet<span className="footer-brand-dot">.</span></span>
           </div>
           <p className="footer-brand-desc">
-            One portable passport for verified skills, projects, and achievements. Tamper-evident issuance and independent public verification powered by Monad.
+            One portable passport for verified skills, projects, and degrees. Tamper-evident issuance and instant digital verification for universities, students, and employers.
           </p>
         </div>
 
@@ -38,7 +38,7 @@ export function Footer() {
               rel="noopener noreferrer"
               className="footer-link footer-link-external"
             >
-              <span>Monad Explorer</span>
+              <span>Public Explorer</span>
               <ExternalLink size={11} />
             </a>
           </li>
@@ -46,7 +46,7 @@ export function Footer() {
       </div>
 
       <div className="container footer-bottom">
-        <p>© 2026 CredoNet. Built for Monad Web3 SkillBuildZ Buildathon. Authenticity secured on Monad Testnet.</p>
+        <p>© 2026 CredoNet. Verifiable Academic & Career Credentials Protocol. Authenticity guaranteed.</p>
       </div>
     </footer>
   );

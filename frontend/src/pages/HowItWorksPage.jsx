@@ -31,7 +31,7 @@ export function HowItWorksPage() {
             How <span className="highlight-text">CredoNet</span> Works
           </h1>
           <p className="how-subtitle">
-            A cryptographic pipeline connecting students, accredited institutions, and employers on Monad EVM to eliminate resume fraud permanently.
+            A tamper-proof digital network connecting students, accredited institutions, and employers to eliminate resume fraud permanently.
           </p>
         </div>
       </section>
@@ -51,13 +51,13 @@ export function HowItWorksPage() {
               <Building2 size={24} />
             </div>
             <span className="pipeline-role">Accredited Issuer</span>
-            <h3 className="pipeline-title">Cryptographic Issuance</h3>
+            <h3 className="pipeline-title">Official Digital Issuance</h3>
             <p className="pipeline-desc">
-              Universities, bootcamps, and hackathons verify student project completion or exam results. The authorized administrator connects their wallet and anchors a cryptographic credential directly to the student's Monad EVM wallet address.
+              Universities, bootcamps, and hackathons verify student project completion or exam results. Authorized institutions certify digital credentials directly to the student's verified profile.
             </p>
             <ul className="pipeline-list">
-              <li><CheckCircle2 size={13} color="#10b981" /> Signed with authorized issuer private key</li>
-              <li><CheckCircle2 size={13} color="#10b981" /> Immutable on-chain timestamp & transaction hash</li>
+              <li><CheckCircle2 size={13} color="#10b981" /> Signed with authorized institutional digital signature</li>
+              <li><CheckCircle2 size={13} color="#10b981" /> Permanent tamper-proof timestamp & verification ID</li>
               <li><CheckCircle2 size={13} color="#10b981" /> Standardized skill metadata & category tags</li>
             </ul>
           </div>
@@ -69,12 +69,12 @@ export function HowItWorksPage() {
               <Award size={24} />
             </div>
             <span className="pipeline-role">Student / Talent</span>
-            <h3 className="pipeline-title">Self-Sovereign Ownership</h3>
+            <h3 className="pipeline-title">Permanent Student Ownership</h3>
             <p className="pipeline-desc">
-              The student owns their credential passport permanently in their wallet. They can link GitHub code repositories, add project evidence, and generate public tamper-evident portfolio links or QR codes for resumes and LinkedIn.
+              Students own their credential passport permanently. They can link GitHub code repositories, add project evidence, and generate public tamper-evident portfolio links or QR codes for resumes and LinkedIn.
             </p>
             <ul className="pipeline-list">
-              <li><CheckCircle2 size={13} color="#10b981" /> True wallet ownership (non-custodial)</li>
+              <li><CheckCircle2 size={13} color="#10b981" /> Permanent independent profile ownership</li>
               <li><CheckCircle2 size={13} color="#10b981" /> Direct GitHub repository & evidence mapping</li>
               <li><CheckCircle2 size={13} color="#10b981" /> 1-Click shareable public URL & QR code</li>
             </ul>
@@ -87,14 +87,14 @@ export function HowItWorksPage() {
               <Briefcase size={24} />
             </div>
             <span className="pipeline-role">Employer / Recruiter</span>
-            <h3 className="pipeline-title">Direct On-Chain Verification</h3>
+            <h3 className="pipeline-title">Instant Digital Verification</h3>
             <p className="pipeline-desc">
-              Employers audit candidate claims with mathematical certainty. By entering the candidate's wallet address or scanning a QR code, the verifier queries Monad RPC directly—no third-party calls, no manual background checks.
+              Employers audit candidate claims with complete confidence. By entering the candidate's address or scanning a QR code, verifiers confirm validity directly—no third-party delays, no manual background checks.
             </p>
             <ul className="pipeline-list">
-              <li><CheckCircle2 size={13} color="#10b981" /> Instant sub-second consensus response</li>
-              <li><CheckCircle2 size={13} color="#10b981" /> Live revocation status check on Monad</li>
-              <li><CheckCircle2 size={13} color="#10b981" /> Zero gas fees required for verification</li>
+              <li><CheckCircle2 size={13} color="#10b981" /> Instant verification response</li>
+              <li><CheckCircle2 size={13} color="#10b981" /> Real-time active and revocation status check</li>
+              <li><CheckCircle2 size={13} color="#10b981" /> 100% free with zero fees required</li>
             </ul>
           </div>
         </div>
@@ -112,15 +112,15 @@ export function HowItWorksPage() {
           <div className="persona-detail-card student">
             <div className="persona-card-top">
               <span className="persona-badge-tag student">Student Experience</span>
-              <h3 className="persona-heading">The Sovereign Career Passport</h3>
+              <h3 className="persona-heading">The Digital Career Passport</h3>
             </div>
             <p className="persona-body">
-              Students build a living record of their engineering capabilities. Instead of easily forged PDF certificates or LinkedIn endorsements, every credential in your CredoNet passport is cryptographically signed by verified organizations.
+              Students build a living record of their capabilities. Instead of easily forged PDF certificates or unverified resumes, every credential in your CredoNet passport is officially verified and digitally certified by recognized organizations.
             </p>
             <div className="persona-features-box">
               <div className="p-feat"><FolderGit2 size={15} color="#f26c36" /> Showcase project repositories alongside certificates</div>
               <div className="p-feat"><Share2 size={15} color="#f26c36" /> Public link (/vault/0x...) viewable by any hiring manager</div>
-              <div className="p-feat"><QrCode size={15} color="#f26c36" /> Printable QR code for physical resumes & conference badges</div>
+              <div className="p-feat"><QrCode size={15} color="#f26c36" /> Printable QR code for physical resumes & portfolios</div>
             </div>
             <Link to="/signup" className="btn-persona-action student">
               <span>Create Student Passport</span>
@@ -135,12 +135,12 @@ export function HowItWorksPage() {
               <h3 className="persona-heading">The Accredited Authority Studio</h3>
             </div>
             <p className="persona-body">
-              Universities, bootcamps, and certifying authorities issue tamper-proof certificates that outlast centralized institutional databases. Issuers retain cryptographic revocation rights if credentials are disputed.
+              Universities, bootcamps, and certifying authorities issue tamper-proof certificates that outlast centralized institutional databases. Issuers retain full revocation authority if credentials are ever disputed or expired.
             </p>
             <div className="persona-features-box">
-              <div className="p-feat"><Lock size={15} color="#38bdf8" /> Smart contract authorization guards issuance rights</div>
+              <div className="p-feat"><Lock size={15} color="#38bdf8" /> Authorized institutional access guards issuance rights</div>
               <div className="p-feat"><FileCheck size={15} color="#38bdf8" /> Immutable credential ledger & recipient registry</div>
-              <div className="p-feat"><ShieldCheck size={15} color="#38bdf8" /> Tamper-evident on-chain revocation controls</div>
+              <div className="p-feat"><ShieldCheck size={15} color="#38bdf8" /> Tamper-evident official revocation controls</div>
             </div>
             <Link to="/signup" className="btn-persona-action issuer">
               <span>Register as Certifying Issuer</span>
@@ -152,15 +152,15 @@ export function HowItWorksPage() {
           <div className="persona-detail-card employer">
             <div className="persona-card-top">
               <span className="persona-badge-tag employer">Employer Experience</span>
-              <h3 className="persona-heading">The Cryptographic Verifier Hub</h3>
+              <h3 className="persona-heading">The Instant Verification Portal</h3>
             </div>
             <p className="persona-body">
-              Recruiters and hiring managers eliminate days of manual background checks and reference phone calls. Search pre-verified engineers by verified competencies and audit credentials directly against Monad EVM.
+              Recruiters and hiring managers eliminate days of manual background checks and reference phone calls. Search pre-verified engineers by verified competencies and audit credentials directly against the official registry.
             </p>
             <div className="persona-features-box">
               <div className="p-feat"><ShieldCheck size={15} color="#c084fc" /> 100% protection against fraudulent resumes</div>
-              <div className="p-feat"><Users size={15} color="#c084fc" /> Browse pre-verified talent by skills (Solidity, Go, Rust)</div>
-              <div className="p-feat"><Cpu size={15} color="#c084fc" /> Sub-500ms audit response with zero gas costs</div>
+              <div className="p-feat"><Users size={15} color="#c084fc" /> Browse pre-verified talent by skills (React, Node, Python)</div>
+              <div className="p-feat"><Cpu size={15} color="#c084fc" /> Instant verification response with zero fees or accounts needed</div>
             </div>
             <Link to="/signup" className="btn-persona-action employer">
               <span>Register as Verified Employer</span>
@@ -175,7 +175,7 @@ export function HowItWorksPage() {
         <div className="cta-banner-box">
           <h2 className="cta-banner-title">Ready to Experience True Credential Verification?</h2>
           <p className="cta-banner-text">
-            Join the decentralized skill credential protocol built on Monad Testnet.
+            Join the verified skill credential network trusted by students, universities, and employers.
           </p>
           <div className="cta-banner-btns">
             <Link to="/signup" className="btn-primary">

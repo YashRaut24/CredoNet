@@ -60,8 +60,8 @@ export function BlindVerifyPage() {
       <div className="container blind-page-wrap">
         <div className="blind-loading-box">
           <Fingerprint size={36} className="spin" color="#e36128" />
-          <h3>Verifying Zero-Knowledge Commitment...</h3>
-          <p>Auditing cryptographic proof against Monad EVM blockchain consensus</p>
+          <h3>Verifying Privacy-Preserving Proof...</h3>
+          <p>Auditing credential validity against the official verification registry</p>
         </div>
       </div>
     );
@@ -98,11 +98,11 @@ export function BlindVerifyPage() {
       <div className="blind-hero">
         <div className="blind-tagline">
           <Lock size={13} color="#10b981" />
-          <span>CRYPTOGRAPHIC BLIND HIRING DOSSIER</span>
+          <span>PRIVACY-PRESERVING VERIFICATION DOSSIER</span>
         </div>
         <h1 className="blind-title">Zero-Bias Skill Verification</h1>
         <p className="blind-desc">
-          This candidate has submitted a cryptographic proof verifying that they hold an authentic, unrevoked credential on the blockchain. Personal identifying details are hidden to guarantee fair, bias-free screening.
+          This candidate has submitted a verified proof confirming that they hold an authentic, unrevoked credential. Personal identifying details are hidden to guarantee fair, bias-free screening.
         </p>
       </div>
 
@@ -120,11 +120,11 @@ export function BlindVerifyPage() {
             )}
             <div>
               <h3 className="status-heading">
-                {isValid ? "AUTHENTIC BLOCKCHAIN CREDENTIAL VERIFIED" : isRevoked ? "CREDENTIAL REVOKED ON-CHAIN" : "CERTIFICATION EXPIRED"}
+                {isValid ? "AUTHENTIC CREDENTIAL VERIFIED" : isRevoked ? "CREDENTIAL REVOKED" : "CERTIFICATION EXPIRED"}
               </h3>
               <p className="status-sub">
                 {isValid 
-                  ? "Tamper-proof smart contract integrity verified with zero fraud detection."
+                  ? "Tamper-proof registry integrity verified with zero fraud detection."
                   : isRevoked
                   ? "This credential was revoked by the issuing authority."
                   : "This certification has reached its expiration date and requires re-certification."}
@@ -173,20 +173,20 @@ export function BlindVerifyPage() {
             </div>
 
             <div className="dossier-item">
-              <span className="dossier-label">Blockchain Consensus Layer</span>
-              <span className="dossier-value">Monad EVM Testnet (Chain ID 10143)</span>
-              <span className="dossier-mono">Contract: {proof.blockchainContract}</span>
+              <span className="dossier-label">Verification Network</span>
+              <span className="dossier-value">CredoNet Verified Network</span>
+              <span className="dossier-mono">Registry: {proof.blockchainContract}</span>
             </div>
           </div>
 
-          {/* Cryptographic Commitment Proof Box */}
+          {/* Privacy-Preserving Proof Box */}
           <div className="commitment-box">
             <div className="commitment-header">
               <Fingerprint size={15} color="#e36128" />
-              <span>CRYPTOGRAPHIC HMAC SHA-256 ZERO-KNOWLEDGE COMMITMENT</span>
+              <span>PRIVACY-PRESERVING DIGITAL COMMITMENT</span>
             </div>
             <p className="commitment-text">
-              The candidate proved possession of the underlying private credential signature without publishing their raw wallet address or personal name.
+              The candidate proved possession of the authentic credential without publishing their personal account or identifying information.
             </p>
             <div className="commitment-hash-wrap">
               <span className="hash-code">{proof.proofCommitmentHash}</span>

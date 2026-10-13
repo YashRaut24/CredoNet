@@ -67,8 +67,8 @@ export function BlindProofModal({ credential, onClose }) {
               <EyeOff size={18} color="#e36128" />
             </div>
             <div>
-              <h3 className="blind-modal-title">Zero-Knowledge Blind Hiring Proof</h3>
-              <p className="blind-modal-sub">Bias-Free Cryptographic Verification</p>
+              <h3 className="blind-modal-title">Privacy-Preserving Hiring Proof</h3>
+              <p className="blind-modal-sub">Bias-Free Skill Verification</p>
             </div>
           </div>
           <button onClick={onClose} className="btn-modal-close" title="Close">
@@ -83,7 +83,7 @@ export function BlindProofModal({ credential, onClose }) {
               <Lock size={15} color="#10b981" />
             </div>
             <p>
-              <strong>What is Blind Proof?</strong> Employers can verify your certified skill on the blockchain without seeing your real name, gender, or wallet history. This ensures 100% merit-based, bias-free technical screening.
+              <strong>What is Blind Proof?</strong> Employers can verify your certified skill in the official registry without seeing your real name, gender, or personal profile. This ensures 100% merit-based, bias-free technical screening.
             </p>
           </div>
 
@@ -99,7 +99,7 @@ export function BlindProofModal({ credential, onClose }) {
               </span>
             </div>
             <div className="blind-summary-row">
-              <span className="summary-label">Blockchain Anchor</span>
+              <span className="summary-label">Credential ID</span>
               <span className="summary-val mono">
                 {credential.credentialId.slice(0, 10)}...{credential.credentialId.slice(-8)}
               </span>
@@ -111,7 +111,7 @@ export function BlindProofModal({ credential, onClose }) {
           {!proofData ? (
             <div className="blind-action-cta">
               <p className="blind-cta-desc">
-                Generate a cryptographic HMAC SHA-256 commitment binding your credential on-chain to an anonymous candidate code.
+                Generate a privacy-preserving digital certificate binding your verified skill to an anonymous candidate code.
               </p>
               <button
                 onClick={generateBlindProof}
@@ -121,12 +121,12 @@ export function BlindProofModal({ credential, onClose }) {
                 {loading ? (
                   <>
                     <Fingerprint size={16} className="spin" />
-                    <span>Generating Cryptographic Proof...</span>
+                    <span>Generating Privacy-Preserving Proof...</span>
                   </>
                 ) : (
                   <>
                     <Sparkles size={16} />
-                    <span>Generate Blind Hiring Proof</span>
+                    <span>Generate Anonymous Proof</span>
                   </>
                 )}
               </button>
@@ -135,7 +135,7 @@ export function BlindProofModal({ credential, onClose }) {
             <div className="blind-result-box">
               <div className="blind-success-badge">
                 <CheckCircle2 size={16} color="#10b981" />
-                <span>Cryptographic Proof Generated Successfully</span>
+                <span>Verification Proof Generated Successfully</span>
               </div>
 
               <div className="blind-fields-list">
@@ -145,7 +145,7 @@ export function BlindProofModal({ credential, onClose }) {
                 </div>
 
                 <div className="blind-field-item">
-                  <span className="field-name">Cryptographic Commitment:</span>
+                  <span className="field-name">Verification Key:</span>
                   <span className="field-val mono-hash">{proofData.proof.proofCommitmentHash.slice(0, 24)}...</span>
                 </div>
 
@@ -173,7 +173,7 @@ export function BlindProofModal({ credential, onClose }) {
                   rel="noopener noreferrer"
                   className="btn-secondary blind-btn-open"
                 >
-                  <span>Open Blind Recruiter Dossier</span>
+                  <span>Open Anonymous Verification View</span>
                   <ExternalLink size={13} />
                 </a>
               </div>

@@ -67,7 +67,7 @@ export function AuthRoleModal() {
 
             <ul className="persona-features">
               <li><CheckCircle2 size={13} color="var(--accent-primary)" /> <span>Add GitHub repos & project proof</span></li>
-              <li><CheckCircle2 size={13} color="var(--accent-primary)" /> <span>Collect verified skills on Monad</span></li>
+              <li><CheckCircle2 size={13} color="var(--accent-primary)" /> <span>Collect verified skills & degrees</span></li>
               <li><CheckCircle2 size={13} color="var(--accent-primary)" /> <span>Unlock real milestone achievements</span></li>
             </ul>
 
@@ -99,8 +99,8 @@ export function AuthRoleModal() {
 
             <ul className="persona-features">
               <li><CheckCircle2 size={13} color="#38bdf8" /> <span>Review student project submissions</span></li>
-              <li><CheckCircle2 size={13} color="#38bdf8" /> <span>Issue credentials directly on Monad</span></li>
-              <li><CheckCircle2 size={13} color="#38bdf8" /> <span>Full on-chain revocation management</span></li>
+              <li><CheckCircle2 size={13} color="#38bdf8" /> <span>Issue credentials directly to student profiles</span></li>
+              <li><CheckCircle2 size={13} color="#38bdf8" /> <span>Full institutional revocation management</span></li>
             </ul>
 
             <button 
@@ -126,13 +126,13 @@ export function AuthRoleModal() {
 
             <h3 className="persona-name">Employer Verification Hub</h3>
             <p className="persona-bio">
-              For hiring managers and recruiters. Scan candidate QR passports, audit verified skills against underlying GitHub code, and check validity with 0 gas and no wallet.
+              For hiring managers and recruiters. Scan candidate QR passports, audit verified skills against underlying project work, and check validity for free with no account.
             </p>
 
             <ul className="persona-features">
-              <li><CheckCircle2 size={13} color="#10b981" /> <span>No crypto wallet or gas fee needed</span></li>
+              <li><CheckCircle2 size={13} color="#10b981" /> <span>100% free with no account needed</span></li>
               <li><CheckCircle2 size={13} color="#10b981" /> <span>Audit candidate passports & GitHub repos</span></li>
-              <li><CheckCircle2 size={13} color="#10b981" /> <span>Instant Monad validation (VALID/REVOKED)</span></li>
+              <li><CheckCircle2 size={13} color="#10b981" /> <span>Instant verification (VALID / REVOKED)</span></li>
             </ul>
 
             <button 
@@ -149,7 +149,7 @@ export function AuthRoleModal() {
         <div className="auth-modal-footer">
           <div className="auth-modal-footer-info">
             <Lock size={14} color="var(--accent-primary)" />
-            <span>Cryptographic integrity powered by Monad Testnet EVM. Personal data remains strictly off-chain.</span>
+            <span>Tamper-proof digital credentials with instant verification. Personal data remains private and secure.</span>
           </div>
         </div>
       </div>

@@ -26,8 +26,38 @@ const CredentialRequestSchema = new mongoose.Schema(
     },
     category: {
       type: String,
-      enum: ["skill", "project", "certification"],
+      enum: ["skill", "project", "certificate", "certification"],
       default: "skill",
+    },
+    certificateTitle: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    issuingOrg: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    certificateGrade: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    certificateFileName: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    certificateFileSize: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    certificateFileHash: {
+      type: String,
+      default: "",
+      trim: true,
     },
     evidenceProject: {
       type: String,

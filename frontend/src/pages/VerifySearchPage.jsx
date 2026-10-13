@@ -52,7 +52,7 @@ export function VerifySearchPage() {
         navigate(`/vault/${addressMatch[0]}`);
         return;
       }
-      setError("Invalid Credential ID. A Credential ID is a 32-byte on-chain state hash (starts with 0x followed by 64 hex characters). Note: A wallet private key is NOT a credential ID.");
+      setError("Invalid Credential ID format. A Credential ID starts with 0x followed by 64 characters.");
     } else {
       if (addressMatch) {
         navigate(`/vault/${addressMatch[0]}`);
@@ -63,7 +63,7 @@ export function VerifySearchPage() {
         navigate(`/verify/${credMatch[0]}`);
         return;
       }
-      setError("Invalid student wallet address. Must be a 20-byte address (starts with 0x...).");
+      setError("Invalid student account address. Please enter a valid address (starts with 0x...).");
     }
   };
 
@@ -73,16 +73,16 @@ export function VerifySearchPage() {
       role: "Computer Engineering Student",
       address: "0x71C92a8C943B8d62283e1c66289b5B38B71C4e92",
       badge: "VERIFIED BUILDER",
-      skills: ["React Development", "Solidity Core", "Node.js"],
-      projects: ["E-Commerce Platform", "CredoNet Protocol DApp"],
+      skills: ["React Development", "System Architecture", "Node.js"],
+      projects: ["E-Commerce Platform", "CredoNet Platform Web App"],
     },
     {
       name: "Elena K.",
-      role: "Smart Contract Security Auditor",
+      role: "Application Security & QA Specialist",
       address: "0x3F8a90Bc18A24e9271C92a8C943B8d62283e1c66",
       badge: "SECURITY AUDITOR",
-      skills: ["Solidity Security", "EVM Bytecode", "DeFi Security"],
-      projects: ["Reentrancy Vulnerability Scanner", "Gas Optimization Suite"],
+      skills: ["Application Security", "API Security", "Cloud Infrastructure"],
+      projects: ["Security Vulnerability Scanner", "Performance Optimization Suite"],
     },
   ];
 
@@ -101,16 +101,16 @@ export function VerifySearchPage() {
           Audit Candidate Passports & Credentials
         </h1>
         <p className="search-page-desc">
-          Independently verify student skills, inspect linked project code, and confirm real-time on-chain validity on the Monad blockchain. Zero gas, no crypto wallet, and no account required.
+          Independently verify student skills, inspect linked project work, and confirm real-time validity directly in the official registry. Zero fees, no crypto wallet, and no account required.
         </p>
 
         {/* 4 Trust Highlights */}
         <div className="trust-highlights-row">
           {[
-            "100% Free & Zero Gas",
-            "No Wallet or Account Needed",
-            "Sub-Second Monad Finality",
-            "Cryptographic Proof Against Fraud"
+            "100% Free Verification",
+            "No Account or Login Required",
+            "Instant Verification Speed",
+            "Tamper-Proof Anti-Fraud Protection"
           ].map((pill) => (
             <div key={pill} className="trust-highlight-chip">
               <Check size={12} color="#10b981" />
@@ -146,8 +146,8 @@ export function VerifySearchPage() {
         <form onSubmit={handleSearch} className="search-form-wrap">
           <label className="search-input-label">
             {searchMode === "passport"
-              ? "Enter Candidate Wallet Address or Passport URL:"
-              : "Enter 32-Byte Cryptographic Credential ID:"}
+              ? "Enter Candidate Address or Passport URL:"
+              : "Enter Official Credential ID:"}
           </label>
 
           <div className="search-input-group">
@@ -167,7 +167,7 @@ export function VerifySearchPage() {
             />
             <button type="submit" className="btn-primary search-submit-btn">
               <Search size={16} />
-              <span>{searchMode === "passport" ? "Audit Passport" : "Verify on Monad"}</span>
+              <span>{searchMode === "passport" ? "Audit Passport" : "Verify Credential"}</span>
             </button>
           </div>
 
@@ -180,7 +180,7 @@ export function VerifySearchPage() {
 
         <div className="search-footer-note">
           <Lock size={12} color="#e36128" />
-          <span>Queries execute directly against the public Monad Testnet EVM consensus node at zero cost.</span>
+          <span>Queries execute directly against the public tamper-proof verification network at zero cost.</span>
         </div>
       </div>
 

@@ -30,7 +30,7 @@ export function MarketRadar() {
       {/* Bottom Readiness & Tag */}
       <div className="radar-footer">
         <div className="readiness-box">
-          <span className="readiness-label">Cryptographic Proof</span>
+          <span className="readiness-label">Official Authenticity</span>
           <div className="readiness-bars">
             <div className="readiness-bar" />
             <div className="readiness-bar" />
@@ -38,10 +38,10 @@ export function MarketRadar() {
             <div className="readiness-bar" />
             <div className="readiness-bar" />
           </div>
-          <span className="readiness-value">99.8% On-Chain Validity</span>
+          <span className="readiness-value">100% Verified Authenticity</span>
         </div>
 
-        <span className="radar-sub-label">EVM Blockchain Ledger</span>
+        <span className="radar-sub-label">Verified Institutional Network</span>
       </div>
     </div>
   );

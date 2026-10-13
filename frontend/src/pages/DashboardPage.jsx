@@ -56,6 +56,7 @@ export function DashboardPage() {
 
   // Tab State: "overview" | "skills" | "projects" | "credentials" | "requests" | "achievements" | "endorsements"
   const [activeTab, setActiveTab] = useState("overview");
+  const [credentialFilter, setCredentialFilter] = useState("all");
 
   // Requests state
   const [requests, setRequests] = useState([]);
@@ -231,6 +232,25 @@ export function DashboardPage() {
 
   // Derived calculations
   const validCreds = credentials.filter((c) => !c.revoked);
+  const certCreds = validCreds.filter(
+    (c) => c.skill?.startsWith("[Certificate]") || c.skill?.toLowerCase().startsWith("certificate:")
+  );
+  const projectCreds = validCreds.filter(
+    (c) => c.skill?.startsWith("[Project]") || c.skill?.toLowerCase().startsWith("project:")
+  );
+  const skillCreds = validCreds.filter(
+    (c) => !c.skill?.startsWith("[Certificate]") && !c.skill?.startsWith("[Project]") && !c.skill?.toLowerCase().startsWith("certificate:") && !c.skill?.toLowerCase().startsWith("project:")
+  );
+
+  const displayedCreds = credentials.filter((c) => {
+    const isCert = c.skill?.startsWith("[Certificate]") || c.skill?.toLowerCase().startsWith("certificate:");
+    const isProj = c.skill?.startsWith("[Project]") || c.skill?.toLowerCase().startsWith("project:");
+    if (credentialFilter === "skills") return !isCert && !isProj;
+    if (credentialFilter === "projects") return isProj;
+    if (credentialFilter === "certificates") return isCert;
+    return true;
+  });
+
   const achievements = calculateAchievements({ credentials, projects, endorsements });
   const evidenceSkillMap = buildEvidenceSkillMap({ credentials, projects, endorsements });
   const verifiedSkillsCount = evidenceSkillMap.filter(s => s.isVerified).length;
@@ -244,7 +264,7 @@ export function DashboardPage() {
           </div>
           <h2 className="connect-title">Connect Student Wallet</h2>
           <p className="connect-desc">
-            Connect your Web3 wallet to manage your career identity, project portfolio, verified skills, and Monad credentials.
+            Connect your wallet to manage your career identity, project portfolio, verified skills, and academic certificates.
           </p>
           <button
             onClick={connectWallet}
@@ -337,7 +357,7 @@ export function DashboardPage() {
             <ExternalLink size={13} />
           </Link>
 
-          <button onClick={loadCredentials} disabled={loading} className="btn-secondary" title="Sync Blockchain Records">
+          <button onClick={loadCredentials} disabled={loading} className="btn-secondary" title="Sync Records">
             <RefreshCw size={14} className={loading ? "spin" : ""} />
             <span>Sync</span>
           </button>
@@ -349,13 +369,19 @@ export function DashboardPage() {
         <div className="stat-box">
           <span className="stat-box-label">Verified Skills</span>
           <span className="stat-box-value">{verifiedSkillsCount}</span>
-          <span className="stat-box-sub stat-sub-success">✓ On-Chain Certified</span>
+          <span className="stat-box-sub stat-sub-success">✓ Certified</span>
+        </div>
+
+        <div className="stat-box">
+          <span className="stat-box-label">Degrees & Certs</span>
+          <span className="stat-box-value">{certCreds.length}</span>
+          <span className="stat-box-sub stat-sub-success">Official Diplomas</span>
         </div>
 
         <div className="stat-box">
           <span className="stat-box-label">Active Credentials</span>
           <span className="stat-box-value">{validCreds.length}</span>
-          <span className="stat-box-sub stat-sub-accent">Valid on Monad</span>
+          <span className="stat-box-sub stat-sub-accent">Authentic & Active</span>
         </div>
 
         <div className="stat-box">
@@ -376,7 +402,7 @@ export function DashboardPage() {
         <div className="dashboard-authenticity-content">
           <ShieldCheck size={18} color="var(--accent-primary)" />
           <span className="dashboard-authenticity-text">
-            <strong>Authenticity Model:</strong> You can document projects and profile evidence, but <em>skills and credentials are only verified when cryptographically issued by an authorized institution on Monad</em>. Students cannot self-verify.
+            <strong>Authenticity Model:</strong> You can document projects and portfolio work, but <em>skills and credentials are verified only when issued and digitally signed by an accredited university or certifying authority</em>. Students cannot self-verify.
           </span>
         </div>
       </div>
@@ -387,7 +413,7 @@ export function DashboardPage() {
           { id: "overview", label: "Overview", count: null },
           { id: "skills", label: "Skills & Evidence", count: evidenceSkillMap.length },
           { id: "projects", label: "Projects Portfolio", count: projects.length },
-          { id: "credentials", label: "Monad Credentials", count: credentials.length },
+          { id: "credentials", label: "Official Credentials", count: credentials.length },
           { id: "requests", label: "Verification Claims", count: requests.length },
           { id: "achievements", label: "Achievements", count: achievements.filter(a => a.unlocked).length },
           { id: "endorsements", label: "Mentor Endorsements", count: endorsements.length },
@@ -476,7 +502,7 @@ export function DashboardPage() {
               <div className="dashboard-card-head">
                 <h3 className="dashboard-card-heading">
                   <ShieldCheck size={16} color="var(--accent-primary)" />
-                  <span>Recent Monad Credentials</span>
+                  <span>Recent Verified Credentials</span>
                 </h3>
                 <button onClick={() => setActiveTab("credentials")} className="btn-secondary dashboard-btn-xs">
                   <span>View All ({credentials.length})</span>
@@ -498,7 +524,7 @@ export function DashboardPage() {
                   ))}
                 </div>
               ) : (
-                <p className="dashboard-muted-msg">No credentials recorded on Monad blockchain yet.</p>
+                <p className="dashboard-muted-msg">No verified credentials recorded yet.</p>
               )}
             </div>
           </div>
@@ -567,7 +593,7 @@ export function DashboardPage() {
                   {/* Associated Credentials & Endorsements */}
                   <div className="dashboard-skill-box">
                     <span className="dashboard-skill-box-label">
-                      BLOCKCHAIN CREDENTIALS & ENDORSEMENTS
+                      OFFICIAL CREDENTIALS & ENDORSEMENTS
                     </span>
                     {item.credentials.length > 0 ? (
                       <div className="dashboard-skill-box-list">
@@ -586,7 +612,7 @@ export function DashboardPage() {
                         ))}
                       </div>
                     ) : (
-                      <span className="dashboard-muted-msg">Awaiting issuer certification on Monad</span>
+                      <span className="dashboard-muted-msg">Awaiting institutional certification</span>
                     )}
                   </div>
                 </div>
@@ -686,22 +712,45 @@ export function DashboardPage() {
       {activeTab === "credentials" && (
         <div className="dashboard-tab-content-col">
           <div className="credentials-section-header">
-            <h3 className="connect-title">On-Chain Monad Credentials</h3>
-            <span className="credentials-count-pill">{credentials.length} Issued</span>
+            <div>
+              <h3 className="connect-title">Official Verified Credentials</h3>
+              <p className="connect-desc">
+                Authentic, tamper-evident credentials issued directly to your profile by accredited institutions.
+              </p>
+            </div>
+            <span className="credentials-count-pill">{credentials.length} Total Issued</span>
           </div>
 
-          {credentials.length > 0 ? (
+          <div className="dashboard-filter-shelf">
+            {[
+              { id: "all", label: `All (${credentials.length})` },
+              { id: "skills", label: `Skills (${skillCreds.length})` },
+              { id: "projects", label: `Projects (${projectCreds.length})` },
+              { id: "certificates", label: `Degrees & Certificates (${certCreds.length})` },
+            ].map((f) => (
+              <button
+                key={f.id}
+                type="button"
+                onClick={() => setCredentialFilter(f.id)}
+                className={`dashboard-filter-pill ${credentialFilter === f.id ? "active" : ""}`}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
+
+          {displayedCreds.length > 0 ? (
             <div className="credentials-grid">
-              {credentials.map((cred) => (
+              {displayedCreds.map((cred) => (
                 <CredentialCard key={cred.credentialId} credential={cred} allowBlind={true} />
               ))}
             </div>
           ) : (
             <div className="empty-credentials-box">
               <ShieldCheck size={28} color="var(--accent-primary)" />
-              <h4>No credentials issued to this wallet yet</h4>
+              <h4>No credentials found for this category</h4>
               <p className="dashboard-muted-msg">
-                Request an authorized university, bootcamp, or mentor to issue credentials to your wallet address.
+                Switch filters above or request an authorized university, bootcamp, or mentor to issue credentials to your wallet address.
               </p>
             </div>
           )}
@@ -736,8 +785,8 @@ export function DashboardPage() {
                         <h4 className="dashboard-claim-title">
                           {req.skillTitle}
                         </h4>
-                        <span className="dashboard-claim-cat-tag">
-                          {req.category}
+                        <span className={`dashboard-claim-cat-tag ${req.category === "certificate" ? "certificate-cat-tag" : ""}`}>
+                          {req.category === "certificate" ? "Official Degree Claim" : req.category}
                         </span>
                       </div>
                       <p className="dashboard-claim-desc">
@@ -769,6 +818,30 @@ export function DashboardPage() {
 
                   {/* Evidence & Issuer Details */}
                   <div className="dashboard-claim-details-grid">
+                    {req.issuingOrg && (
+                      <div>
+                        <span className="dashboard-detail-label">INSTITUTION:</span>
+                        <span className="dashboard-project-link-sky">{req.issuingOrg}</span>
+                      </div>
+                    )}
+                    {req.certificateGrade && (
+                      <div>
+                        <span className="dashboard-detail-label">HONORS / GRADE:</span>
+                        <span className="dashboard-detail-mono">{req.certificateGrade}</span>
+                      </div>
+                    )}
+                    {req.certificateFileName && (
+                      <div>
+                        <span className="dashboard-detail-label">ATTACHED DOCUMENT:</span>
+                        <span className="dashboard-detail-mono">{req.certificateFileName}</span>
+                      </div>
+                    )}
+                    {req.certificateFileHash && (
+                      <div>
+                        <span className="dashboard-detail-label">DOCUMENT FINGERPRINT:</span>
+                        <span className="dashboard-detail-mono">{req.certificateFileHash.slice(0, 16)}...</span>
+                      </div>
+                    )}
                     {req.evidenceProject && (
                       <div>
                         <span className="dashboard-detail-label">EVIDENCE PROJECT:</span>
@@ -1161,7 +1234,7 @@ export function DashboardPage() {
         <QRCodeModal
           url={`${window.location.origin}/vault/${account}`}
           title="Share Student Passport"
-          description={`Scan to inspect verified skills, projects, and Monad credentials bound to ${account.slice(0, 6)}...${account.slice(-4)}.`}
+          description={`Scan to inspect verified skills, projects, and authentic credentials issued to ${account.slice(0, 6)}...${account.slice(-4)}.`}
           onClose={() => setShowQR(false)}
         />
       )}

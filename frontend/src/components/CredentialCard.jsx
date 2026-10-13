@@ -8,9 +8,10 @@ import {
   Calendar, 
   QrCode, 
   ExternalLink, 
-  AlertTriangle, 
+  AlertTriangle,
   FolderGit2, 
   Award, 
+  FileCheck,
   Info,
   Clock,
   EyeOff
@@ -48,8 +49,12 @@ export function CredentialCard({
                     credential.skill?.toLowerCase().startsWith("project:") ||
                     credential.metadata?.type === "project";
 
+  const isCertificate = credential.skill?.startsWith("[Certificate]") || 
+                        credential.skill?.toLowerCase().startsWith("certificate:") ||
+                        credential.metadata?.type === "certificate";
+
   const displayTitle = credential.skill
-    ? credential.skill.replace(/^\[Project\]\s*/i, "").replace(/^project:\s*/i, "")
+    ? credential.skill.replace(/^\[(Project|Certificate)\]\s*/i, "").replace(/^(project|certificate):\s*/i, "")
     : "Untitled Credential";
 
   const formattedDate = new Date(Number(credential.issuedAt) * 1000).toLocaleDateString("en-US", {
@@ -71,9 +76,21 @@ export function CredentialCard({
         {/* Top Info */}
         <div className="card-top">
           <div className="card-top-info">
-            <span className={`card-category ${isProject ? "category-project" : "category-skill"}`}>
-              {isProject ? <FolderGit2 size={12} color="var(--accent-primary)" /> : <Award size={12} color="var(--accent-primary)" />}
-              <span>{isProject ? "Verified Capstone Project" : "Verified Skill Credential"}</span>
+            <span className={`card-category ${isProject ? "category-project" : isCertificate ? "category-certificate" : "category-skill"}`}>
+              {isProject ? (
+                <FolderGit2 size={12} color="#38bdf8" />
+              ) : isCertificate ? (
+                <FileCheck size={12} color="#10b981" />
+              ) : (
+                <Award size={12} color="var(--accent-primary)" />
+              )}
+              <span>
+                {isProject 
+                  ? "Verified Capstone Project" 
+                  : isCertificate 
+                  ? "Official Degree / Certificate" 
+                  : "Verified Skill Credential"}
+              </span>
             </span>
             <h3 className="card-skill-title">{displayTitle}</h3>
           </div>
@@ -89,7 +106,7 @@ export function CredentialCard({
                 <span>EXPIRED</span>
               </span>
             ) : (
-              <span className="status-pill valid" title="Credential is cryptographically valid">
+              <span className="status-pill valid" title="Credential is verified and valid">
                 <CheckCircle2 size={12} />
                 <span>VALID</span>
               </span>
@@ -151,7 +168,7 @@ export function CredentialCard({
             <button
               onClick={() => setShowDetail(true)}
               className="btn-card-action btn-detail-action"
-              title="View full cryptographic details"
+              title="View full credential details"
             >
               <Info size={12} />
               <span>Details</span>
@@ -166,7 +183,7 @@ export function CredentialCard({
               <button
                 onClick={() => setShowBlindProof(true)}
                 className="btn-card-action btn-blind-action"
-                title="Generate Zero-Knowledge Blind Hiring Proof"
+                title="Generate Anonymous Verification Proof"
               >
                 <EyeOff size={12} />
                 <span>Blind</span>
@@ -188,7 +205,7 @@ export function CredentialCard({
               onClick={() => onRevoke(credential.credentialId)}
               disabled={isRevoking}
               className="btn-card-action btn-revoke"
-              title="Revoke credential on-chain"
+              title="Revoke credential in official registry"
             >
               <AlertTriangle size={12} />
               <span>{isRevoking ? "Revoking..." : "Revoke"}</span>
@@ -215,7 +232,7 @@ export function CredentialCard({
         <QRCodeModal
           url={verifyUrl}
           title={`Verify: ${credential.skill}`}
-          description={`Cryptographic proof for ${credential.student.slice(0, 6)}...${credential.student.slice(-4)} verified on-chain via CredoNet.`}
+          description={`Official verified credential for ${credential.student.slice(0, 6)}...${credential.student.slice(-4)} verified via CredoNet.`}
           onClose={() => setShowQR(false)}
         />
       )}

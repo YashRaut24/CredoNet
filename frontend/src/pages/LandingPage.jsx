@@ -59,27 +59,27 @@ export function LandingPage() {
 
   const sampleVaults = [
     {
-      role: "Blockchain & Smart Contract Engineer",
+      role: "Full-Stack & Cloud Systems Engineer",
       candidate: "Rahul S. (Sem 7)",
       address: "0x71C92a8C943B8d62283e1c66289b5B38B71C4e92",
       credsCount: 3,
-      tags: ["CredoNet Capstone", "Distributed Systems", "Solidity Core"],
+      tags: ["Full Stack Systems", "Distributed Systems", "Cloud Architecture"],
       badge: "VERIFIED BUILDER"
     },
     {
-      role: "Smart Contract Security Auditor",
+      role: "Application Security & QA Specialist",
       candidate: "Elena K.",
       address: "0x3F8a90Bc18A24e9271C92a8C943B8d62283e1c66",
       credsCount: 4,
-      tags: ["Solidity Core", "EVM Bytecode", "DeFi Security"],
+      tags: ["Application Security", "System Architecture", "API Security"],
       badge: "SECURITY SPECIALIST"
     },
     {
-      role: "Full-Stack Web3 DApp Architect",
+      role: "Full-Stack Software Engineer",
       candidate: "Marcus V.",
       address: "0x9B3f18A24e9271C92a8C943B8d62283e1c663F8a",
       credsCount: 3,
-      tags: ["React & Node", "Ethers.js v6", "IPFS Storage"],
+      tags: ["React & Node", "API Architecture", "Cloud Storage"],
       badge: "FULL-STACK BUILDER"
     }
   ];
@@ -91,7 +91,7 @@ export function LandingPage() {
         <div className="hero-content">
           <div className="hero-tagline">
             <span className="hero-tagline-dot">•</span>
-            <span>CRYPTOGRAPHIC CREDENTIAL PROTOCOL</span>
+            <span>TAMPER-PROOF VERIFICATION NETWORK</span>
           </div>
 
           <h1 className="hero-title">
@@ -99,7 +99,7 @@ export function LandingPage() {
           </h1>
 
           <p className="hero-description">
-            One portable passport for your verified skills, projects and achievements. Trusted issuers issue credentials to your wallet, and employers independently verify them directly on-chain.
+            One portable passport for your verified skills, projects and achievements. Trusted issuers certify credentials to your profile, and employers independently verify them in seconds.
           </p>
 
           <div className="hero-actions">
@@ -126,11 +126,11 @@ export function LandingPage() {
             </div>
             <div className="trust-pill">
               <Lock size={14} color="#f26c36" />
-              <span>Tamper-Proof Blockchain Proof</span>
+              <span>Tamper-Proof Digital Verification</span>
             </div>
             <div className="trust-pill">
               <Zap size={14} color="#f26c36" />
-              <span>Sub-Second Verification</span>
+              <span>Instant Verification</span>
             </div>
             <div className="trust-pill">
               <QrCode size={14} color="#f26c36" />
@@ -176,7 +176,7 @@ export function LandingPage() {
                 Own your portable career passport. Add project evidence with GitHub links, collect verified credentials from authorized issuers, and unlock achievements.
               </p>
               <ul className="triad-card-list">
-                <li>Self-custody profile & portfolio projects</li>
+                <li>Permanent profile & portfolio projects</li>
                 <li>Evidence-linked skill verification</li>
                 <li>Real milestones & mentor endorsements</li>
                 <li>Shareable public link & QR code</li>
@@ -201,13 +201,13 @@ export function LandingPage() {
               </div>
               <h3 className="triad-title">Issuer Certification Portal</h3>
               <p className="triad-card-desc">
-                For universities, bootcamps, and hackathons. Review student project submissions, certify verified competencies, and anchor proof directly on-chain.
+                For universities, bootcamps, and hackathons. Review student project submissions, certify verified competencies, and record official credentials.
               </p>
               <ul className="triad-card-list">
                 <li>Review student portfolio evidence</li>
                 <li>Link capstone projects to verified skills</li>
-                <li>Permanent decentralized on-chain issuance</li>
-                <li>On-chain cryptographic revocation</li>
+                <li>Permanent tamper-proof digital issuance</li>
+                <li>Instant official revocation control</li>
               </ul>
             </div>
             <Link to="/signup" className="btn-secondary triad-btn issuer">
@@ -229,12 +229,12 @@ export function LandingPage() {
               </div>
               <h3 className="triad-title">Employer Verification Hub</h3>
               <p className="triad-card-desc">
-                Zero-gas, zero-wallet verification. Scan candidate QR codes, inspect underlying GitHub repositories, and verify active validity directly from blockchain RPC.
+                100% free verification without accounts. Scan candidate QR codes, inspect underlying project work, and verify active validity in the official registry.
               </p>
               <ul className="triad-card-list">
-                <li>Zero gas fees & no wallet needed</li>
+                <li>100% free & no account needed</li>
                 <li>Inspect code behind claimed skills</li>
-                <li>Sub-second cryptographic verification</li>
+                <li>Instant digital verification</li>
                 <li>Instant detection of revoked credentials</li>
               </ul>
             </div>
@@ -265,10 +265,10 @@ export function LandingPage() {
               THE SKILLPASSPORT SOLUTION
             </span>
             <h3 className="problem-solution-title">
-              Portable Wallet-Based Passport on Monad
+              Portable Verified Digital Passport
             </h3>
             <p className="problem-solution-desc">
-              SkillPassport gives students a portable wallet-based achievement passport. Trusted issuers issue credentials to the student's wallet on Monad. Blockchain provides tamper-evident proof that an authorized issuer issued a particular credential to the student's wallet and that it has not been revoked.
+              SkillPassport gives students a portable digital achievement passport. Trusted universities and organizations certify credentials directly to the student's profile. The network provides tamper-evident proof that an authorized issuer issued the credential and that it remains active.
             </p>
           </div>
         </div>
@@ -279,10 +279,10 @@ export function LandingPage() {
         <div className="section-meta-wrap">
           <span className="section-label">CORE PRODUCT FLOW</span>
           <h2 className="section-title">
-            How SkillPassport Works on Monad
+            How SkillPassport Works
           </h2>
           <p className="section-desc">
-            A tamper-evident pipeline connecting student wallets, recognized issuers, and public verification.
+            A tamper-evident pipeline connecting students, recognized issuers, and public employer verification.
           </p>
         </div>
 
@@ -296,7 +296,7 @@ export function LandingPage() {
             </div>
             <h3 className="flow-step-title">Issuer Issues Credential</h3>
             <p className="flow-step-desc">
-              Authorized issuer connects wallet, inputs student wallet address & achievement, and records the credential on Monad.
+              Authorized issuer verifies student achievement and records the credential in the official registry.
             </p>
           </div>
 
@@ -309,7 +309,7 @@ export function LandingPage() {
             </div>
             <h3 className="flow-step-title">Student Owns Passport</h3>
             <p className="flow-step-desc">
-              The credential becomes part of the student's portable SkillPassport bound to their self-custody wallet.
+              The credential becomes part of the student's portable SkillPassport bound permanently to their verified profile.
             </p>
           </div>
 
@@ -333,9 +333,9 @@ export function LandingPage() {
                 <ShieldCheck size={18} />
               </div>
             </div>
-            <h3 className="flow-step-title">Public Monad Verification</h3>
+            <h3 className="flow-step-title">Instant Public Verification</h3>
             <p className="flow-step-desc">
-              Employer verifies credential directly against Monad smart contract without needing a wallet: VALID or REVOKED.
+              Employer verifies credential directly against the official registry without needing an account: VALID or REVOKED.
             </p>
           </div>
         </div>
@@ -349,7 +349,7 @@ export function LandingPage() {
             Inspect Sample CredoVaults
           </h2>
           <p className="section-desc">
-            Explore authentic digital CredoVaults anchored on the EVM blockchain. Click any sample to inspect its live credential vault.
+            Explore authentic digital CredoVaults. Click any sample to inspect its live credentials.
           </p>
         </div>
 
@@ -421,11 +421,11 @@ export function LandingPage() {
             </div>
             <h3 className="category-title">Engineering Mastery</h3>
             <p className="category-desc">
-              Verified skills in Web Development, Python, Smart Contracts, Distributed Systems, and Modern Frameworks.
+              Verified skills in Web Development, Python, Cloud Systems, Distributed Systems, and Modern Frameworks.
             </p>
             <div className="category-examples">
-              <span>Solidity Core</span>
-              <span>EVM Architecture</span>
+              <span>Cloud Systems</span>
+              <span>System Architecture</span>
               <span>React & Node</span>
             </div>
           </div>
@@ -436,12 +436,12 @@ export function LandingPage() {
             </div>
             <h3 className="category-title">Security & Auditing</h3>
             <p className="category-desc">
-              Formal verification protocols, smart contract audit certifications, cryptography proficiencies, and vulnerability research.
+              Institutional security verifications, software quality certifications, application security proficiencies, and vulnerability research.
             </p>
             <div className="category-examples">
-              <span>Smart Contract Audit</span>
-              <span>Cryptography</span>
-              <span>Zero-Knowledge</span>
+              <span>Application Security</span>
+              <span>Code Review</span>
+              <span>System Compliance</span>
             </div>
           </div>
 
@@ -480,7 +480,7 @@ export function LandingPage() {
             <ul className="triad-list">
               <li>
                 <CheckCircle2 size={14} color="#f26c36" />
-                <span>100% self-custody in your personal Web3 wallet.</span>
+                <span>Permanent ownership of your digital profile.</span>
               </li>
               <li>
                 <CheckCircle2 size={14} color="#f26c36" />
@@ -488,7 +488,7 @@ export function LandingPage() {
               </li>
               <li>
                 <CheckCircle2 size={14} color="#f26c36" />
-                <span>One verifiable Vault link & QR key for your entire career.</span>
+                <span>One verifiable link & QR key for your entire career.</span>
               </li>
             </ul>
           </div>
@@ -501,7 +501,7 @@ export function LandingPage() {
             <ul className="triad-list">
               <li>
                 <CheckCircle2 size={14} color="#f26c36" />
-                <span>Role-Based Access Control (RBAC) smart contracts.</span>
+                <span>Authorized institutional issuance standards.</span>
               </li>
               <li>
                 <CheckCircle2 size={14} color="#f26c36" />
@@ -509,7 +509,7 @@ export function LandingPage() {
               </li>
               <li>
                 <CheckCircle2 size={14} color="#f26c36" />
-                <span>Automated on-chain issuance with transparent revocation.</span>
+                <span>Automated official issuance with transparent revocation.</span>
               </li>
             </ul>
           </div>
@@ -522,11 +522,11 @@ export function LandingPage() {
             <ul className="triad-list">
               <li>
                 <CheckCircle2 size={14} color="#f26c36" />
-                <span>Zero-fraud guarantee through cryptographic consensus.</span>
+                <span>Zero-fraud guarantee through official institutional verification.</span>
               </li>
               <li>
                 <CheckCircle2 size={14} color="#f26c36" />
-                <span>Sub-second instant background checks without agency fees.</span>
+                <span>Instant digital background checks without agency fees.</span>
               </li>
               <li>
                 <CheckCircle2 size={14} color="#f26c36" />
@@ -547,15 +547,15 @@ export function LandingPage() {
                 <Award size={18} />
               </div>
               <div>
-                <h4 className="search-box-title">Inspect Sovereign CredoVault</h4>
-                <p className="search-box-sub">Enter any candidate wallet address to view their credential vault</p>
+                <h4 className="search-box-title">Inspect Student Career Passport</h4>
+                <p className="search-box-sub">Enter candidate address or ID to view their passport</p>
               </div>
             </div>
 
             <form onSubmit={handleVaultSearch} className="search-form">
               <input
                 type="text"
-                placeholder="Candidate wallet address (0x...)"
+                placeholder="Candidate address (0x...)"
                 value={vaultAddress}
                 onChange={(e) => setVaultAddress(e.target.value)}
                 className="search-input"
@@ -581,22 +581,22 @@ export function LandingPage() {
             </form>
           </div>
 
-          {/* Credential Hash Verification */}
+          {/* Credential ID Verification */}
           <div className="search-box">
             <div className="search-box-header">
               <div className="search-box-icon">
                 <ShieldCheck size={18} />
               </div>
               <div>
-                <h4 className="search-box-title">Verify Credential Hash</h4>
-                <p className="search-box-sub">Verify a specific credential hash against EVM blockchain consensus</p>
+                <h4 className="search-box-title">Verify Credential ID</h4>
+                <p className="search-box-sub">Verify a specific credential ID against the official registry</p>
               </div>
             </div>
 
             <form onSubmit={handleVerifySearch} className="search-form">
               <input
                 type="text"
-                placeholder="Credential Hash ID (0x...)"
+                placeholder="Credential ID (0x...)"
                 value={verifyId}
                 onChange={(e) => setVerifyId(e.target.value)}
                 className="search-input"

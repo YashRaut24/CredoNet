@@ -215,6 +215,26 @@ input, textarea, select {
   background: var(--accent-primary);
 }
 
+.trust-badge.project-badge {
+  background: rgba(56, 189, 248, 0.1);
+  border-color: rgba(56, 189, 248, 0.25);
+  color: #38bdf8;
+}
+
+.trust-badge-dot.project-dot {
+  background: #38bdf8;
+}
+
+.trust-badge.certificate-badge {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: rgba(16, 185, 129, 0.25);
+  color: #10b981;
+}
+
+.trust-badge-dot.certificate-dot {
+  background: #10b981;
+}
+
 /* Institutional Security Badge Strip */
 .trust-strip {
   display: flex;

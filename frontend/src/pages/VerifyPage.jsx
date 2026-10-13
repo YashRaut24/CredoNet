@@ -19,7 +19,8 @@ import {
   FileText,
   Printer,
   Clock,
-  AlertTriangle
+  AlertTriangle,
+  FileCheck
 } from "lucide-react";
 import { useWeb3 } from "../context/Web3Context";
 import { CONTRACT_ADDRESS, MONAD_TESTNET_CONFIG } from "../config/contractConfig";
@@ -108,9 +109,9 @@ export function VerifyPage() {
       <div className="container verify-empty-container">
         <div className="connect-prompt-card">
           <XCircle size={40} color="#f43f5e" />
-          <h3 className="connect-title">Invalid Credential Hash</h3>
+          <h3 className="connect-title">Invalid Credential ID</h3>
           <p className="connect-desc">
-            A valid credential ID must be a 32-byte hexadecimal string (66 characters starting with 0x...).
+            A valid credential ID must start with 0x followed by 64 characters.
           </p>
           <Link to="/verify/search" className="btn-primary">
             <Search size={14} />
@@ -137,9 +138,9 @@ export function VerifyPage() {
               <ShieldCheck size={26} className="spin" />
             </div>
             <div>
-              <h3 className="verify-loading-title">Validating Cryptographic Consensus</h3>
+              <h3 className="verify-loading-title">Verifying Official Record</h3>
               <p className="verify-loading-desc">
-                Reading state directly from EVM blockchain contract consensus (0xc6Bf...8e6f)...
+                Checking tamper-proof digital registry for authentic credentials...
               </p>
             </div>
             <div className="verify-loading-bar-wrap">
@@ -153,17 +154,24 @@ export function VerifyPage() {
               const isProject = credential.skill?.startsWith("[Project]") || 
                                 credential.skill?.toLowerCase().startsWith("project:") || 
                                 metadata?.type === "project";
+              const isCertificate = credential.skill?.startsWith("[Certificate]") || 
+                                    credential.skill?.toLowerCase().startsWith("certificate:") || 
+                                    metadata?.type === "certificate";
               const displayTitle = credential.skill
-                ? credential.skill.replace(/^\[Project\]\s*/i, "").replace(/^project:\s*/i, "")
+                ? credential.skill.replace(/^\[(Project|Certificate)\]\s*/i, "").replace(/^(project|certificate):\s*/i, "")
                 : "Untitled Record";
 
               return (
                 <>
                   <div className="verify-header">
                     <div className="verify-skill-wrap">
-                      <span className={`trust-badge ${isProject ? "project-badge" : ""}`}>
-                        <span className={`trust-badge-dot ${isProject ? "project-dot" : ""}`} />
-                        {isProject ? "Verified Capstone Project Audit" : "Verified Skill Competency Audit"}
+                      <span className={`trust-badge ${isProject ? "project-badge" : isCertificate ? "certificate-badge" : ""}`}>
+                        <span className={`trust-badge-dot ${isProject ? "project-dot" : isCertificate ? "certificate-dot" : ""}`} />
+                        {isProject 
+                          ? "Verified Capstone Project Audit" 
+                          : isCertificate 
+                          ? "Official Academic Degree / Certificate Audit" 
+                          : "Verified Skill Competency Audit"}
                       </span>
                       <h2 className="verify-skill-title">{displayTitle}</h2>
                     </div>
@@ -181,7 +189,7 @@ export function VerifyPage() {
                                 <span>✕ REVOKED</span>
                               </span>
                               <span className="verify-status-sub revoked">
-                                Revoked on Monad blockchain
+                                Revoked by authorized issuer
                               </span>
                             </div>
                           );
@@ -205,7 +213,7 @@ export function VerifyPage() {
                                 <span>✓ VALID</span>
                               </span>
                               <span className="verify-status-sub valid">
-                                Verified from Monad blockchain
+                                Verified Authentic & Active
                               </span>
                             </div>
                           );
@@ -290,8 +298,67 @@ export function VerifyPage() {
                     </div>
                   )}
 
+                  {/* If Certificate: Official Academic Degree / Certificate Panel */}
+                  {isCertificate && (
+                    <div className="verify-certificate-artifacts">
+                      <div className="verify-certificate-header">
+                        <span className="verify-certificate-title">
+                          <FileCheck size={14} color="#10b981" />
+                          OFFICIAL ACADEMIC DEGREE & CERTIFICATE AUDIT
+                        </span>
+                        <span className="verify-certificate-tag">
+                          Institutional Provenance
+                        </span>
+                      </div>
+
+                      <div className="verify-cert-details-grid">
+                        {metadata?.issuingOrg && (
+                          <div className="verify-cert-field">
+                            <span className="verify-section-label">ISSUING UNIVERSITY / INSTITUTION</span>
+                            <span className="verify-cert-value">{metadata.issuingOrg}</span>
+                          </div>
+                        )}
+                        {metadata?.certificateTitle && (
+                          <div className="verify-cert-field">
+                            <span className="verify-section-label">DEGREE PROGRAM</span>
+                            <span className="verify-cert-value">{metadata.certificateTitle}</span>
+                          </div>
+                        )}
+                        {metadata?.certificateGrade && (
+                          <div className="verify-cert-field">
+                            <span className="verify-section-label">HONORS / CLASSIFICATION</span>
+                            <span className="verify-cert-value">{metadata.certificateGrade}</span>
+                          </div>
+                        )}
+                        {metadata?.certificateFileName && (
+                          <div className="verify-cert-field">
+                            <span className="verify-section-label">ATTACHED DOCUMENT</span>
+                            <span className="verify-cert-value">
+                              {metadata.certificateFileName} {metadata.certificateFileSize ? `(${metadata.certificateFileSize})` : ""}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      {metadata?.certificateFileHash && (
+                        <div className="verify-cert-hash-box">
+                          <span className="verify-section-label">DOCUMENT DIGITAL SIGNATURE / DIGEST</span>
+                          <span className="verify-cert-hash-value">{metadata.certificateFileHash}</span>
+                          <span className="verify-cert-hash-note">✓ Verified authentic match in official registry</span>
+                        </div>
+                      )}
+
+                      {metadata?.description && (
+                        <div>
+                          <span className="verify-section-label">ACCREDITATION REMARKS</span>
+                          <p className="verify-notes-text">{metadata.description}</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                   {/* If Skill: Skill Details Panel */}
-                  {!isProject && metadata && (
+                  {!isProject && !isCertificate && metadata && (
                     <div className="verify-skill-details">
                       <div className="verify-skill-details-header">
                         <span className="verify-assessment-title">
@@ -380,7 +447,7 @@ export function VerifyPage() {
 
               <div className="audit-row">
                 <span className="audit-label">
-                  <ShieldCheck size={14} color="var(--accent-primary)" /> Smart Contract
+                  <ShieldCheck size={14} color="var(--accent-primary)" /> Official Registry
                 </span>
                 <a
                   href={`${MONAD_TESTNET_CONFIG.explorerUrl}/address/${CONTRACT_ADDRESS}`}
@@ -407,7 +474,7 @@ export function VerifyPage() {
               </button>
 
               <Link to={`/vault/${credential.student}`} className="btn-primary">
-                <span>View Sovereign CredoVault</span>
+                <span>View Student Passport</span>
                 <ExternalLink size={14} />
               </Link>
             </div>
@@ -417,7 +484,7 @@ export function VerifyPage() {
             <XCircle size={36} color="#f43f5e" className="verify-not-found-icon" />
             <h3 className="verify-not-found-title">Credential Not Found</h3>
             <p className="verify-not-found-desc">
-              No record was found on Monad EVM for this credential ID.
+              No record was found in the official registry for this credential ID.
             </p>
           </div>
         )}
@@ -427,7 +494,7 @@ export function VerifyPage() {
         <QRCodeModal
           url={pageUrl}
           title={`Verify: ${credential?.skill}`}
-          description="Point any smartphone camera to check mathematical validity on Monad."
+          description="Scan with any smartphone camera to confirm real-time validity instantly."
           onClose={() => setShowQR(false)}
         />
       )}
@@ -442,10 +509,10 @@ export function VerifyPage() {
             <div className="audit-dossier-header">
               <div>
                 <span className="audit-dossier-eyebrow">
-                  Official Audit Dossier • ISO/IEC 27001 & SOC-2 Background Proof
+                  Official Verification Dossier • Authentic Background Proof
                 </span>
                 <h3 className="audit-dossier-title">
-                  Cryptographic Background Verification Certificate
+                  Official Background Verification Certificate
                 </h3>
               </div>
               <button
@@ -462,7 +529,7 @@ export function VerifyPage() {
                 <div>
                   <span className="audit-pass-status">AUTHENTICITY AUDIT RESULT: PASSED</span>
                   <span className="audit-pass-sub">
-                    Verified directly against Monad EVM contract consensus.
+                    Verified directly against the tamper-proof official registry.
                   </span>
                 </div>
                 <CheckCircle2 size={24} color="#10b981" />
@@ -476,7 +543,7 @@ export function VerifyPage() {
                 <div className="audit-meta-cell">
                   <span className="audit-meta-cell-label">CREDENTIAL STATUS</span>
                   <span className={`audit-meta-cell-value ${credential.revoked ? "status-revoked" : isValid ? "status-valid" : "status-invalid"}`}>
-                    {credential.revoked ? "REVOKED" : isValid ? "MATHEMATICALLY VALID" : "INVALID"}
+                    {credential.revoked ? "REVOKED" : isValid ? "AUTHENTIC & ACTIVE" : "INVALID"}
                   </span>
                 </div>
               </div>
@@ -484,29 +551,29 @@ export function VerifyPage() {
               <div className="audit-dossier-fields">
                 <div><span className="text-muted">Credential ID: </span><span className="text-highlight">{credential.credentialId}</span></div>
                 <div><span className="text-muted">Certified Competency: </span><span className="text-primary">{credential.skill}</span></div>
-                <div><span className="text-muted">Student Sovereign Wallet: </span><span className="text-mono">{credential.student}</span></div>
+                <div><span className="text-muted">Student Account: </span><span className="text-mono">{credential.student}</span></div>
                 <div><span className="text-muted">Accredited Issuer: </span><span className="text-mono">{credential.issuer}</span></div>
-                <div><span className="text-muted">Contract Address: </span><span className="text-mono">{CONTRACT_ADDRESS}</span></div>
-                <div><span className="text-muted">Metadata Hash: </span><span className="text-mono">{credential.metadataHash}</span></div>
-                <div><span className="text-muted">Blockchain Network: </span><span>Monad Testnet (Chain ID 10143)</span></div>
+                <div><span className="text-muted">Registry Contract: </span><span className="text-mono">{CONTRACT_ADDRESS}</span></div>
+                <div><span className="text-muted">Record Checksum: </span><span className="text-mono">{credential.metadataHash}</span></div>
+                <div><span className="text-muted">Verification Network: </span><span>CredoNet Verified Network</span></div>
               </div>
 
               <div>
                 <span className="audit-dossier-eyebrow">
-                  Audit Compliance Checklist
+                  Verification Checklist
                 </span>
                 <div className="audit-dossier-checklist">
                   <div className="audit-dossier-check-item">
-                    <CheckCircle2 size={13} /> <span>Soulbound Non-Transferability Check: Immutable recipient bound (ERC-5192)</span>
+                    <CheckCircle2 size={13} /> <span>Permanent Identity Binding: Bound permanently to student and non-transferable</span>
                   </div>
                   <div className="audit-dossier-check-item">
-                    <CheckCircle2 size={13} /> <span>Issuer Authority Signature: Verified on-chain authorized authority list</span>
+                    <CheckCircle2 size={13} /> <span>Authorized Issuer Signature: Verified against approved institutional list</span>
                   </div>
                   <div className="audit-dossier-check-item">
-                    <CheckCircle2 size={13} /> <span>Cryptographic Non-Repudiation: Monad transaction ledger immutable log</span>
+                    <CheckCircle2 size={13} /> <span>Tamper-Proof Audit Trail: Permanent digital record in official registry</span>
                   </div>
                   <div className="audit-dossier-check-item">
-                    <CheckCircle2 size={13} /> <span>Revocation Lifecycle: Verified not in revoked state on block consensus</span>
+                    <CheckCircle2 size={13} /> <span>Revocation Lifecycle: Verified authentic and not revoked</span>
                   </div>
                 </div>
               </div>

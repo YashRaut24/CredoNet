@@ -16,7 +16,9 @@ import {
   Building2,
   GitBranch,
   Lock,
-  ArrowRight
+  ArrowRight,
+  GraduationCap,
+  FileCheck
 } from "lucide-react";
 import { useRole } from "../context/RoleContext";
 import "./TalentDirectoryPage.css";
@@ -62,27 +64,27 @@ export function TalentDirectoryPage() {
       address: "0x71C92a8C943B8d62283e1c66289b5B38B71C4e92",
       college: "Sardar Patel Institute of Technology",
       degree: "B.E. Computer Engineering (2027)",
-      role: "Full-Stack & Distributed Systems Engineer",
-      bio: "Focuses on Solidity smart contracts, EVM consensus optimization, and sovereign decentralized credential ledgers.",
-      skills: ["Solidity & Smart Contracts", "Distributed Systems", "React.js", "Full Stack Development", "Cryptography"],
-      evidenceProject: "CredoNet Sovereign Protocol",
+      role: "Full-Stack & Cloud Systems Engineer",
+      bio: "Focuses on modern web architectures, distributed systems optimization, and verified credential applications.",
+      skills: ["System Architecture", "Distributed Systems", "React.js", "Full Stack Development", "API Security"],
+      evidenceProject: "CredoNet Skill Verification Platform",
       githubUrl: "https://github.com/alexjohn/credonet",
       verifiedCount: 2,
-      issuer: "XYZ Web3 Academy & Partner Universities"
+      issuer: "Sardar Patel Institute & Partner Universities"
     },
     {
       id: "cand-2",
       name: "XYZ Certified Candidate",
       address: "0x21626cDb67f0114D0F6a7dBC1140B7C0A9101864",
-      college: "XYZ Web3 Academy",
-      degree: "Advanced Blockchain & Mobile Certification",
-      role: "EVM Mobile & Smart Contract Engineer",
-      bio: "Expertise in Web3 mobile dApps, Android integration with EVM JSON-RPC nodes, and gas-efficient Solidity state architecture.",
-      skills: ["Android Developer", "Solidity & Smart Contracts", "EVM Consensus", "Web3 Architecture"],
-      evidenceProject: "CredoNet Mobile Vault Client",
-      githubUrl: "https://github.com/xyz-academy/evm-android",
+      college: "Sardar Patel Institute of Technology",
+      degree: "Advanced Mobile Application Certification",
+      role: "Mobile Application & Frontend Engineer",
+      bio: "Expertise in native Android development, API integrations, and intuitive responsive user interfaces.",
+      skills: ["Android Developer", "Mobile UI/UX", "API Integration", "Kotlin"],
+      evidenceProject: "CredoNet Mobile Portfolio Client",
+      githubUrl: "https://github.com/xyz-academy/mobile-client",
       verifiedCount: 2,
-      issuer: "XYZ Web3 Academy"
+      issuer: "Sardar Patel Institute of Technology"
     },
     {
       id: "cand-3",
@@ -90,41 +92,41 @@ export function TalentDirectoryPage() {
       address: "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
       college: "Indian Institute of Technology (IIT)",
       degree: "B.Tech Computer Science (2026)",
-      role: "Backend & Web3 Distributed Systems Architect",
-      bio: "High-throughput backend systems engineer benchmarking EVM JSON-RPC node consensus latency and real-time state indexing.",
-      skills: ["Go", "Node.js", "EVM Optimization", "PostgreSQL", "Distributed Systems"],
-      evidenceProject: "Monad Consensus Latency Benchmark",
-      githubUrl: "https://github.com/priyasharma/monad-benchmark",
+      role: "Backend & Cloud Systems Architect",
+      bio: "High-throughput backend systems engineer benchmarking cloud services latency and real-time data indexing.",
+      skills: ["Go", "Node.js", "System Optimization", "PostgreSQL", "Cloud Computing"],
+      evidenceProject: "Cloud Network Latency Benchmark",
+      githubUrl: "https://github.com/priyasharma/network-benchmark",
       verifiedCount: 3,
-      issuer: "IIT Cryptography Lab"
+      issuer: "IIT Technical Labs"
     },
     {
       id: "cand-4",
       name: "Marcus Vance",
       address: "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
-      college: "Stanford Blockchain Research Center",
-      degree: "M.S. Applied Cryptography",
-      role: "Zero-Knowledge & Cryptography Specialist",
-      bio: "Researching zero-knowledge proofs, Circom circuit verification, and bias-free blind hiring commitments.",
-      skills: ["Circom", "ZK-SNARKs", "Rust", "Ethereum L1/L2", "Zero-Knowledge"],
-      evidenceProject: "ZK Blind Hiring Commitment Verifier",
-      githubUrl: "https://github.com/marcusvance/zk-credentials",
+      college: "Stanford Computer Science Department",
+      degree: "M.S. Computer Science",
+      role: "Privacy & Cloud Security Specialist",
+      bio: "Researching privacy-preserving algorithms, secure data verification, and bias-free hiring workflows.",
+      skills: ["Cloud Security", "Data Privacy", "Rust", "API Security", "Python"],
+      evidenceProject: "Privacy-Preserving Hiring Verifier",
+      githubUrl: "https://github.com/marcusvance/privacy-verifier",
       verifiedCount: 4,
-      issuer: "Stanford Blockchain Initiative"
+      issuer: "Stanford Engineering Initiative"
     },
     {
       id: "cand-5",
       name: "Elena Kostas",
       address: "0x3F8a90Bc18A24e9271C92a8C943B8d62283e1c66",
-      college: "MIT Cryptoeconomics Lab",
+      college: "MIT Distributed Systems Lab",
       degree: "B.S. Cyber Security & Distributed Computing",
-      role: "Smart Contract Security Auditor",
-      bio: "Specializing in reentrancy vulnerability mitigation, EVM bytecode inspection, and formal smart contract verification.",
-      skills: ["Smart Contract Security", "Solidity & Smart Contracts", "EVM Bytecode", "DeFi Security"],
-      evidenceProject: "Reentrancy Vulnerability Scanner",
-      githubUrl: "https://github.com/elenak/reentrancy-scanner",
+      role: "Software Security & Quality Auditor",
+      bio: "Specializing in software vulnerability mitigation, automated code analysis, and application security.",
+      skills: ["Application Security", "Code Auditing", "Cloud Architecture", "DevOps"],
+      evidenceProject: "Automated Security Code Scanner",
+      githubUrl: "https://github.com/elenak/security-scanner",
       verifiedCount: 3,
-      issuer: "MIT Web3 Security Group"
+      issuer: "MIT Computer Science Group"
     }
   ];
 
@@ -150,10 +152,25 @@ export function TalentDirectoryPage() {
   const filteredCandidates = candidateDirectory
     .filter((candidate) => {
       // 1. Category Filter
-      const matchesCategory =
-        selectedCategory === "all" ||
-        candidate.skills.some((s) => s.toLowerCase().includes(selectedCategory.toLowerCase())) ||
-        candidate.role.toLowerCase().includes(selectedCategory.toLowerCase());
+      let matchesCategory = false;
+      if (selectedCategory === "all") {
+        matchesCategory = true;
+      } else if (selectedCategory === "certificate") {
+        matchesCategory = Boolean(
+          (candidate.degree && (
+            candidate.degree.toLowerCase().includes("b.e") ||
+            candidate.degree.toLowerCase().includes("b.tech") ||
+            candidate.degree.toLowerCase().includes("m.s") ||
+            candidate.degree.toLowerCase().includes("degree") ||
+            candidate.degree.toLowerCase().includes("certification")
+          )) ||
+          candidate.skills.some((s) => s.toLowerCase().includes("cert") || s.toLowerCase().includes("degree"))
+        );
+      } else {
+        matchesCategory =
+          candidate.skills.some((s) => s.toLowerCase().includes(selectedCategory.toLowerCase())) ||
+          candidate.role.toLowerCase().includes(selectedCategory.toLowerCase());
+      }
 
       // 2. Minimum Verified Count Filter
       const matchesMin =
@@ -192,15 +209,15 @@ export function TalentDirectoryPage() {
           </span>
           <span className="talent-verified-tag">
             <ShieldCheck size={13} />
-            <span>100% On-Chain Verified Credentials</span>
+            <span>100% Verified Academic Credentials</span>
           </span>
         </div>
 
         <div className="talent-title-area">
           <h1>Pre-Verified Engineering Talent Directory</h1>
           <p>
-            Source verified engineering candidates with cryptographic credentials anchored on EVM smart contracts. 
-            Every listed skill is mathematically backed by authorized institutional signatures.
+            Source verified engineering candidates with authentic credentials certified in the official institutional registry. 
+            Every listed skill is officially backed by accredited university signatures.
           </p>
         </div>
 
@@ -222,7 +239,7 @@ export function TalentDirectoryPage() {
             </div>
             <div>
               <div className="talent-stat-num">14+ Badges</div>
-              <div className="talent-stat-lbl">Cryptographically Audited</div>
+              <div className="talent-stat-lbl">Officially Audited</div>
             </div>
           </div>
 
@@ -289,12 +306,13 @@ export function TalentDirectoryPage() {
           <span className="talent-category-label">Specialization:</span>
           {[
             { id: "all", label: "All Engineers" },
-            { id: "solidity", label: "Solidity & Smart Contracts" },
+            { id: "certificate", label: "Degrees & Certificates" },
+            { id: "full stack", label: "Full Stack Development" },
             { id: "android", label: "Android & Mobile" },
-            { id: "security", label: "Security & Auditing" },
+            { id: "security", label: "Cloud & App Security" },
             { id: "distributed", label: "Distributed Systems" },
-            { id: "zero-knowledge", label: "Zero-Knowledge" },
-            { id: "full stack", label: "Full Stack Web3" }
+            { id: "backend", label: "Backend Engineering" },
+            { id: "react", label: "Frontend & UI" }
           ].map((cat) => (
             <button
               key={cat.id}
@@ -315,7 +333,7 @@ export function TalentDirectoryPage() {
             Verified Candidates ({filteredCandidates.length})
           </h2>
           <span className="talent-section-sub">
-            Zero-Gas Public Verification Available
+            100% Free Instant Verification
           </span>
         </div>
 
@@ -333,6 +351,12 @@ export function TalentDirectoryPage() {
                       <h3 className="talent-card-name">{candidate.name}</h3>
                       <span className="talent-card-college">{candidate.college}</span>
                       <span className="talent-card-role">{candidate.role}</span>
+                      {candidate.degree && (
+                        <span className="talent-card-degree-badge">
+                          <GraduationCap size={11} color="#10b981" />
+                          <span>{candidate.degree}</span>
+                        </span>
+                      )}
                     </div>
                   </div>
 

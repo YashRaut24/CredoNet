@@ -40,6 +40,7 @@ export function PassportPage() {
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
   const [showQR, setShowQR] = useState(false);
+  const [filterType, setFilterType] = useState("all");
 
   const isValidAddress = ethers.isAddress(address || "");
 
@@ -92,6 +93,25 @@ export function PassportPage() {
   };
 
   const validCreds = credentials.filter((c) => !c.revoked);
+  const certCreds = validCreds.filter(
+    (c) => c.skill?.startsWith("[Certificate]") || c.skill?.toLowerCase().startsWith("certificate:")
+  );
+  const projectCreds = validCreds.filter(
+    (c) => c.skill?.startsWith("[Project]") || c.skill?.toLowerCase().startsWith("project:")
+  );
+  const skillCreds = validCreds.filter(
+    (c) => !c.skill?.startsWith("[Certificate]") && !c.skill?.startsWith("[Project]") && !c.skill?.toLowerCase().startsWith("certificate:") && !c.skill?.toLowerCase().startsWith("project:")
+  );
+
+  const displayedCreds = credentials.filter((c) => {
+    const isCert = c.skill?.startsWith("[Certificate]") || c.skill?.toLowerCase().startsWith("certificate:");
+    const isProj = c.skill?.startsWith("[Project]") || c.skill?.toLowerCase().startsWith("project:");
+    if (filterType === "skills") return !isCert && !isProj;
+    if (filterType === "projects") return isProj;
+    if (filterType === "certificates") return isCert;
+    return true;
+  });
+
   const achievements = calculateAchievements({ credentials, projects, endorsements });
   const evidenceSkillMap = buildEvidenceSkillMap({ credentials, projects, endorsements });
   const verifiedSkills = evidenceSkillMap.filter(s => s.isVerified);
@@ -104,7 +124,7 @@ export function PassportPage() {
           <XCircle size={40} color="#f43f5e" />
           <h3 className="connect-title">Invalid Wallet Address</h3>
           <p className="connect-desc">
-            The requested address "{address}" is not a valid 42-character EVM hexadecimal address.
+            The requested address or ID "{address}" is not a valid account format.
           </p>
           <Link to="/" className="btn-secondary">
             <ArrowLeft size={14} />
@@ -138,7 +158,7 @@ export function PassportPage() {
           <div className="passport-hero-info">
             <span className="trust-badge">
               <span className="trust-badge-dot" />
-              Verified SkillPassport • Monad Testnet
+              Verified SkillPassport • Official Registry
             </span>
             <h2 className="passport-title">{profile?.name || "Student Career Passport"}</h2>
             
@@ -154,6 +174,14 @@ export function PassportPage() {
                 <>
                   <span>•</span>
                   <span>Class of {profile.graduationYear}</span>
+                </>
+              )}
+              {certCreds.length > 0 && (
+                <>
+                  <span>•</span>
+                  <span className="passport-cert-highlight">
+                    ✓ {certCreds.length} Official Degree / Certificate{certCreds.length > 1 ? "s" : ""}
+                  </span>
                 </>
               )}
             </div>
@@ -204,7 +232,7 @@ export function PassportPage() {
 
       {/* Trust Notice */}
       <div className="passport-guarantee-banner">
-        <strong>Employer Verification Guarantee:</strong> Official credentials shown in this passport are cryptographically signed by authorized issuers and verified directly against Monad smart contracts. Students cannot self-verify skills or projects.
+        <strong>Employer Verification Guarantee:</strong> Official credentials shown in this passport are digitally certified by authorized institutions and verified directly against the tamper-proof registry. Students cannot self-verify skills or projects.
       </div>
 
       {/* 3. VERIFIED SKILLS SECTION */}
@@ -225,7 +253,7 @@ export function PassportPage() {
           </div>
         ) : (
           <p className="passport-empty-msg">
-            No verified skills certified on Monad yet for this wallet.
+            No verified skills certified yet for this profile.
           </p>
         )}
       </div>
@@ -295,12 +323,30 @@ export function PassportPage() {
       <div className="passport-section">
         <div className="passport-section-header">
           <div>
-            <h3 className="passport-section-title">On-Chain Monad Credentials</h3>
+            <h3 className="passport-section-title">Official Verified Credentials</h3>
             <p className="app-section-desc">
-              Independently verifiable against Monad smart contract without needing a wallet.
+              Independently verifiable against the official registry without needing an account.
             </p>
           </div>
-          <span className="app-badge-tag">{validCreds.length} Valid on Monad</span>
+          <span className="app-badge-tag">{validCreds.length} Authentic & Active</span>
+        </div>
+
+        <div className="passport-filter-shelf">
+          {[
+            { id: "all", label: `All (${credentials.length})` },
+            { id: "skills", label: `Skills (${skillCreds.length})` },
+            { id: "projects", label: `Projects (${projectCreds.length})` },
+            { id: "certificates", label: `Degrees & Certificates (${certCreds.length})` },
+          ].map((f) => (
+            <button
+              key={f.id}
+              type="button"
+              onClick={() => setFilterType(f.id)}
+              className={`passport-filter-pill ${filterType === f.id ? "active" : ""}`}
+            >
+              {f.label}
+            </button>
+          ))}
         </div>
 
         {loading ? (
@@ -313,18 +359,18 @@ export function PassportPage() {
               </div>
             ))}
           </div>
-        ) : credentials.length > 0 ? (
+        ) : displayedCreds.length > 0 ? (
           <div className="credentials-grid">
-            {credentials.map((cred) => (
+            {displayedCreds.map((cred) => (
               <CredentialCard key={cred.credentialId} credential={cred} />
             ))}
           </div>
         ) : (
           <div className="empty-credentials-box">
             <ShieldCheck size={28} color="var(--accent-primary)" />
-            <h4>No credentials issued to this wallet</h4>
+            <h4>No credentials found for this filter</h4>
             <p className="passport-empty-msg">
-              This wallet has not yet received verified credentials on Monad blockchain.
+              This profile has no credentials matching the selected filter in the verified registry.
             </p>
           </div>
         )}
@@ -389,7 +435,7 @@ export function PassportPage() {
         <QRCodeModal
           url={pageUrl}
           title={`SkillPassport: ${profile?.name || address.slice(0, 6)}`}
-          description={`Scan to inspect verified skills, projects, and Monad credentials bound to ${address.slice(0, 6)}...${address.slice(-4)} on Monad blockchain.`}
+          description={`Scan to inspect verified skills, projects, and authentic credentials issued to ${address.slice(0, 6)}...${address.slice(-4)}.`}
           onClose={() => setShowQR(false)}
         />
       )}

@@ -48,15 +48,14 @@ export function StudentHomePage() {
         const raw = await contract.getStudentCredentials(account);
         const parsed = (raw || []).map((c) => ({
           credentialId: c?.credentialId || "",
-          recipient: c?.recipient || "",
+          student: c?.student || "",
           issuer: c?.issuer || "",
-          title: c?.title || "",
-          category: c?.category || "",
-          skills: c?.skills || "",
-          issueDate: c?.issueDate ? Number(c.issueDate) : 0,
-          isRevoked: Boolean(c?.isRevoked),
+          skill: c?.skill || "",
+          metadataHash: c?.metadataHash || "",
+          issuedAt: c?.issuedAt ? c.issuedAt.toString() : "0",
+          revoked: Boolean(c?.revoked),
         }));
-        setCredentials(parsed.filter((c) => !c.isRevoked));
+        setCredentials(parsed.filter((c) => !c.revoked));
       } catch (err) {
         console.error("Failed to load on-chain credentials:", err);
       } finally {
@@ -65,6 +64,10 @@ export function StudentHomePage() {
     }
     fetchCreds();
   }, [account]);
+
+  const certCount = credentials.filter(
+    (c) => c.skill?.startsWith("[Certificate]") || c.skill?.toLowerCase().startsWith("certificate:")
+  ).length;
 
   const handleCopy = (text) => {
     navigator.clipboard.writeText(text);
@@ -110,13 +113,13 @@ export function StudentHomePage() {
               )}
             </div>
             <div className="wallet-strip-item">
-              <span className="strip-label">Contract:</span>
-              <span className="strip-value font-mono">0xc6Bf...8e6f</span>
+              <span className="strip-label">Registry:</span>
+              <span className="strip-value font-mono">Official Registry</span>
             </div>
             <div className="wallet-strip-item">
               <span className="strip-label">Network:</span>
               <span className="strip-value network-dot-wrap">
-                <span className="active-dot" /> EVM Testnet (10143)
+                <span className="active-dot" /> Verified Network
               </span>
             </div>
           </div>
@@ -159,7 +162,17 @@ export function StudentHomePage() {
           </div>
           <div className="stat-details">
             <span className="stat-number">{credentials.length}</span>
-            <span className="stat-label">On-Chain Credentials</span>
+            <span className="stat-label">Verified Credentials</span>
+          </div>
+        </div>
+
+        <div className="stat-card">
+          <div className="stat-icon-wrap green">
+            <ShieldCheck size={20} />
+          </div>
+          <div className="stat-details">
+            <span className="stat-number">{certCount}</span>
+            <span className="stat-label">Degrees & Certs</span>
           </div>
         </div>
 
@@ -182,16 +195,6 @@ export function StudentHomePage() {
             <span className="stat-label">Unlocked Achievements</span>
           </div>
         </div>
-
-        <div className="stat-card">
-          <div className="stat-icon-wrap green">
-            <ShieldCheck size={20} />
-          </div>
-          <div className="stat-details">
-            <span className="stat-number">100%</span>
-            <span className="stat-label">Cryptographic Validity</span>
-          </div>
-        </div>
       </section>
 
       {/* Core Student Action Hub */}
@@ -210,7 +213,7 @@ export function StudentHomePage() {
             </div>
             <h3 className="feature-card-title">My Career Passport</h3>
             <p className="feature-card-desc">
-              Manage your verified credentials, add projects with GitHub and live demo links, customize your academic bio, and build your cryptographic portfolio.
+              Manage your verified credentials, add projects with GitHub and live demo links, customize your academic bio, and build your verified professional portfolio.
             </p>
             <ul className="feature-points">
               <li><CheckCircle2 size={13} color="#10b981" /> Link GitHub repositories & technology stacks</li>
@@ -233,7 +236,7 @@ export function StudentHomePage() {
             </div>
             <h3 className="feature-card-title">Public Candidate Vault</h3>
             <p className="feature-card-desc">
-              Your public tamper-evident link designed for resumes, LinkedIn profiles, and job applications. Recruiters can verify your skills directly on-chain.
+              Your public tamper-evident link designed for resumes, LinkedIn profiles, and job applications. Recruiters can verify your skills directly in the official registry.
             </p>
             <ul className="feature-points">
               <li><CheckCircle2 size={13} color="#10b981" /> 1-Click public verification for recruiters</li>
@@ -260,7 +263,7 @@ export function StudentHomePage() {
             </p>
             <ul className="feature-points">
               <li><CheckCircle2 size={13} color="#10b981" /> Provide your wallet address to your university/issuer</li>
-              <li><CheckCircle2 size={13} color="#10b981" /> Issuer signs & anchors the credential on-chain</li>
+              <li><CheckCircle2 size={13} color="#10b981" /> Issuer signs & issues the authentic credential</li>
               <li><CheckCircle2 size={13} color="#10b981" /> Instantly appears in your passport</li>
             </ul>
             <button 

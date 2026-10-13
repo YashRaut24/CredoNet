@@ -20,7 +20,7 @@ export function QRCodeModal({ url, title, description, onClose }) {
         </button>
 
         <h3 className="qr-title">{title || "Verifiable QR Passport"}</h3>
-        <p className="qr-description">{description || "Scan with any smartphone camera to inspect mathematical validity on Monad."}</p>
+        <p className="qr-description">{description || "Scan with any smartphone camera to verify authenticity instantly."}</p>
 
         <div className="qr-box-wrap">
           <QRCodeSVG

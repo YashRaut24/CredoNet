@@ -35,14 +35,15 @@ export function IssuerHomePage() {
       try {
         setLoading(true);
         const contract = getReadOnlyContract();
+        const raw = await contract.getIssuerCredentials(account);
         const parsed = (raw || []).map((c) => ({
           credentialId: c?.credentialId || "",
-          recipient: c?.recipient || "",
-          title: c?.title || "",
-          category: c?.category || "",
-          skills: c?.skills || "",
-          issueDate: c?.issueDate ? Number(c.issueDate) : 0,
-          isRevoked: Boolean(c?.isRevoked),
+          student: c?.student || "",
+          issuer: c?.issuer || "",
+          skill: c?.skill || "",
+          metadataHash: c?.metadataHash || "",
+          issuedAt: c?.issuedAt ? c.issuedAt.toString() : "0",
+          revoked: Boolean(c?.revoked),
         }));
         setIssuedCreds(parsed);
       } catch (err) {
@@ -54,12 +55,15 @@ export function IssuerHomePage() {
     loadIssuerStats();
   }, [account]);
 
-  const activeCount = issuedCreds.filter((c) => !c?.isRevoked).length;
-  const revokedCount = issuedCreds.filter((c) => c?.isRevoked).length;
+  const activeCount = issuedCreds.filter((c) => !c?.revoked).length;
+  const revokedCount = issuedCreds.filter((c) => c?.revoked).length;
+  const certCount = issuedCreds.filter(
+    (c) => c.skill?.startsWith("[Certificate]") || c.skill?.toLowerCase().startsWith("certificate:")
+  ).length;
   const uniqueStudents = new Set(
     issuedCreds
-      .filter((c) => c && c.recipient && typeof c.recipient === "string")
-      .map((c) => c.recipient.toLowerCase())
+      .filter((c) => c && c.student && typeof c.student === "string")
+      .map((c) => c.student.toLowerCase())
   ).size;
 
   const handleCopy = (text) => {
@@ -102,7 +106,7 @@ export function IssuerHomePage() {
           </h1>
 
           <p className="issuer-hero-subtitle">
-            Accredited issuance terminal for universities, bootcamps, and certifying bodies. Mint tamper-evident credentials directly to recipient wallets with permanent cryptographic provenance.
+            Accredited issuance terminal for universities, bootcamps, and certifying bodies. Issue tamper-evident credentials directly to student profiles with verified institutional authenticity.
           </p>
 
           <div className="issuer-meta-strip">
@@ -118,9 +122,9 @@ export function IssuerHomePage() {
               </button>
             </div>
             <div className="meta-strip-item">
-              <span className="meta-label">Consensus:</span>
+              <span className="meta-label">Network:</span>
               <span className="meta-val network-dot-wrap">
-                <span className="active-dot" /> EVM Testnet (10143)
+                <span className="active-dot" /> Verified Network
               </span>
             </div>
           </div>
@@ -133,7 +137,7 @@ export function IssuerHomePage() {
             <span>Issuance Quick Action</span>
           </div>
           <p className="launch-card-text">
-            Ready to mint verified degrees, course badges, or skill certificates? Enter the student's Monad wallet address to anchor credentials on-chain.
+            Ready to issue verified degrees, course badges, or skill certificates? Enter the student's account address to record credentials in the official registry.
           </p>
           <div className="launch-card-cta">
             <Link to="/issuer" className="btn-launch-studio">
@@ -157,7 +161,7 @@ export function IssuerHomePage() {
           </div>
           <div className="stat-details">
             <span className="stat-number">{issuedCreds.length}</span>
-            <span className="stat-label">Total Anchored Credentials</span>
+            <span className="stat-label">Total Issued Credentials</span>
           </div>
         </div>
 
@@ -176,18 +180,18 @@ export function IssuerHomePage() {
             <FileCheck2 size={20} />
           </div>
           <div className="stat-details">
-            <span className="stat-number">{activeCount}</span>
-            <span className="stat-label">Active Valid Credentials</span>
+            <span className="stat-number">{certCount}</span>
+            <span className="stat-label">Degrees & Certs Issued</span>
           </div>
         </div>
 
         <div className="stat-card">
-          <div className="stat-icon-wrap red">
-            <Ban size={20} />
+          <div className="stat-icon-wrap green">
+            <ShieldCheck size={20} />
           </div>
           <div className="stat-details">
-            <span className="stat-number">{revokedCount}</span>
-            <span className="stat-label">Revocations Enforced</span>
+            <span className="stat-number">{activeCount}</span>
+            <span className="stat-label">Active Valid Credentials</span>
           </div>
         </div>
       </section>
@@ -195,7 +199,7 @@ export function IssuerHomePage() {
       {/* Feature Modules */}
       <section className="issuer-features-section">
         <h2 className="section-title">Certifying Authority Operations</h2>
-        <p className="section-desc">Manage the lifecycle of cryptographic skill credentials issued by your organization.</p>
+        <p className="section-desc">Manage the lifecycle of verified skill credentials issued by your organization.</p>
 
         <div className="features-grid">
           {/* Card 1: Issue Credentials */}
@@ -208,12 +212,12 @@ export function IssuerHomePage() {
             </div>
             <h3 className="feature-card-title">Issue New Credential</h3>
             <p className="feature-card-desc">
-              Anchor a skill certificate, diploma, or project completion directly onto Monad EVM. Input student wallet address, credential title, category, and comma-separated skills.
+              Certify a skill certificate, diploma, or project completion in the official registry. Input student account address, credential title, category, and skills.
             </p>
             <ul className="feature-points">
-              <li><CheckCircle2 size={13} color="#10b981" /> Instant ECDSA cryptographic signature</li>
-              <li><CheckCircle2 size={13} color="#10b981" /> Direct assignment to student's Monad wallet</li>
-              <li><CheckCircle2 size={13} color="#10b981" /> Permanent immutable audit timestamp</li>
+              <li><CheckCircle2 size={13} color="#10b981" /> Official institutional digital signature</li>
+              <li><CheckCircle2 size={13} color="#10b981" /> Direct assignment to student profile</li>
+              <li><CheckCircle2 size={13} color="#10b981" /> Permanent tamper-proof audit timestamp</li>
             </ul>
             <Link to="/issuer" className="btn-feature-cta primary">
               <span>Go to Issue Form</span>
@@ -231,11 +235,11 @@ export function IssuerHomePage() {
             </div>
             <h3 className="feature-card-title">Credential Registry & Audit</h3>
             <p className="feature-card-desc">
-              Access your institutional ledger of all issued credentials. Verify recipient wallet addresses, review skill taxonomy, and verify raw transaction receipts.
+              Access your institutional record of all issued credentials. Verify recipient addresses, review skill taxonomy, and track issuance history.
             </p>
             <ul className="feature-points">
-              <li><CheckCircle2 size={13} color="#10b981" /> Filter by recipient wallet or date</li>
-              <li><CheckCircle2 size={13} color="#10b981" /> Inspect on-chain data schemas</li>
+              <li><CheckCircle2 size={13} color="#10b981" /> Filter by recipient or date</li>
+              <li><CheckCircle2 size={13} color="#10b981" /> Inspect verified credential records</li>
               <li><CheckCircle2 size={13} color="#10b981" /> Publicly verifiable by global employers</li>
             </ul>
             <Link to="/issuer" className="btn-feature-cta secondary">
@@ -254,11 +258,11 @@ export function IssuerHomePage() {
             </div>
             <h3 className="feature-card-title">Revocation & Integrity Control</h3>
             <p className="feature-card-desc">
-              Only authorized issuers hold the cryptographic power to revoke their own credentials. Revocations flag instantly on all employer verifiers and public vaults.
+              Only authorized issuers hold the authority to revoke their own credentials. Revocations flag instantly on all employer verification searches and student profiles.
             </p>
             <ul className="feature-points">
               <li><CheckCircle2 size={13} color="#10b981" /> Protects institutional reputation</li>
-              <li><CheckCircle2 size={13} color="#10b981" /> Instant propagation across Monad</li>
+              <li><CheckCircle2 size={13} color="#10b981" /> Instant update across verification network</li>
               <li><CheckCircle2 size={13} color="#10b981" /> Complete tamper-evident audit trail</li>
             </ul>
             <Link to="/issuer" className="btn-feature-cta secondary">

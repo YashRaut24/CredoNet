@@ -34,8 +34,8 @@ export function CredoVaultCard() {
   const sampleCredentials = [
     {
       id: "cred-1",
-      skill: "Solidity Core & EVM Architecture",
-      issuer: "Web3 Engineering Council",
+      skill: "Full-Stack & Cloud Architecture",
+      issuer: "Engineering Accreditation Board",
       tag: "VERIFIED SKILL",
       status: "AUTHENTIC",
       date: "Aug 2026",
@@ -44,18 +44,18 @@ export function CredoVaultCard() {
     },
     {
       id: "cred-2",
-      skill: "[Project] CredoNet Protocol Architecture",
+      skill: "[Project] CredoNet Platform Architecture",
       issuer: "Autonomous Technical Institute",
       tag: "VERIFIED PROJECT",
-      status: "ON-CHAIN",
+      status: "OFFICIAL",
       date: "Sep 2026",
       icon: Layers,
       color: "#e36128"
     },
     {
       id: "cred-3",
-      skill: "Distributed Consensus & Cryptography",
-      issuer: "Consensus Architecture Lab",
+      skill: "Distributed Systems & Application Security",
+      issuer: "Systems Engineering Lab",
       tag: "VERIFIED SKILL",
       status: "AUTHENTIC",
       date: "Jul 2026",
@@ -104,11 +104,11 @@ export function CredoVaultCard() {
             </div>
             <div>
               <span className="vault-sub-label">NETWORK</span>
-              <span className="vault-val-text">MONAD BLOCKCHAIN</span>
+              <span className="vault-val-text">VERIFIED NETWORK</span>
             </div>
             <div>
               <span className="vault-sub-label">PROTECTION</span>
-              <span className="vault-val-text">CRYPTOGRAPHIC PROOF</span>
+              <span className="vault-val-text">TAMPER-PROOF</span>
             </div>
             <div>
               <span className="vault-sub-label">STORAGE</span>
@@ -132,7 +132,7 @@ export function CredoVaultCard() {
           onClick={() => setActiveTab("proof")}
         >
           <Layers size={13} />
-          <span>Cryptographic Proof</span>
+          <span>Verification Audit</span>
         </button>
         <button 
           className={`vault-tab-btn ${activeTab === "qr" ? "active" : ""}`}
@@ -176,20 +176,20 @@ export function CredoVaultCard() {
       {activeTab === "proof" && (
         <div className="vault-shelf">
           <div className="vault-data-block">
-            <span className="data-title">Sovereign Vault Public Address</span>
+            <span className="data-title">Student Account Identifier</span>
             <span className="data-code-val">{displayAddress}</span>
             <button onClick={copyAddress} className="btn-copy-small" title="Copy Address">
               {copied ? <Check size={12} color="#10b981" /> : <Copy size={12} />}
             </button>
           </div>
           <div className="vault-data-block">
-            <span className="data-title">Verified Smart Contract</span>
+            <span className="data-title">Official Registry Contract</span>
             <span className="data-code-val">0xc6BfB22D6B46346B113333b5513BDcD361488e6f</span>
           </div>
           <div className="vault-data-block">
             <span className="data-title">Authenticity Guarantee</span>
             <span className="data-plain-val">
-              All credentials are cryptographically signed and permanently protected against tampering or forgery.
+              All credentials are digitally certified by authorized institutions and protected against tampering or forgery.
             </span>
           </div>
         </div>
@@ -216,7 +216,7 @@ export function CredoVaultCard() {
       {/* Bottom Holographic Seal Plate */}
       <div className="vault-seal-footer">
         <div className="holographic-seal-badge">
-          <span className="seal-badge-heading">★ ANCHORED ON CREDONET LEDGER ★</span>
+          <span className="seal-badge-heading">★ OFFICIAL CREDONET VERIFIED RECORD ★</span>
           <span className="seal-badge-sub">VERIFIABLE CREDENTIAL SYSTEM</span>
         </div>
         <Link to={account ? "/dashboard" : "/verify/search"} className="vault-action-link">

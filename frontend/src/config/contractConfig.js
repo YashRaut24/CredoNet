@@ -2,9 +2,9 @@
 export const MONAD_TESTNET_CONFIG = {
   chainId: 10143,
   chainIdHex: "0x279f",
-  chainName: "Monad Testnet",
+  chainName: "CredoNet Verified Network",
   rpcUrl: "https://testnet-rpc.monad.xyz",
-  symbol: "MON",
+  symbol: "CRED",
   decimals: 18,
   explorerUrl: "https://testnet.monadexplorer.com",
 };
