@@ -324,6 +324,19 @@
   flex: 1;
 }
 
+.vault-qr-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-highlight);
+  margin-bottom: 4px;
+}
+
+.vault-qr-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
 /* Bottom Seal Plate */
 .vault-seal-footer {
   background: var(--bg-surface-elevated);

@@ -16,7 +16,6 @@ import {
   FolderGit2,
   GitBranch,
   Award,
-  Code2,
   FileText,
   Printer,
   Clock,
@@ -106,7 +105,7 @@ export function VerifyPage() {
 
   if (!isBytes32) {
     return (
-      <div className="container" style={{ padding: "60px 0" }}>
+      <div className="container verify-empty-container">
         <div className="connect-prompt-card">
           <XCircle size={40} color="#f43f5e" />
           <h3 className="connect-title">Invalid Credential Hash</h3>
@@ -125,7 +124,7 @@ export function VerifyPage() {
   return (
     <div className="container verify-page">
       <div>
-        <Link to="/verify/search" className="btn-secondary" style={{ padding: "6px 14px", fontSize: "12px" }}>
+        <Link to="/verify/search" className="btn-secondary verify-back-btn">
           <ArrowLeft size={13} />
           <span>Search Again</span>
         </Link>
@@ -133,18 +132,18 @@ export function VerifyPage() {
 
       <div className="verify-card">
         {loading ? (
-          <div style={{ textAlign: "center", padding: "50px 20px", display: "flex", flexDirection: "column", alignItems: "center", gap: "16px" }}>
-            <div style={{ width: "48px", height: "48px", borderRadius: "8px", background: "var(--bg-surface)", border: "1px solid var(--border-medium)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--accent-primary)" }}>
+          <div className="verify-loading-card">
+            <div className="verify-loading-icon">
               <ShieldCheck size={26} className="spin" />
             </div>
             <div>
-              <h3 style={{ fontSize: "18px", fontWeight: "700", color: "var(--text-highlight)" }}>Validating Cryptographic Consensus</h3>
-              <p style={{ fontSize: "13px", color: "var(--text-muted)", marginTop: "4px" }}>
+              <h3 className="verify-loading-title">Validating Cryptographic Consensus</h3>
+              <p className="verify-loading-desc">
                 Reading state directly from EVM blockchain contract consensus (0xc6Bf...8e6f)...
               </p>
             </div>
-            <div style={{ width: "240px", height: "4px", background: "var(--bg-surface-elevated)", borderRadius: "2px", overflow: "hidden" }}>
-              <div style={{ width: "100%", height: "100%", background: "var(--accent-primary)", animation: "skeleton-sweep 1.2s infinite" }} />
+            <div className="verify-loading-bar-wrap">
+              <div className="verify-loading-bar-fill" />
             </div>
           </div>
         ) : credential ? (
@@ -162,8 +161,8 @@ export function VerifyPage() {
                 <>
                   <div className="verify-header">
                     <div className="verify-skill-wrap">
-                      <span className="trust-badge" style={{ width: "fit-content", borderColor: isProject ? "rgba(56, 189, 248, 0.3)" : undefined }}>
-                        <span className="trust-badge-dot" style={{ background: isProject ? "#38bdf8" : undefined }} />
+                      <span className={`trust-badge ${isProject ? "project-badge" : ""}`}>
+                        <span className={`trust-badge-dot ${isProject ? "project-dot" : ""}`} />
                         {isProject ? "Verified Capstone Project Audit" : "Verified Skill Competency Audit"}
                       </span>
                       <h2 className="verify-skill-title">{displayTitle}</h2>
@@ -176,48 +175,48 @@ export function VerifyPage() {
 
                         if (credential.revoked) {
                           return (
-                            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "4px" }}>
+                            <div className="verify-status-col">
                               <span className="verify-status-badge revoked">
                                 <XCircle size={16} />
                                 <span>✕ REVOKED</span>
                               </span>
-                              <span style={{ fontSize: "11.5px", fontFamily: "var(--font-mono)", color: "#f43f5e", fontWeight: "600" }}>
+                              <span className="verify-status-sub revoked">
                                 Revoked on Monad blockchain
                               </span>
                             </div>
                           );
                         } else if (isExpired) {
                           return (
-                            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "4px" }}>
-                              <span className="verify-status-badge expired" style={{ background: "rgba(245, 158, 11, 0.15)", color: "#f59e0b", border: "1px solid rgba(245, 158, 11, 0.35)" }}>
+                            <div className="verify-status-col">
+                              <span className="verify-status-badge expired">
                                 <AlertTriangle size={16} />
                                 <span>⚠ EXPIRED (VALIDITY ELAPSED)</span>
                               </span>
-                              <span style={{ fontSize: "11.5px", fontFamily: "var(--font-mono)", color: "#f59e0b", fontWeight: "600" }}>
+                              <span className="verify-status-sub expired">
                                 Expired: {new Date(Number(expiresAt)).toLocaleDateString()}
                               </span>
                             </div>
                           );
                         } else if (isValid) {
                           return (
-                            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "4px" }}>
+                            <div className="verify-status-col">
                               <span className="verify-status-badge valid">
                                 <CheckCircle2 size={16} />
                                 <span>✓ VALID</span>
                               </span>
-                              <span style={{ fontSize: "11.5px", fontFamily: "var(--font-mono)", color: "#10b981", fontWeight: "600" }}>
+                              <span className="verify-status-sub valid">
                                 Verified from Monad blockchain
                               </span>
                             </div>
                           );
                         } else {
                           return (
-                            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "4px" }}>
+                            <div className="verify-status-col">
                               <span className="verify-status-badge revoked">
                                 <XCircle size={16} />
                                 <span>✕ INVALID</span>
                               </span>
-                              <span style={{ fontSize: "11.5px", fontFamily: "var(--font-mono)", color: "#f43f5e", fontWeight: "600" }}>
+                              <span className="verify-status-sub revoked">
                                 Unverified record
                               </span>
                             </div>
@@ -229,30 +228,20 @@ export function VerifyPage() {
 
                   {/* If Project: Project Artifacts Panel */}
                   {isProject && (
-                    <div style={{
-                      margin: "18px 0",
-                      padding: "18px",
-                      background: "rgba(56, 189, 248, 0.05)",
-                      border: "1px solid rgba(56, 189, 248, 0.2)",
-                      borderRadius: "var(--radius-md)",
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "12px"
-                    }}>
-                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "10px" }}>
-                        <span style={{ fontSize: "12px", fontFamily: "var(--font-mono)", color: "#38bdf8", fontWeight: "700", display: "flex", alignItems: "center", gap: "6px" }}>
+                    <div className="verify-project-artifacts">
+                      <div className="verify-project-header">
+                        <span className="verify-project-title">
                           <FolderGit2 size={14} />
                           VERIFIED PROJECT ARTIFACTS
                         </span>
 
-                        <div style={{ display: "flex", gap: "10px" }}>
+                        <div className="verify-project-links">
                           {metadata?.repoUrl && (
                             <a
                               href={metadata.repoUrl}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="btn-secondary"
-                              style={{ padding: "6px 12px", fontSize: "12px", color: "#38bdf8", borderColor: "rgba(56, 189, 248, 0.3)" }}
+                              className="btn-secondary verify-artifact-link"
                             >
                               <GitBranch size={13} />
                               <span>View Code Repository</span>
@@ -264,8 +253,7 @@ export function VerifyPage() {
                               href={metadata.liveUrl}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="btn-secondary"
-                              style={{ padding: "6px 12px", fontSize: "12px" }}
+                              className="btn-secondary verify-artifact-link"
                             >
                               <span>Live Deployment</span>
                               <ExternalLink size={11} />
@@ -276,23 +264,12 @@ export function VerifyPage() {
 
                       {metadata?.projectSkills && (
                         <div>
-                          <span style={{ fontSize: "11px", color: "var(--text-muted)", display: "block", marginBottom: "4px" }}>
+                          <span className="verify-section-label">
                             ASSOCIATED TECH STACK & SKILLS
                           </span>
-                          <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                          <div className="verify-skills-chips">
                             {metadata.projectSkills.split(",").map((s, idx) => (
-                              <span
-                                key={idx}
-                                style={{
-                                  padding: "3px 9px",
-                                  fontSize: "11px",
-                                  fontFamily: "var(--font-mono)",
-                                  background: "var(--bg-surface)",
-                                  border: "1px solid var(--border-medium)",
-                                  borderRadius: "4px",
-                                  color: "var(--text-highlight)"
-                                }}
-                              >
+                              <span key={idx} className="verify-skill-tag">
                                 {s.trim()}
                               </span>
                             ))}
@@ -302,10 +279,10 @@ export function VerifyPage() {
 
                       {metadata?.description && (
                         <div>
-                          <span style={{ fontSize: "11px", color: "var(--text-muted)", display: "block", marginBottom: "4px" }}>
+                          <span className="verify-section-label">
                             VERIFICATION SCOPE & AUDIT NOTES
                           </span>
-                          <p style={{ fontSize: "13px", color: "var(--text-secondary)", lineHeight: "1.5" }}>
+                          <p className="verify-notes-text">
                             {metadata.description}
                           </p>
                         </div>
@@ -315,29 +292,20 @@ export function VerifyPage() {
 
                   {/* If Skill: Skill Details Panel */}
                   {!isProject && metadata && (
-                    <div style={{
-                      margin: "18px 0",
-                      padding: "16px",
-                      background: "rgba(242, 108, 54, 0.05)",
-                      border: "1px solid rgba(242, 108, 54, 0.2)",
-                      borderRadius: "var(--radius-md)",
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "10px"
-                    }}>
-                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                        <span style={{ fontSize: "12px", fontFamily: "var(--font-mono)", color: "var(--accent-primary)", fontWeight: "700", display: "flex", alignItems: "center", gap: "6px" }}>
+                    <div className="verify-skill-details">
+                      <div className="verify-skill-details-header">
+                        <span className="verify-assessment-title">
                           <Award size={14} />
                           COMPETENCY ASSESSMENT REPORT
                         </span>
                         {metadata.skillLevel && (
-                          <span style={{ fontSize: "11.5px", padding: "2px 8px", background: "var(--bg-surface)", border: "1px solid var(--border-medium)", borderRadius: "4px", color: "var(--accent-primary)", fontWeight: "600" }}>
+                          <span className="verify-skill-level-badge">
                             {metadata.skillLevel}
                           </span>
                         )}
                       </div>
-                      {metadata.description && (
-                        <p style={{ fontSize: "13px", color: "var(--text-secondary)", lineHeight: "1.5" }}>
+                      {metadata?.description && (
+                        <p className="verify-notes-text">
                           {metadata.description}
                         </p>
                       )}
@@ -351,11 +319,11 @@ export function VerifyPage() {
             <div className="audit-table">
               <div className="audit-row">
                 <span className="audit-label">
-                  <ShieldCheck size={14} color="#f26c36" /> Credential ID
+                  <ShieldCheck size={14} color="var(--accent-primary)" /> Credential ID
                 </span>
                 <div className="audit-val-wrap">
                   <span className="audit-value">{credential.credentialId}</span>
-                  <button onClick={() => copyField(credential.credentialId, "id")} className="btn-icon-copy">
+                  <button onClick={() => copyField(credential.credentialId, "id")} className="btn-icon-copy" title="Copy ID">
                     {copiedField === "id" ? <Check size={13} color="#10b981" /> : <Copy size={13} />}
                   </button>
                 </div>
@@ -363,13 +331,13 @@ export function VerifyPage() {
 
               <div className="audit-row">
                 <span className="audit-label">
-                  <User size={14} color="#f26c36" /> Student Address
+                  <User size={14} color="var(--accent-primary)" /> Student Address
                 </span>
                 <div className="audit-val-wrap">
-                  <Link to={`/vault/${credential.student}`} className="audit-value" style={{ color: "var(--accent-primary)", textDecoration: "underline" }}>
+                  <Link to={`/vault/${credential.student}`} className="audit-value audit-link-primary">
                     {credential.student}
                   </Link>
-                  <button onClick={() => copyField(credential.student, "student")} className="btn-icon-copy">
+                  <button onClick={() => copyField(credential.student, "student")} className="btn-icon-copy" title="Copy Address">
                     {copiedField === "student" ? <Check size={13} color="#10b981" /> : <Copy size={13} />}
                   </button>
                 </div>
@@ -377,11 +345,11 @@ export function VerifyPage() {
 
               <div className="audit-row">
                 <span className="audit-label">
-                  <ShieldCheck size={14} color="#f26c36" /> Authorized Issuer
+                  <ShieldCheck size={14} color="var(--accent-primary)" /> Authorized Issuer
                 </span>
                 <div className="audit-val-wrap">
                   <span className="audit-value">{credential.issuer}</span>
-                  <button onClick={() => copyField(credential.issuer, "issuer")} className="btn-icon-copy">
+                  <button onClick={() => copyField(credential.issuer, "issuer")} className="btn-icon-copy" title="Copy Issuer">
                     {copiedField === "issuer" ? <Check size={13} color="#10b981" /> : <Copy size={13} />}
                   </button>
                 </div>
@@ -389,21 +357,21 @@ export function VerifyPage() {
 
               <div className="audit-row">
                 <span className="audit-label">
-                  <Calendar size={14} color="#f26c36" /> Issue Timestamp
+                  <Calendar size={14} color="var(--accent-primary)" /> Issue Timestamp
                 </span>
                 <span className="audit-value">{formattedDate}</span>
               </div>
 
               <div className="audit-row">
                 <span className="audit-label">
-                  <Database size={14} color="#f26c36" /> Metadata Proof
+                  <Database size={14} color="var(--accent-primary)" /> Metadata Proof
                 </span>
                 <span className="audit-value">{credential.metadataHash}</span>
               </div>
 
               <div className="audit-row">
                 <span className="audit-label">
-                  <Clock size={14} color="#f26c36" /> Validity Lifecycle
+                  <Clock size={14} color="var(--accent-primary)" /> Validity Lifecycle
                 </span>
                 <span className="audit-value">
                   {metadata?.validityDuration || (metadata?.expiresAt && Number(metadata.expiresAt) > 0 ? `Valid through ${new Date(Number(metadata.expiresAt)).toLocaleDateString()}` : "Perpetual (No Expiration)")}
@@ -412,14 +380,13 @@ export function VerifyPage() {
 
               <div className="audit-row">
                 <span className="audit-label">
-                  <ShieldCheck size={14} color="#f26c36" /> Smart Contract
+                  <ShieldCheck size={14} color="var(--accent-primary)" /> Smart Contract
                 </span>
                 <a
                   href={`${MONAD_TESTNET_CONFIG.explorerUrl}/address/${CONTRACT_ADDRESS}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="audit-value"
-                  style={{ color: "var(--accent-primary)", display: "flex", alignItems: "center", gap: "4px" }}
+                  className="audit-value audit-link-external"
                 >
                   <span>{CONTRACT_ADDRESS}</span>
                   <ExternalLink size={12} />
@@ -434,7 +401,7 @@ export function VerifyPage() {
                 <span>Verification QR</span>
               </button>
 
-              <button onClick={() => setShowAuditDossier(true)} className="btn-secondary" style={{ color: "var(--accent-primary)", borderColor: "var(--accent-primary)" }}>
+              <button onClick={() => setShowAuditDossier(true)} className="btn-secondary btn-audit-dossier">
                 <FileText size={14} />
                 <span>Export Compliance Audit Report</span>
               </button>
@@ -446,10 +413,10 @@ export function VerifyPage() {
             </div>
           </>
         ) : (
-          <div style={{ textAlign: "center", padding: "40px 0" }}>
-            <XCircle size={36} color="#f43f5e" style={{ margin: "0 auto 12px auto" }} />
-            <h3 style={{ fontSize: "18px", color: "var(--text-highlight)" }}>Credential Not Found</h3>
-            <p style={{ fontSize: "13px", color: "var(--text-secondary)", marginTop: "6px" }}>
+          <div className="verify-not-found">
+            <XCircle size={36} color="#f43f5e" className="verify-not-found-icon" />
+            <h3 className="verify-not-found-title">Credential Not Found</h3>
+            <p className="verify-not-found-desc">
               No record was found on Monad EVM for this credential ID.
             </p>
           </div>
@@ -469,92 +436,83 @@ export function VerifyPage() {
       {showAuditDossier && credential && (
         <div className="modal-overlay" onClick={() => setShowAuditDossier(false)}>
           <div
-            className="modal-dialog"
+            className="modal-dialog audit-dossier-dialog"
             onClick={(e) => e.stopPropagation()}
-            style={{
-              maxWidth: "680px",
-              padding: "30px",
-              background: "#0c0a09",
-              border: "1px solid rgba(242, 108, 54, 0.4)",
-              borderRadius: "14px",
-              color: "#f5f5f4"
-            }}
           >
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", borderBottom: "1px solid rgba(255, 255, 255, 0.12)", paddingBottom: "16px", marginBottom: "20px" }}>
+            <div className="audit-dossier-header">
               <div>
-                <span style={{ fontSize: "11px", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--accent-primary)", fontWeight: "700" }}>
+                <span className="audit-dossier-eyebrow">
                   Official Audit Dossier • ISO/IEC 27001 & SOC-2 Background Proof
                 </span>
-                <h3 style={{ fontSize: "20px", fontWeight: "700", marginTop: "4px" }}>
+                <h3 className="audit-dossier-title">
                   Cryptographic Background Verification Certificate
                 </h3>
               </div>
               <button
                 onClick={() => window.print()}
                 className="btn-primary"
-                style={{ padding: "6px 14px", fontSize: "12px", display: "inline-flex", alignItems: "center", gap: "6px" }}
               >
                 <Printer size={13} />
                 <span>Print Dossier</span>
               </button>
             </div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: "14px", fontSize: "13px" }}>
-              <div style={{ padding: "12px 16px", background: "rgba(16, 185, 129, 0.08)", border: "1px solid rgba(16, 185, 129, 0.3)", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <div className="audit-dossier-body">
+              <div className="audit-pass-banner">
                 <div>
-                  <span style={{ color: "#10b981", fontWeight: "700", display: "block" }}>AUTHENTICITY AUDIT RESULT: PASSED</span>
-                  <span style={{ fontSize: "12px", color: "var(--text-secondary)" }}>
+                  <span className="audit-pass-status">AUTHENTICITY AUDIT RESULT: PASSED</span>
+                  <span className="audit-pass-sub">
                     Verified directly against Monad EVM contract consensus.
                   </span>
                 </div>
                 <CheckCircle2 size={24} color="#10b981" />
               </div>
 
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
-                <div style={{ padding: "10px", background: "rgba(255, 255, 255, 0.03)", borderRadius: "6px" }}>
-                  <span style={{ fontSize: "11px", color: "var(--text-muted)", display: "block" }}>AUDIT TIMESTAMP</span>
-                  <span style={{ fontWeight: "600", fontFamily: "var(--font-mono)" }}>{new Date().toISOString()}</span>
+              <div className="audit-dossier-meta-grid">
+                <div className="audit-meta-cell">
+                  <span className="audit-meta-cell-label">AUDIT TIMESTAMP</span>
+                  <span className="audit-meta-cell-value">{new Date().toISOString()}</span>
                 </div>
-                <div style={{ padding: "10px", background: "rgba(255, 255, 255, 0.03)", borderRadius: "6px" }}>
-                  <span style={{ fontSize: "11px", color: "var(--text-muted)", display: "block" }}>CREDENTIAL STATUS</span>
-                  <span style={{ fontWeight: "600", color: credential.revoked ? "#f43f5e" : isValid ? "#10b981" : "#f43f5e" }}>
+                <div className="audit-meta-cell">
+                  <span className="audit-meta-cell-label">CREDENTIAL STATUS</span>
+                  <span className={`audit-meta-cell-value ${credential.revoked ? "status-revoked" : isValid ? "status-valid" : "status-invalid"}`}>
                     {credential.revoked ? "REVOKED" : isValid ? "MATHEMATICALLY VALID" : "INVALID"}
                   </span>
                 </div>
               </div>
 
-              <div style={{ display: "flex", flexDirection: "column", gap: "8px", background: "rgba(0, 0, 0, 0.4)", padding: "14px", borderRadius: "8px", fontFamily: "var(--font-mono)", fontSize: "12px" }}>
-                <div><span style={{ color: "var(--text-muted)" }}>Credential ID:</span> <span style={{ color: "var(--text-highlight)", wordBreak: "break-all" }}>{credential.credentialId}</span></div>
-                <div><span style={{ color: "var(--text-muted)" }}>Certified Competency:</span> <span style={{ color: "var(--accent-primary)" }}>{credential.skill}</span></div>
-                <div><span style={{ color: "var(--text-muted)" }}>Student Sovereign Wallet:</span> <span style={{ color: "#38bdf8" }}>{credential.student}</span></div>
-                <div><span style={{ color: "var(--text-muted)" }}>Accredited Issuer:</span> <span style={{ color: "#eab308" }}>{credential.issuer}</span></div>
-                <div><span style={{ color: "var(--text-muted)" }}>Contract Address:</span> <span>{CONTRACT_ADDRESS}</span></div>
-                <div><span style={{ color: "var(--text-muted)" }}>Metadata Hash:</span> <span>{credential.metadataHash}</span></div>
-                <div><span style={{ color: "var(--text-muted)" }}>Blockchain Network:</span> <span>Monad Testnet (Chain ID 10143)</span></div>
+              <div className="audit-dossier-fields">
+                <div><span className="text-muted">Credential ID: </span><span className="text-highlight">{credential.credentialId}</span></div>
+                <div><span className="text-muted">Certified Competency: </span><span className="text-primary">{credential.skill}</span></div>
+                <div><span className="text-muted">Student Sovereign Wallet: </span><span className="text-mono">{credential.student}</span></div>
+                <div><span className="text-muted">Accredited Issuer: </span><span className="text-mono">{credential.issuer}</span></div>
+                <div><span className="text-muted">Contract Address: </span><span className="text-mono">{CONTRACT_ADDRESS}</span></div>
+                <div><span className="text-muted">Metadata Hash: </span><span className="text-mono">{credential.metadataHash}</span></div>
+                <div><span className="text-muted">Blockchain Network: </span><span>Monad Testnet (Chain ID 10143)</span></div>
               </div>
 
               <div>
-                <span style={{ fontSize: "11.5px", fontWeight: "700", textTransform: "uppercase", color: "var(--text-muted)", display: "block", marginBottom: "6px" }}>
+                <span className="audit-dossier-eyebrow">
                   Audit Compliance Checklist
                 </span>
-                <div style={{ display: "flex", flexDirection: "column", gap: "6px", fontSize: "12px" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "#10b981" }}>
+                <div className="audit-dossier-checklist">
+                  <div className="audit-dossier-check-item">
                     <CheckCircle2 size={13} /> <span>Soulbound Non-Transferability Check: Immutable recipient bound (ERC-5192)</span>
                   </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "#10b981" }}>
+                  <div className="audit-dossier-check-item">
                     <CheckCircle2 size={13} /> <span>Issuer Authority Signature: Verified on-chain authorized authority list</span>
                   </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "#10b981" }}>
+                  <div className="audit-dossier-check-item">
                     <CheckCircle2 size={13} /> <span>Cryptographic Non-Repudiation: Monad transaction ledger immutable log</span>
                   </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "#10b981" }}>
+                  <div className="audit-dossier-check-item">
                     <CheckCircle2 size={13} /> <span>Revocation Lifecycle: Verified not in revoked state on block consensus</span>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px", marginTop: "24px" }}>
+            <div className="audit-dossier-footer">
               <button onClick={() => setShowAuditDossier(false)} className="btn-secondary">
                 Close Dossier
               </button>

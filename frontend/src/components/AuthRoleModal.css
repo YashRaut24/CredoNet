@@ -119,26 +119,22 @@
 }
 
 .auth-persona-card:hover {
-  transform: translateY(-3px);
-  border-color: var(--accent-primary);
-  box-shadow: 0 10px 24px rgba(242, 108, 54, 0.12);
+  transform: translateY(-2px);
+  border-color: var(--border-highlight);
 }
 
 .auth-persona-card.active-role {
   border-color: var(--accent-primary);
-  box-shadow: 0 0 0 1px var(--accent-primary), 0 10px 24px rgba(242, 108, 54, 0.15);
 }
 
 .auth-persona-card.issuer:hover,
 .auth-persona-card.issuer.active-role {
   border-color: #38bdf8;
-  box-shadow: 0 0 0 1px #38bdf8, 0 10px 24px rgba(56, 189, 248, 0.15);
 }
 
 .auth-persona-card.employer:hover,
 .auth-persona-card.employer.active-role {
   border-color: #10b981;
-  box-shadow: 0 0 0 1px #10b981, 0 10px 24px rgba(16, 185, 129, 0.15);
 }
 
 .persona-card-top {
@@ -267,4 +263,10 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.auth-modal-footer-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }

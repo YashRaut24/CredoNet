@@ -268,14 +268,13 @@ export function RequestCredentialModal({ onClose, onRequestSubmitted }) {
             </div>
 
             <div className="request-modal-actions">
-              <button type="button" onClick={onClose} className="btn-secondary" style={{ padding: "8px 16px" }}>
+              <button type="button" onClick={onClose} className="btn-secondary request-btn-cancel">
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={submitting}
-                className="btn-primary"
-                style={{ padding: "8px 20px", gap: "6px" }}
+                className="btn-primary request-btn-submit"
               >
                 {submitting ? (
                   <span>Submitting...</span>

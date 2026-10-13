@@ -71,8 +71,8 @@ export function CredentialCard({
         {/* Top Info */}
         <div className="card-top">
           <div className="card-top-info">
-            <span className={`card-category ${isProject ? "category-project" : "category-skill"}`} style={{ display: "inline-flex", alignItems: "center", gap: "5px" }}>
-              {isProject ? <FolderGit2 size={12} color="#38bdf8" /> : <Award size={12} color="#f26c36" />}
+            <span className={`card-category ${isProject ? "category-project" : "category-skill"}`}>
+              {isProject ? <FolderGit2 size={12} color="var(--accent-primary)" /> : <Award size={12} color="var(--accent-primary)" />}
               <span>{isProject ? "Verified Capstone Project" : "Verified Skill Credential"}</span>
             </span>
             <h3 className="card-skill-title">{displayTitle}</h3>
@@ -101,7 +101,7 @@ export function CredentialCard({
         <div className="card-details">
           <div className="card-row">
             <span className="card-label">
-              <User size={13} color="#f26c36" /> Student
+              <User size={13} color="var(--accent-primary)" /> Student
             </span>
             <span className="card-value">
               {credential.student.slice(0, 6)}...{credential.student.slice(-4)}
@@ -110,7 +110,7 @@ export function CredentialCard({
 
           <div className="card-row">
             <span className="card-label">
-              <ShieldCheck size={13} color="#f26c36" /> Issuer
+              <ShieldCheck size={13} color="var(--accent-primary)" /> Issuer
             </span>
             <span className="card-value">
               {credential.issuer.slice(0, 6)}...{credential.issuer.slice(-4)}
@@ -120,9 +120,9 @@ export function CredentialCard({
           {evidenceName && (
             <div className="card-row">
               <span className="card-label">
-                <FolderGit2 size={13} color="#38bdf8" /> Evidence
+                <FolderGit2 size={13} color="var(--accent-primary)" /> Evidence
               </span>
-              <span className="card-value" style={{ color: "#38bdf8", fontWeight: "600" }}>
+              <span className="card-value evidence">
                 {evidenceName}
               </span>
             </div>

@@ -9,9 +9,9 @@ export function Footer() {
     <footer className="footer">
       <div className="container footer-container">
         <div className="footer-brand">
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <ShieldCheck size={18} color="#f26c36" />
-            <span className="footer-brand-title">CredoNet<span style={{ color: "#f26c36" }}>.</span></span>
+          <div className="footer-brand-header">
+            <ShieldCheck size={18} color="var(--accent-primary)" />
+            <span className="footer-brand-title">CredoNet<span className="footer-brand-dot">.</span></span>
           </div>
           <p className="footer-brand-desc">
             One portable passport for verified skills, projects, and achievements. Tamper-evident issuance and independent public verification powered by Monad.
@@ -36,8 +36,7 @@ export function Footer() {
               href={MONAD_TESTNET_CONFIG.explorerUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="footer-link"
-              style={{ display: "flex", alignItems: "center", gap: "4px" }}
+              className="footer-link footer-link-external"
             >
               <span>Monad Explorer</span>
               <ExternalLink size={11} />

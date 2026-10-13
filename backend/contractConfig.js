@@ -1,18 +1,25 @@
 const path = require("path");
 require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
 
+const RPC_URL = process.env.MONAD_TESTNET_RPC || process.env.NEXT_PUBLIC_MONAD_RPC || "https://testnet-rpc.monad.xyz";
+
 let deployedAddress = "0xc6BfB22D6B46346B113333b5513BDcD361488e6f";
 try {
   const deployed = require("../src/config/deployedContracts.json");
   if (deployed && deployed.address) {
-    deployedAddress = deployed.address;
+    // Only use deployed.address if network matches or is not localhost on remote RPC
+    const isLocalRPC = RPC_URL.includes("127.0.0.1") || RPC_URL.includes("localhost");
+    if (deployed.network === "localhost" && !isLocalRPC) {
+      deployedAddress = "0xc6BfB22D6B46346B113333b5513BDcD361488e6f";
+    } else {
+      deployedAddress = deployed.address;
+    }
   }
 } catch (e) {
   // fallback
 }
 
 const CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || process.env.CONTRACT_ADDRESS || deployedAddress;
-const RPC_URL = process.env.MONAD_TESTNET_RPC || process.env.NEXT_PUBLIC_MONAD_RPC || "https://testnet-rpc.monad.xyz";
 
 const CONTRACT_ABI = [
   {

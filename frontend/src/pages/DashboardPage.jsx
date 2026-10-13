@@ -237,7 +237,7 @@ export function DashboardPage() {
 
   if (!account) {
     return (
-      <div className="container" style={{ padding: "60px 0" }}>
+      <div className="container dashboard-connect-container">
         <div className="connect-prompt-card">
           <div className="connect-icon-wrap">
             <Award size={32} />
@@ -249,8 +249,7 @@ export function DashboardPage() {
           <button
             onClick={connectWallet}
             disabled={isConnecting}
-            className="btn-primary"
-            style={{ width: "100%", padding: "14px", fontSize: "14.5px" }}
+            className="btn-primary dashboard-connect-btn"
           >
             {isConnecting ? "Connecting..." : "Connect Wallet"}
           </button>
@@ -264,16 +263,16 @@ export function DashboardPage() {
       {/* 1. Profile Hero Card */}
       <div className="profile-banner">
         <div className="profile-identity">
-          <div className="profile-avatar" style={{ overflow: "hidden" }}>
+          <div className="profile-avatar dashboard-profile-avatar-wrap">
             {profile.avatar ? (
-              <img src={profile.avatar} alt="Profile" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              <img src={profile.avatar} alt="Profile" className="dashboard-profile-avatar-img" />
             ) : (
               <User size={30} />
             )}
           </div>
           <div className="profile-info">
-            <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
-              <h2 style={{ fontSize: "22px", fontWeight: "700", color: "var(--text-highlight)" }}>
+            <div className="dashboard-profile-header-row">
+              <h2 className="dashboard-profile-title">
                 {profile.name || "Student Passport Holder"}
               </h2>
               <button
@@ -281,8 +280,7 @@ export function DashboardPage() {
                   setProfileForm(profile);
                   setIsEditingProfile(true);
                 }}
-                className="btn-secondary"
-                style={{ padding: "4px 8px", fontSize: "11px" }}
+                className="btn-secondary dashboard-btn-xs"
                 title="Edit Profile"
               >
                 <Edit3 size={11} />
@@ -290,7 +288,7 @@ export function DashboardPage() {
               </button>
             </div>
 
-            <div style={{ display: "flex", gap: "12px", alignItems: "center", flexWrap: "wrap", fontSize: "13px", color: "var(--text-secondary)" }}>
+            <div className="dashboard-meta-row">
               {profile.degree && <span>{profile.degree}</span>}
               {profile.college && (
                 <>
@@ -307,12 +305,12 @@ export function DashboardPage() {
             </div>
 
             {profile.bio && (
-              <p style={{ fontSize: "12.5px", color: "var(--text-muted)", marginTop: "4px", maxWidth: "600px", lineHeight: "1.4" }}>
+              <p className="dashboard-bio">
                 {profile.bio}
               </p>
             )}
 
-            <div className="profile-address-row" style={{ marginTop: "4px" }}>
+            <div className="profile-address-row dashboard-address-row">
               <span className="profile-address-text">
                 Wallet: {account.slice(0, 6)}...{account.slice(-4)}
               </span>
@@ -324,7 +322,7 @@ export function DashboardPage() {
         </div>
 
         <div className="profile-actions">
-          <button onClick={() => setIsRequestingCredential(true)} className="btn-primary" style={{ padding: "8px 16px", fontSize: "13px" }}>
+          <button onClick={() => setIsRequestingCredential(true)} className="btn-primary dashboard-request-claim-btn">
             <Send size={13} />
             <span>Request Credential</span>
           </button>
@@ -351,50 +349,40 @@ export function DashboardPage() {
         <div className="stat-box">
           <span className="stat-box-label">Verified Skills</span>
           <span className="stat-box-value">{verifiedSkillsCount}</span>
-          <span className="stat-box-sub" style={{ color: "var(--success)" }}>✓ On-Chain Certified</span>
+          <span className="stat-box-sub stat-sub-success">✓ On-Chain Certified</span>
         </div>
 
         <div className="stat-box">
           <span className="stat-box-label">Active Credentials</span>
           <span className="stat-box-value">{validCreds.length}</span>
-          <span className="stat-box-sub" style={{ color: "var(--accent-primary)" }}>Valid on Monad</span>
+          <span className="stat-box-sub stat-sub-accent">Valid on Monad</span>
         </div>
 
         <div className="stat-box">
           <span className="stat-box-label">Projects Added</span>
           <span className="stat-box-value">{projects.length}</span>
-          <span className="stat-box-sub" style={{ color: "#38bdf8" }}>Portfolio Evidence</span>
+          <span className="stat-box-sub stat-sub-info">Portfolio Evidence</span>
         </div>
 
         <div className="stat-box">
           <span className="stat-box-label">Achievements</span>
           <span className="stat-box-value">{achievements.filter(a => a.unlocked).length}</span>
-          <span className="stat-box-sub" style={{ color: "#eab308" }}>Unlocked</span>
+          <span className="stat-box-sub stat-sub-warning">Unlocked</span>
         </div>
       </div>
 
       {/* 3. Logical Rules & Security Notice */}
-      <div style={{
-        padding: "14px 18px",
-        background: "rgba(242, 108, 54, 0.08)",
-        border: "1px solid rgba(242, 108, 54, 0.25)",
-        borderRadius: "var(--radius-md)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        flexWrap: "wrap",
-        gap: "10px"
-      }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+      <div className="dashboard-authenticity-banner">
+        <div className="dashboard-authenticity-content">
           <ShieldCheck size={18} color="var(--accent-primary)" />
-          <span style={{ fontSize: "13px", color: "var(--text-secondary)" }}>
+          <span className="dashboard-authenticity-text">
             <strong>Authenticity Model:</strong> You can document projects and profile evidence, but <em>skills and credentials are only verified when cryptographically issued by an authorized institution on Monad</em>. Students cannot self-verify.
           </span>
         </div>
       </div>
 
       {/* 4. Navigation Sub-Tabs */}
-      <div style={{ display: "flex", gap: "10px", margin: "10px 0", flexWrap: "wrap", borderBottom: "1px solid var(--border-medium)", paddingBottom: "14px" }}>
+      <div className="dashboard-tabs-nav">
         {[
           { id: "overview", label: "Overview", count: null },
           { id: "skills", label: "Skills & Evidence", count: evidenceSkillMap.length },
@@ -407,26 +395,11 @@ export function DashboardPage() {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`btn-secondary ${activeTab === tab.id ? "active" : ""}`}
-            style={{
-              padding: "8px 16px",
-              fontSize: "12.5px",
-              fontWeight: "600",
-              borderColor: activeTab === tab.id ? "var(--accent-primary)" : "var(--border-medium)",
-              background: activeTab === tab.id ? "rgba(242, 108, 54, 0.12)" : "transparent",
-              color: activeTab === tab.id ? "var(--text-highlight)" : "var(--text-secondary)"
-            }}
+            className={`dashboard-tab-pill ${activeTab === tab.id ? "active" : ""}`}
           >
             <span>{tab.label}</span>
             {tab.count !== null && (
-              <span style={{
-                marginLeft: "6px",
-                padding: "1px 6px",
-                background: "var(--bg-surface)",
-                borderRadius: "10px",
-                fontSize: "11px",
-                fontFamily: "var(--font-mono)"
-              }}>
+              <span className="dashboard-tab-pill-badge">
                 {tab.count}
               </span>
             )}
@@ -436,49 +409,30 @@ export function DashboardPage() {
 
       {/* 5. TAB: OVERVIEW */}
       {activeTab === "overview" && (
-        <div style={{ display: "flex", flexDirection: "column", gap: "28px" }}>
+        <div className="dashboard-tab-content-col-lg">
           {/* Verified Skills Summary */}
-          <div style={{
-            padding: "20px",
-            background: "var(--bg-surface)",
-            border: "1px solid var(--border-medium)",
-            borderRadius: "var(--radius-md)"
-          }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px" }}>
-              <h3 style={{ fontSize: "16px", fontWeight: "700", display: "flex", alignItems: "center", gap: "8px" }}>
+          <div className="dashboard-section-card">
+            <div className="dashboard-card-head">
+              <h3 className="dashboard-card-heading">
                 <Award size={16} color="var(--accent-primary)" />
                 <span>Verified Skills (Issuer-Certified)</span>
               </h3>
-              <button onClick={() => setActiveTab("skills")} className="btn-secondary" style={{ padding: "4px 10px", fontSize: "11.5px" }}>
+              <button onClick={() => setActiveTab("skills")} className="btn-secondary dashboard-btn-xs">
                 <span>View Full Evidence Map</span>
                 <ArrowRight size={12} />
               </button>
             </div>
 
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+            <div className="dashboard-skills-badges-wrap">
               {evidenceSkillMap.filter(s => s.isVerified).length > 0 ? (
                 evidenceSkillMap.filter(s => s.isVerified).map((s, idx) => (
-                  <div
-                    key={idx}
-                    style={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: "6px",
-                      padding: "6px 12px",
-                      background: "rgba(16, 185, 129, 0.08)",
-                      border: "1px solid rgba(16, 185, 129, 0.3)",
-                      borderRadius: "var(--radius-sm)",
-                      fontSize: "12.5px",
-                      fontWeight: "600",
-                      color: "#10b981"
-                    }}
-                  >
+                  <div key={idx} className="dashboard-badge-certified">
                     <span>✓</span>
                     <span>{s.name}</span>
                   </div>
                 ))
               ) : (
-                <p style={{ fontSize: "13px", color: "var(--text-muted)" }}>
+                <p className="dashboard-muted-msg">
                   No skills have been verified by an authorized issuer yet. Request an authorized issuer to certify your achievements.
                 </p>
               )}
@@ -486,65 +440,65 @@ export function DashboardPage() {
           </div>
 
           {/* Recent Projects & Recent Credentials */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px" }}>
+          <div className="dashboard-grid-2col">
             {/* Projects Box */}
-            <div style={{ padding: "20px", background: "var(--bg-surface)", border: "1px solid var(--border-medium)", borderRadius: "var(--radius-md)" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px" }}>
-                <h3 style={{ fontSize: "16px", fontWeight: "700", display: "flex", alignItems: "center", gap: "8px" }}>
+            <div className="dashboard-section-card">
+              <div className="dashboard-card-head">
+                <h3 className="dashboard-card-heading">
                   <FolderGit2 size={16} color="#38bdf8" />
                   <span>Project Portfolio Evidence</span>
                 </h3>
-                <button onClick={() => setIsAddingProject(true)} className="btn-secondary" style={{ padding: "4px 8px", fontSize: "11.5px" }}>
+                <button onClick={() => setIsAddingProject(true)} className="btn-secondary dashboard-btn-xs">
                   <PlusCircle size={12} />
                   <span>Add</span>
                 </button>
               </div>
 
               {projects.length > 0 ? (
-                <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                <div className="dashboard-preview-list">
                   {projects.slice(0, 3).map((p) => (
-                    <div key={p.id} style={{ padding: "10px", background: "var(--bg-secondary)", borderRadius: "var(--radius-sm)", border: "1px solid var(--border-subtle)" }}>
-                      <div style={{ display: "flex", justifyContent: "space-between" }}>
-                        <span style={{ fontSize: "13.5px", fontWeight: "600", color: "var(--text-highlight)" }}>{p.name}</span>
-                        <span style={{ fontSize: "10px", fontFamily: "var(--font-mono)", color: "var(--text-muted)" }}>EVIDENCE</span>
+                    <div key={p.id} className="dashboard-preview-item">
+                      <div className="dashboard-preview-item-row">
+                        <span className="dashboard-preview-item-title">{p.name}</span>
+                        <span className="dashboard-preview-item-sub">EVIDENCE</span>
                       </div>
-                      <p style={{ fontSize: "12px", color: "var(--text-secondary)", marginTop: "4px", lineClamp: 2 }}>{p.description}</p>
+                      <p className="dashboard-preview-item-desc">{p.description}</p>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p style={{ fontSize: "13px", color: "var(--text-muted)" }}>No projects added yet. Click Add to document your project evidence.</p>
+                <p className="dashboard-muted-msg">No projects added yet. Click Add to document your project evidence.</p>
               )}
             </div>
 
             {/* Credentials Box */}
-            <div style={{ padding: "20px", background: "var(--bg-surface)", border: "1px solid var(--border-medium)", borderRadius: "var(--radius-md)" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px" }}>
-                <h3 style={{ fontSize: "16px", fontWeight: "700", display: "flex", alignItems: "center", gap: "8px" }}>
+            <div className="dashboard-section-card">
+              <div className="dashboard-card-head">
+                <h3 className="dashboard-card-heading">
                   <ShieldCheck size={16} color="var(--accent-primary)" />
                   <span>Recent Monad Credentials</span>
                 </h3>
-                <button onClick={() => setActiveTab("credentials")} className="btn-secondary" style={{ padding: "4px 8px", fontSize: "11.5px" }}>
+                <button onClick={() => setActiveTab("credentials")} className="btn-secondary dashboard-btn-xs">
                   <span>View All ({credentials.length})</span>
                 </button>
               </div>
 
               {credentials.length > 0 ? (
-                <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                <div className="dashboard-preview-list">
                   {credentials.slice(0, 3).map((c) => (
-                    <div key={c.credentialId} style={{ padding: "10px", background: "var(--bg-secondary)", borderRadius: "var(--radius-sm)", border: "1px solid var(--border-subtle)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div key={c.credentialId} className="dashboard-cred-item">
                       <div>
-                        <span style={{ fontSize: "13.5px", fontWeight: "600", color: "var(--text-highlight)", display: "block" }}>{c.skill}</span>
-                        <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>Issuer: {c.issuer.slice(0, 6)}...{c.issuer.slice(-4)}</span>
+                        <span className="dashboard-cred-name">{c.skill}</span>
+                        <span className="dashboard-cred-issuer">Issuer: {c.issuer.slice(0, 6)}...{c.issuer.slice(-4)}</span>
                       </div>
-                      <span className={`status-pill ${c.revoked ? "revoked" : "valid"}`} style={{ fontSize: "11px", padding: "2px 8px" }}>
+                      <span className={`status-pill ${c.revoked ? "revoked" : "valid"}`}>
                         {c.revoked ? "✕ REVOKED" : "✓ VALID"}
                       </span>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p style={{ fontSize: "13px", color: "var(--text-muted)" }}>No credentials recorded on Monad blockchain yet.</p>
+                <p className="dashboard-muted-msg">No credentials recorded on Monad blockchain yet.</p>
               )}
             </div>
           </div>
@@ -553,58 +507,36 @@ export function DashboardPage() {
 
       {/* 6. TAB: SKILLS & EVIDENCE */}
       {activeTab === "skills" && (
-        <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div className="dashboard-tab-content-col">
+          <div className="credentials-section-header">
             <div>
-              <h3 style={{ fontSize: "18px", fontWeight: "700", color: "var(--text-highlight)" }}>
+              <h3 className="connect-title">
                 Evidence-Based Skill Directory
               </h3>
-              <p style={{ fontSize: "13px", color: "var(--text-secondary)", marginTop: "2px" }}>
+              <p className="connect-desc">
                 Each skill connects demonstrated project evidence, mentor endorsements, and official blockchain certifications.
               </p>
             </div>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "16px" }}>
+          <div className="dashboard-skill-dir-grid">
             {evidenceSkillMap.map((item, idx) => (
-              <div
-                key={idx}
-                style={{
-                  padding: "18px 22px",
-                  background: "var(--bg-surface)",
-                  border: "1px solid var(--border-medium)",
-                  borderRadius: "var(--radius-md)",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "12px"
-                }}
-              >
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "10px" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <div key={idx} className="dashboard-skill-dir-card">
+                <div className="dashboard-skill-dir-card-top">
+                  <div className="dashboard-skill-title-wrap">
                     <Code2 size={18} color="var(--accent-primary)" />
-                    <h4 style={{ fontSize: "16px", fontWeight: "700", color: "var(--text-highlight)" }}>
+                    <h4 className="dashboard-skill-dir-title">
                       {item.name}
                     </h4>
                   </div>
                   <div>
                     {item.isVerified ? (
-                      <span className="verify-status-badge valid" style={{ padding: "4px 10px", fontSize: "11.5px" }}>
+                      <span className="verify-status-badge valid">
                         <CheckCircle2 size={13} />
                         <span>✓ VERIFIED BY RECOGNIZED ISSUER</span>
                       </span>
                     ) : (
-                      <span style={{
-                        display: "inline-flex",
-                        alignItems: "center",
-                        gap: "5px",
-                        padding: "4px 10px",
-                        background: "rgba(56, 189, 248, 0.08)",
-                        border: "1px solid rgba(56, 189, 248, 0.25)",
-                        borderRadius: "var(--radius-sm)",
-                        fontSize: "11px",
-                        fontFamily: "var(--font-mono)",
-                        color: "#38bdf8"
-                      }}>
+                      <span className="dashboard-skill-tag-portfolio">
                         <FolderGit2 size={12} />
                         <span>PORTFOLIO EVIDENCE (UNVERIFIED)</span>
                       </span>
@@ -613,48 +545,48 @@ export function DashboardPage() {
                 </div>
 
                 {/* Evidence Details */}
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px", marginTop: "4px" }}>
+                <div className="dashboard-skill-evidence-grid">
                   {/* Associated Projects */}
-                  <div style={{ padding: "10px 14px", background: "var(--bg-secondary)", borderRadius: "var(--radius-sm)", border: "1px solid var(--border-subtle)" }}>
-                    <span style={{ fontSize: "11px", fontFamily: "var(--font-mono)", color: "var(--text-muted)", display: "block", marginBottom: "4px" }}>
+                  <div className="dashboard-skill-box">
+                    <span className="dashboard-skill-box-label">
                       DEMONSTRATED IN PROJECTS ({item.projects.length})
                     </span>
                     {item.projects.length > 0 ? (
-                      <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                      <div className="dashboard-skill-box-list">
                         {item.projects.map((p) => (
-                          <span key={p.id} style={{ fontSize: "12.5px", color: "#38bdf8", fontWeight: "500" }}>
+                          <span key={p.id} className="dashboard-project-link-sky">
                             • {p.name}
                           </span>
                         ))}
                       </div>
                     ) : (
-                      <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>None linked yet</span>
+                      <span className="dashboard-muted-msg">None linked yet</span>
                     )}
                   </div>
 
                   {/* Associated Credentials & Endorsements */}
-                  <div style={{ padding: "10px 14px", background: "var(--bg-secondary)", borderRadius: "var(--radius-sm)", border: "1px solid var(--border-subtle)" }}>
-                    <span style={{ fontSize: "11px", fontFamily: "var(--font-mono)", color: "var(--text-muted)", display: "block", marginBottom: "4px" }}>
+                  <div className="dashboard-skill-box">
+                    <span className="dashboard-skill-box-label">
                       BLOCKCHAIN CREDENTIALS & ENDORSEMENTS
                     </span>
                     {item.credentials.length > 0 ? (
-                      <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                      <div className="dashboard-skill-box-list">
                         {item.credentials.map((c) => (
-                          <span key={c.credentialId} style={{ fontSize: "12.5px", color: "#10b981", fontWeight: "500" }}>
+                          <span key={c.credentialId} className="dashboard-cred-link-green">
                             ✓ Credential #{c.credentialId.slice(0, 8)}... (Issuer: {c.issuer.slice(0, 6)}...)
                           </span>
                         ))}
                       </div>
                     ) : item.endorsements.length > 0 ? (
-                      <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                      <div className="dashboard-skill-box-list">
                         {item.endorsements.map((end) => (
-                          <span key={end.id} style={{ fontSize: "12.5px", color: "#eab308" }}>
+                          <span key={end.id} className="dashboard-endorse-yellow">
                             🤝 Endorsed by {end.endorserName}
                           </span>
                         ))}
                       </div>
                     ) : (
-                      <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>Awaiting issuer certification on Monad</span>
+                      <span className="dashboard-muted-msg">Awaiting issuer certification on Monad</span>
                     )}
                   </div>
                 </div>
@@ -666,61 +598,43 @@ export function DashboardPage() {
 
       {/* 7. TAB: PROJECTS PORTFOLIO */}
       {activeTab === "projects" && (
-        <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "10px" }}>
+        <div className="dashboard-tab-content-col">
+          <div className="credentials-section-header">
             <div>
-              <h3 style={{ fontSize: "18px", fontWeight: "700", color: "var(--text-highlight)" }}>
+              <h3 className="connect-title">
                 Project Portfolio
               </h3>
-              <p style={{ fontSize: "13px", color: "var(--text-secondary)", marginTop: "2px" }}>
+              <p className="connect-desc">
                 Add your technical builds as evidence. Issuers can verify skills linked to these projects.
               </p>
             </div>
-            <button onClick={() => setIsAddingProject(true)} className="btn-primary" style={{ padding: "8px 16px", fontSize: "13px" }}>
+            <button onClick={() => setIsAddingProject(true)} className="btn-primary dashboard-request-claim-btn">
               <PlusCircle size={14} />
               <span>Add New Project</span>
             </button>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "18px" }}>
+          <div className="dashboard-projects-grid">
             {projects.map((proj) => (
-              <div key={proj.id} style={{
-                padding: "20px",
-                background: "var(--bg-surface)",
-                border: "1px solid var(--border-medium)",
-                borderRadius: "var(--radius-md)",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-between",
-                gap: "14px"
-              }}>
+              <div key={proj.id} className="dashboard-project-card">
                 <div>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "10px" }}>
-                    <h4 style={{ fontSize: "16px", fontWeight: "700", color: "var(--text-highlight)" }}>{proj.name}</h4>
-                    <span style={{
-                      fontSize: "10px",
-                      fontFamily: "var(--font-mono)",
-                      padding: "2px 6px",
-                      background: "rgba(56, 189, 248, 0.1)",
-                      border: "1px solid rgba(56, 189, 248, 0.3)",
-                      borderRadius: "4px",
-                      color: "#38bdf8",
-                      whiteSpace: "nowrap"
-                    }}>
+                  <div className="dashboard-project-card-top">
+                    <h4 className="dashboard-project-title">{proj.name}</h4>
+                    <span className="dashboard-project-badge">
                       PORTFOLIO EVIDENCE
                     </span>
                   </div>
 
-                  <p style={{ fontSize: "13px", color: "var(--text-secondary)", marginTop: "8px", lineHeight: "1.5" }}>
+                  <p className="dashboard-project-desc">
                     {proj.description}
                   </p>
 
                   {proj.technologies && (
-                    <div style={{ marginTop: "12px" }}>
-                      <span style={{ fontSize: "11px", color: "var(--text-muted)", display: "block", marginBottom: "4px" }}>TECH STACK:</span>
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: "5px" }}>
+                    <div className="dashboard-chips-group">
+                      <span className="dashboard-chips-label">TECH STACK:</span>
+                      <div className="dashboard-project-chips-wrap">
                         {proj.technologies.split(",").map((tech, tIdx) => (
-                          <span key={tIdx} style={{ fontSize: "11px", fontFamily: "var(--font-mono)", padding: "2px 6px", background: "var(--bg-secondary)", border: "1px solid var(--border-subtle)", borderRadius: "3px" }}>
+                          <span key={tIdx} className="dashboard-tech-chip">
                             {tech.trim()}
                           </span>
                         ))}
@@ -729,11 +643,11 @@ export function DashboardPage() {
                   )}
 
                   {proj.skillsDemonstrated && (
-                    <div style={{ marginTop: "8px" }}>
-                      <span style={{ fontSize: "11px", color: "var(--text-muted)", display: "block", marginBottom: "4px" }}>DEMONSTRATED SKILLS:</span>
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: "5px" }}>
+                    <div className="dashboard-chips-group">
+                      <span className="dashboard-chips-label">DEMONSTRATED SKILLS:</span>
+                      <div className="dashboard-project-chips-wrap">
                         {proj.skillsDemonstrated.split(",").map((sk, sIdx) => (
-                          <span key={sIdx} style={{ fontSize: "11px", color: "var(--accent-primary)", padding: "2px 6px", background: "rgba(242, 108, 54, 0.08)", borderRadius: "3px" }}>
+                          <span key={sIdx} className="dashboard-skill-chip">
                             • {sk.trim()}
                           </span>
                         ))}
@@ -742,23 +656,23 @@ export function DashboardPage() {
                   )}
                 </div>
 
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: "12px", borderTop: "1px solid var(--border-subtle)" }}>
-                  <div style={{ display: "flex", gap: "8px" }}>
+                <div className="dashboard-project-footer">
+                  <div className="dashboard-project-links">
                     {proj.githubUrl && (
-                      <a href={proj.githubUrl} target="_blank" rel="noopener noreferrer" className="btn-secondary" style={{ padding: "4px 10px", fontSize: "11.5px" }}>
+                      <a href={proj.githubUrl} target="_blank" rel="noopener noreferrer" className="btn-secondary dashboard-btn-xs">
                         <GitBranch size={12} />
                         <span>Code</span>
                         <ExternalLink size={10} />
                       </a>
                     )}
                     {proj.demoUrl && (
-                      <a href={proj.demoUrl} target="_blank" rel="noopener noreferrer" className="btn-secondary" style={{ padding: "4px 10px", fontSize: "11.5px" }}>
+                      <a href={proj.demoUrl} target="_blank" rel="noopener noreferrer" className="btn-secondary dashboard-btn-xs">
                         <span>Demo</span>
                         <ExternalLink size={10} />
                       </a>
                     )}
                   </div>
-                  <button onClick={() => handleDeleteProject(proj.id)} className="btn-secondary" style={{ padding: "4px 8px", color: "#f87171" }} title="Delete Project">
+                  <button onClick={() => handleDeleteProject(proj.id)} className="btn-secondary dashboard-btn-xs" title="Delete Project">
                     <Trash2 size={13} />
                   </button>
                 </div>
@@ -770,9 +684,9 @@ export function DashboardPage() {
 
       {/* 8. TAB: CREDENTIALS */}
       {activeTab === "credentials" && (
-        <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <h3 style={{ fontSize: "18px", fontWeight: "700" }}>On-Chain Monad Credentials</h3>
+        <div className="dashboard-tab-content-col">
+          <div className="credentials-section-header">
+            <h3 className="connect-title">On-Chain Monad Credentials</h3>
             <span className="credentials-count-pill">{credentials.length} Issued</span>
           </div>
 
@@ -786,7 +700,7 @@ export function DashboardPage() {
             <div className="empty-credentials-box">
               <ShieldCheck size={28} color="var(--accent-primary)" />
               <h4>No credentials issued to this wallet yet</h4>
-              <p style={{ fontSize: "13px", color: "var(--text-muted)" }}>
+              <p className="dashboard-muted-msg">
                 Request an authorized university, bootcamp, or mentor to issue credentials to your wallet address.
               </p>
             </div>
@@ -796,108 +710,56 @@ export function DashboardPage() {
 
       {/* 8b. TAB: VERIFICATION CLAIMS & REQUESTS */}
       {activeTab === "requests" && (
-        <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "10px" }}>
+        <div className="dashboard-tab-content-col">
+          <div className="credentials-section-header">
             <div>
-              <h3 style={{ fontSize: "18px", fontWeight: "700", color: "var(--text-highlight)" }}>
+              <h3 className="connect-title">
                 Student Verification Claims & Requests
               </h3>
-              <p style={{ fontSize: "13px", color: "var(--text-secondary)", marginTop: "2px" }}>
+              <p className="connect-desc">
                 Submit proof of project completion or skill mastery to authorized institutional issuers for on-chain certification.
               </p>
             </div>
-            <button onClick={() => setIsRequestingCredential(true)} className="btn-primary" style={{ padding: "8px 16px", fontSize: "13px" }}>
+            <button onClick={() => setIsRequestingCredential(true)} className="btn-primary dashboard-request-claim-btn">
               <PlusCircle size={14} />
               <span>Submit New Claim</span>
             </button>
           </div>
 
           {requests.length > 0 ? (
-            <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+            <div className="dashboard-preview-list">
               {requests.map((req) => (
-                <div
-                  key={req.id}
-                  style={{
-                    padding: "18px",
-                    background: "var(--bg-surface)",
-                    border: "1px solid var(--border-medium)",
-                    borderRadius: "var(--radius-md)",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "12px"
-                  }}
-                >
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "10px" }}>
+                <div key={req.id} className="dashboard-claim-card">
+                  <div className="dashboard-claim-header">
                     <div>
-                      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                        <h4 style={{ fontSize: "16px", fontWeight: "700", color: "var(--text-highlight)" }}>
+                      <div className="dashboard-claim-title-wrap">
+                        <h4 className="dashboard-claim-title">
                           {req.skillTitle}
                         </h4>
-                        <span style={{
-                          fontSize: "11px",
-                          fontFamily: "var(--font-mono)",
-                          padding: "2px 8px",
-                          background: "var(--bg-secondary)",
-                          border: "1px solid var(--border-subtle)",
-                          borderRadius: "4px",
-                          color: "var(--accent-primary)"
-                        }}>
+                        <span className="dashboard-claim-cat-tag">
                           {req.category}
                         </span>
                       </div>
-                      <p style={{ fontSize: "13px", color: "var(--text-secondary)", marginTop: "6px", lineHeight: "1.4" }}>
+                      <p className="dashboard-claim-desc">
                         {req.description}
                       </p>
                     </div>
 
                     <div>
                       {req.status === "PENDING" && (
-                        <span style={{
-                          display: "inline-flex",
-                          alignItems: "center",
-                          gap: "5px",
-                          padding: "4px 10px",
-                          background: "rgba(245, 158, 11, 0.12)",
-                          border: "1px solid rgba(245, 158, 11, 0.35)",
-                          borderRadius: "4px",
-                          fontSize: "11.5px",
-                          fontWeight: "600",
-                          color: "#f59e0b"
-                        }}>
+                        <span className="dashboard-claim-status-pending">
                           <Inbox size={12} />
                           <span>PENDING ISSUER REVIEW</span>
                         </span>
                       )}
                       {req.status === "APPROVED" && (
-                        <span style={{
-                          display: "inline-flex",
-                          alignItems: "center",
-                          gap: "5px",
-                          padding: "4px 10px",
-                          background: "rgba(16, 185, 129, 0.12)",
-                          border: "1px solid rgba(16, 185, 129, 0.35)",
-                          borderRadius: "4px",
-                          fontSize: "11.5px",
-                          fontWeight: "600",
-                          color: "#10b981"
-                        }}>
+                        <span className="dashboard-claim-status-approved">
                           <CheckCircle2 size={12} />
                           <span>APPROVED & MINTED</span>
                         </span>
                       )}
                       {req.status === "REJECTED" && (
-                        <span style={{
-                          display: "inline-flex",
-                          alignItems: "center",
-                          gap: "5px",
-                          padding: "4px 10px",
-                          background: "rgba(239, 68, 68, 0.12)",
-                          border: "1px solid rgba(239, 68, 68, 0.35)",
-                          borderRadius: "4px",
-                          fontSize: "11.5px",
-                          fontWeight: "600",
-                          color: "#ef4444"
-                        }}>
+                        <span className="dashboard-claim-status-rejected">
                           <XCircle size={12} />
                           <span>REJECTED</span>
                         </span>
@@ -906,41 +768,32 @@ export function DashboardPage() {
                   </div>
 
                   {/* Evidence & Issuer Details */}
-                  <div style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-                    gap: "10px",
-                    padding: "10px 14px",
-                    background: "var(--bg-secondary)",
-                    borderRadius: "var(--radius-sm)",
-                    border: "1px solid var(--border-subtle)",
-                    fontSize: "12px"
-                  }}>
+                  <div className="dashboard-claim-details-grid">
                     {req.evidenceProject && (
                       <div>
-                        <span style={{ color: "var(--text-muted)", display: "block" }}>EVIDENCE PROJECT:</span>
-                        <span style={{ color: "#38bdf8", fontWeight: "600" }}>{req.evidenceProject}</span>
+                        <span className="dashboard-detail-label">EVIDENCE PROJECT:</span>
+                        <span className="dashboard-project-link-sky">{req.evidenceProject}</span>
                       </div>
                     )}
                     {req.evidenceGithubUrl && (
                       <div>
-                        <span style={{ color: "var(--text-muted)", display: "block" }}>GITHUB REPOSITORY:</span>
-                        <a href={req.evidenceGithubUrl} target="_blank" rel="noopener noreferrer" style={{ color: "var(--accent-primary)", display: "inline-flex", alignItems: "center", gap: "4px" }}>
+                        <span className="dashboard-detail-label">GITHUB REPOSITORY:</span>
+                        <a href={req.evidenceGithubUrl} target="_blank" rel="noopener noreferrer" className="dashboard-cred-link-green">
                           <span>{req.evidenceGithubUrl.replace("https://github.com/", "")}</span>
                           <ExternalLink size={11} />
                         </a>
                       </div>
                     )}
                     <div>
-                      <span style={{ color: "var(--text-muted)", display: "block" }}>TARGETED ISSUER:</span>
-                      <span style={{ fontFamily: "var(--font-mono)", color: "var(--text-secondary)" }}>
+                      <span className="dashboard-detail-label">TARGETED ISSUER:</span>
+                      <span className="dashboard-detail-mono">
                         {req.issuerAddress.slice(0, 8)}...{req.issuerAddress.slice(-6)}
                       </span>
                     </div>
                     {req.credentialId && (
                       <div>
-                        <span style={{ color: "var(--text-muted)", display: "block" }}>ON-CHAIN CREDENTIAL:</span>
-                        <Link to={`/verify/${req.credentialId}`} style={{ color: "#10b981", fontWeight: "600", display: "inline-flex", alignItems: "center", gap: "4px" }}>
+                        <span className="dashboard-detail-label">ON-CHAIN CREDENTIAL:</span>
+                        <Link to={`/verify/${req.credentialId}`} className="dashboard-cred-link-green">
                           <span>View #{req.credentialId.slice(0, 8)}...</span>
                           <ExternalLink size={11} />
                         </Link>
@@ -949,7 +802,7 @@ export function DashboardPage() {
                   </div>
 
                   {req.issuerNotes && (
-                    <div style={{ fontSize: "12px", color: "var(--text-secondary)", fontStyle: "italic" }}>
+                    <div className="dashboard-claim-notes">
                       Issuer Notes: "{req.issuerNotes}"
                     </div>
                   )}
@@ -960,10 +813,10 @@ export function DashboardPage() {
             <div className="empty-credentials-box">
               <Inbox size={30} color="var(--accent-primary)" />
               <h4>No verification claims submitted yet</h4>
-              <p style={{ fontSize: "13px", color: "var(--text-muted)", maxWidth: "480px" }}>
+              <p className="dashboard-muted-msg">
                 Built an awesome project or finished a course? Submit a verification claim with your GitHub proof to an authorized issuer for blockchain certification.
               </p>
-              <button onClick={() => setIsRequestingCredential(true)} className="btn-primary" style={{ marginTop: "8px" }}>
+              <button onClick={() => setIsRequestingCredential(true)} className="btn-primary dashboard-request-claim-btn">
                 <Send size={13} />
                 <span>Submit Verification Claim</span>
               </button>
@@ -974,59 +827,33 @@ export function DashboardPage() {
 
       {/* 9. TAB: ACHIEVEMENTS */}
       {activeTab === "achievements" && (
-        <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+        <div className="dashboard-tab-content-col">
           <div>
-            <h3 style={{ fontSize: "18px", fontWeight: "700", color: "var(--text-highlight)" }}>
+            <h3 className="connect-title">
               Career Milestones & Achievements
             </h3>
-            <p style={{ fontSize: "13px", color: "var(--text-secondary)", marginTop: "2px" }}>
+            <p className="connect-desc">
               Achievements are automatically calculated from actual verifiable on-chain credentials and documented projects.
             </p>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+          <div className="dashboard-achievements-grid">
             {achievements.map((ach) => (
-              <div
-                key={ach.id}
-                style={{
-                  padding: "18px",
-                  background: ach.unlocked ? "rgba(16, 185, 129, 0.04)" : "var(--bg-surface)",
-                  border: ach.unlocked ? "1px solid rgba(16, 185, 129, 0.3)" : "1px solid var(--border-medium)",
-                  borderRadius: "var(--radius-md)",
-                  display: "flex",
-                  alignItems: "flex-start",
-                  gap: "14px",
-                  opacity: ach.unlocked ? 1 : 0.65
-                }}
-              >
-                <div style={{
-                  fontSize: "24px",
-                  width: "44px",
-                  height: "44px",
-                  borderRadius: "var(--radius-md)",
-                  background: ach.unlocked ? "rgba(16, 185, 129, 0.15)" : "var(--bg-secondary)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center"
-                }}>
+              <div key={ach.id} className={`dashboard-achievement-card ${ach.unlocked ? "unlocked" : ""}`}>
+                <div className={`dashboard-achievement-icon-wrap ${ach.unlocked ? "unlocked" : ""}`}>
                   {ach.icon}
                 </div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <h4 style={{ fontSize: "15px", fontWeight: "700", color: "var(--text-highlight)" }}>{ach.title}</h4>
-                    <span style={{
-                      fontSize: "11px",
-                      fontWeight: "700",
-                      fontFamily: "var(--font-mono)",
-                      color: ach.unlocked ? "#10b981" : "var(--text-muted)"
-                    }}>
+                <div className="dashboard-achievement-body">
+                  <div className="dashboard-achievement-header">
+                    <h4 className="dashboard-achievement-title">{ach.title}</h4>
+                    <span className={`dashboard-achievement-tag ${ach.unlocked ? "unlocked" : ""}`}>
                       {ach.unlocked ? "✓ UNLOCKED" : "LOCKED"}
                     </span>
                   </div>
-                  <p style={{ fontSize: "12.5px", color: "var(--text-secondary)", marginTop: "4px" }}>
+                  <p className="dashboard-achievement-desc">
                     {ach.description}
                   </p>
-                  <div style={{ marginTop: "8px", fontSize: "11.5px", fontFamily: "var(--font-mono)", color: "var(--text-muted)" }}>
+                  <div className="dashboard-achievement-rule">
                     Rule: {ach.requirement} ({ach.current})
                   </div>
                 </div>
@@ -1038,56 +865,45 @@ export function DashboardPage() {
 
       {/* 10. TAB: MENTOR ENDORSEMENTS */}
       {activeTab === "endorsements" && (
-        <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "10px" }}>
+        <div className="dashboard-tab-content-col">
+          <div className="credentials-section-header">
             <div>
-              <h3 style={{ fontSize: "18px", fontWeight: "700", color: "var(--text-highlight)" }}>
+              <h3 className="connect-title">
                 Mentor Endorsements
               </h3>
-              <p style={{ fontSize: "13px", color: "var(--text-secondary)", marginTop: "2px" }}>
+              <p className="connect-desc">
                 Testimonials from project mentors, instructors, and lead engineers. Distinct from institutional credentials.
               </p>
             </div>
-            <button onClick={() => setIsAddingEndorsement(true)} className="btn-secondary" style={{ padding: "8px 16px", fontSize: "13px" }}>
+            <button onClick={() => setIsAddingEndorsement(true)} className="btn-secondary dashboard-request-claim-btn">
               <PlusCircle size={14} />
               <span>Add Mentor Testimonial</span>
             </button>
           </div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+          <div className="dashboard-endorsements-list">
             {endorsements.length > 0 ? (
               endorsements.map((end) => (
-                <div
-                  key={end.id}
-                  style={{
-                    padding: "18px 22px",
-                    background: "var(--bg-surface)",
-                    border: "1px solid var(--border-medium)",
-                    borderRadius: "var(--radius-md)",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "8px"
-                  }}
-                >
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <span style={{ fontSize: "12px", fontFamily: "var(--font-mono)", color: "var(--accent-primary)", fontWeight: "700" }}>
+                <div key={end.id} className="dashboard-endorsement-card">
+                  <div className="dashboard-endorsement-header">
+                    <span className="dashboard-endorsement-skill">
                       ENDORSED SKILL: {end.skill}
                     </span>
-                    <span style={{ fontSize: "11.5px", color: "var(--text-muted)" }}>{end.date}</span>
+                    <span className="dashboard-endorsement-date">{end.date}</span>
                   </div>
-                  <p style={{ fontSize: "13.5px", color: "var(--text-highlight)", fontStyle: "italic", lineHeight: "1.5" }}>
+                  <p className="dashboard-endorsement-quote">
                     "{end.endorsementText}"
                   </p>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "4px", fontSize: "12px", color: "var(--text-secondary)" }}>
+                  <div className="dashboard-endorsement-footer">
                     <span>— {end.endorserName}</span>
-                    <span style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--text-muted)" }}>
+                    <span className="dashboard-signer-mono">
                       Signer: {end.endorserWallet.slice(0, 6)}...{end.endorserWallet.slice(-4)}
                     </span>
                   </div>
                 </div>
               ))
             ) : (
-              <p style={{ fontSize: "13px", color: "var(--text-muted)" }}>No mentor endorsements recorded yet.</p>
+              <p className="dashboard-muted-msg">No mentor endorsements recorded yet.</p>
             )}
           </div>
         </div>
@@ -1096,11 +912,11 @@ export function DashboardPage() {
       {/* MODAL: EDIT PROFILE */}
       {isEditingProfile && (
         <div className="modal-overlay" onClick={() => setIsEditingProfile(false)}>
-          <div className="modal-dialog" onClick={(e) => e.stopPropagation()} style={{ maxWidth: "540px", padding: "24px" }}>
-            <h3 style={{ fontSize: "18px", fontWeight: "700", marginBottom: "16px" }}>Edit Student Profile</h3>
-            <form onSubmit={handleSaveProfile} style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+          <div className="modal-dialog dashboard-modal-dialog" onClick={(e) => e.stopPropagation()}>
+            <h3 className="dashboard-modal-title">Edit Student Profile</h3>
+            <form onSubmit={handleSaveProfile} className="dashboard-form-col">
               <div>
-                <label style={{ fontSize: "12px", display: "block", marginBottom: "4px" }}>Full Name</label>
+                <label className="dashboard-label">Full Name</label>
                 <input
                   type="text"
                   value={profileForm.name}
@@ -1112,7 +928,7 @@ export function DashboardPage() {
               </div>
 
               <div>
-                <label style={{ fontSize: "12px", display: "block", marginBottom: "4px" }}>College / Institution</label>
+                <label className="dashboard-label">College / Institution</label>
                 <input
                   type="text"
                   value={profileForm.college}
@@ -1122,9 +938,9 @@ export function DashboardPage() {
                 />
               </div>
 
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+              <div className="dashboard-form-2col">
                 <div>
-                  <label style={{ fontSize: "12px", display: "block", marginBottom: "4px" }}>Degree / Program</label>
+                  <label className="dashboard-label">Degree / Program</label>
                   <input
                     type="text"
                     value={profileForm.degree}
@@ -1134,7 +950,7 @@ export function DashboardPage() {
                   />
                 </div>
                 <div>
-                  <label style={{ fontSize: "12px", display: "block", marginBottom: "4px" }}>Graduation Year</label>
+                  <label className="dashboard-label">Graduation Year</label>
                   <input
                     type="text"
                     value={profileForm.graduationYear}
@@ -1146,7 +962,7 @@ export function DashboardPage() {
               </div>
 
               <div>
-                <label style={{ fontSize: "12px", display: "block", marginBottom: "4px" }}>Short Bio</label>
+                <label className="dashboard-label">Short Bio</label>
                 <textarea
                   value={profileForm.bio}
                   onChange={(e) => setProfileForm({ ...profileForm, bio: e.target.value })}
@@ -1157,7 +973,7 @@ export function DashboardPage() {
               </div>
 
               <div>
-                <label style={{ fontSize: "12px", display: "block", marginBottom: "4px" }}>Avatar Photo URL</label>
+                <label className="dashboard-label">Avatar Photo URL</label>
                 <input
                   type="url"
                   value={profileForm.avatar}
@@ -1167,7 +983,7 @@ export function DashboardPage() {
                 />
               </div>
 
-              <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px", marginTop: "12px" }}>
+              <div className="dashboard-form-actions">
                 <button type="button" onClick={() => setIsEditingProfile(false)} className="btn-secondary">
                   Cancel
                 </button>
@@ -1183,14 +999,14 @@ export function DashboardPage() {
       {/* MODAL: ADD PROJECT */}
       {isAddingProject && (
         <div className="modal-overlay" onClick={() => setIsAddingProject(false)}>
-          <div className="modal-dialog" onClick={(e) => e.stopPropagation()} style={{ maxWidth: "560px", padding: "24px" }}>
-            <h3 style={{ fontSize: "18px", fontWeight: "700", marginBottom: "6px" }}>Add Project Evidence</h3>
-            <p style={{ fontSize: "12.5px", color: "var(--text-secondary)", marginBottom: "16px" }}>
+          <div className="modal-dialog dashboard-modal-dialog" onClick={(e) => e.stopPropagation()}>
+            <h3 className="dashboard-modal-title">Add Project Evidence</h3>
+            <p className="dashboard-modal-sub">
               Add a technical project as portfolio evidence for recruiters and authorized issuers to review.
             </p>
-            <form onSubmit={handleAddProject} style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+            <form onSubmit={handleAddProject} className="dashboard-form-col">
               <div>
-                <label style={{ fontSize: "12px", display: "block", marginBottom: "4px" }}>Project Name *</label>
+                <label className="dashboard-label">Project Name *</label>
                 <input
                   type="text"
                   value={projectForm.name}
@@ -1202,7 +1018,7 @@ export function DashboardPage() {
               </div>
 
               <div>
-                <label style={{ fontSize: "12px", display: "block", marginBottom: "4px" }}>Project Description</label>
+                <label className="dashboard-label">Project Description</label>
                 <textarea
                   value={projectForm.description}
                   onChange={(e) => setProjectForm({ ...projectForm, description: e.target.value })}
@@ -1212,9 +1028,9 @@ export function DashboardPage() {
                 />
               </div>
 
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+              <div className="dashboard-form-2col">
                 <div>
-                  <label style={{ fontSize: "12px", display: "block", marginBottom: "4px" }}>Technologies Used</label>
+                  <label className="dashboard-label">Technologies Used</label>
                   <input
                     type="text"
                     value={projectForm.technologies}
@@ -1224,7 +1040,7 @@ export function DashboardPage() {
                   />
                 </div>
                 <div>
-                  <label style={{ fontSize: "12px", display: "block", marginBottom: "4px" }}>Skills Demonstrated</label>
+                  <label className="dashboard-label">Skills Demonstrated</label>
                   <input
                     type="text"
                     value={projectForm.skillsDemonstrated}
@@ -1235,9 +1051,9 @@ export function DashboardPage() {
                 </div>
               </div>
 
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+              <div className="dashboard-form-2col">
                 <div>
-                  <label style={{ fontSize: "12px", display: "block", marginBottom: "4px" }}>GitHub Repository URL</label>
+                  <label className="dashboard-label">GitHub Repository URL</label>
                   <input
                     type="url"
                     value={projectForm.githubUrl}
@@ -1247,7 +1063,7 @@ export function DashboardPage() {
                   />
                 </div>
                 <div>
-                  <label style={{ fontSize: "12px", display: "block", marginBottom: "4px" }}>Live Demo URL</label>
+                  <label className="dashboard-label">Live Demo URL</label>
                   <input
                     type="url"
                     value={projectForm.demoUrl}
@@ -1258,7 +1074,7 @@ export function DashboardPage() {
                 </div>
               </div>
 
-              <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px", marginTop: "12px" }}>
+              <div className="dashboard-form-actions">
                 <button type="button" onClick={() => setIsAddingProject(false)} className="btn-secondary">
                   Cancel
                 </button>
@@ -1274,14 +1090,14 @@ export function DashboardPage() {
       {/* MODAL: ADD ENDORSEMENT */}
       {isAddingEndorsement && (
         <div className="modal-overlay" onClick={() => setIsAddingEndorsement(false)}>
-          <div className="modal-dialog" onClick={(e) => e.stopPropagation()} style={{ maxWidth: "540px", padding: "24px" }}>
-            <h3 style={{ fontSize: "18px", fontWeight: "700", marginBottom: "6px" }}>Add Mentor Endorsement</h3>
-            <p style={{ fontSize: "12.5px", color: "var(--text-secondary)", marginBottom: "16px" }}>
+          <div className="modal-dialog dashboard-modal-dialog" onClick={(e) => e.stopPropagation()}>
+            <h3 className="dashboard-modal-title">Add Mentor Endorsement</h3>
+            <p className="dashboard-modal-sub">
               Record a testimonial endorsement from a project mentor, instructor, or senior peer.
             </p>
-            <form onSubmit={handleAddEndorsement} style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+            <form onSubmit={handleAddEndorsement} className="dashboard-form-col">
               <div>
-                <label style={{ fontSize: "12px", display: "block", marginBottom: "4px" }}>Endorsed Skill / Competency *</label>
+                <label className="dashboard-label">Endorsed Skill / Competency *</label>
                 <input
                   type="text"
                   value={endorsementForm.skill}
@@ -1293,7 +1109,7 @@ export function DashboardPage() {
               </div>
 
               <div>
-                <label style={{ fontSize: "12px", display: "block", marginBottom: "4px" }}>Mentor Testimonial *</label>
+                <label className="dashboard-label">Mentor Testimonial *</label>
                 <textarea
                   value={endorsementForm.endorsementText}
                   onChange={(e) => setEndorsementForm({ ...endorsementForm, endorsementText: e.target.value })}
@@ -1304,9 +1120,9 @@ export function DashboardPage() {
                 />
               </div>
 
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+              <div className="dashboard-form-2col">
                 <div>
-                  <label style={{ fontSize: "12px", display: "block", marginBottom: "4px" }}>Mentor Name & Role</label>
+                  <label className="dashboard-label">Mentor Name & Role</label>
                   <input
                     type="text"
                     value={endorsementForm.endorserName}
@@ -1316,7 +1132,7 @@ export function DashboardPage() {
                   />
                 </div>
                 <div>
-                  <label style={{ fontSize: "12px", display: "block", marginBottom: "4px" }}>Mentor Wallet Address</label>
+                  <label className="dashboard-label">Mentor Wallet Address</label>
                   <input
                     type="text"
                     value={endorsementForm.endorserWallet}
@@ -1327,7 +1143,7 @@ export function DashboardPage() {
                 </div>
               </div>
 
-              <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px", marginTop: "12px" }}>
+              <div className="dashboard-form-actions">
                 <button type="button" onClick={() => setIsAddingEndorsement(false)} className="btn-secondary">
                   Cancel
                 </button>

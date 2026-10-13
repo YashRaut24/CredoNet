@@ -23,7 +23,7 @@ export function Navbar() {
           <div className="brand-icon-wrap">
             <ShieldCheck size={18} />
           </div>
-          <span style={{ fontSize: "19px", fontWeight: "800", letterSpacing: "-0.02em" }}>
+          <span className="brand-text">
             CredoNet<span className="brand-dot">.</span>
           </span>
         </Link>
@@ -101,7 +101,7 @@ export function Navbar() {
         <div className="nav-actions">
           {/* Authenticated User / Role Pill */}
           {user ? (
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <div className="nav-auth-group">
               <div 
                 className={`persona-nav-pill ${currentRole}`}
                 title={`Logged in as ${user.name} (${user.role})`}
@@ -115,19 +115,17 @@ export function Navbar() {
 
               <button
                 onClick={handleLogout}
-                className="btn-secondary"
-                style={{ padding: "6px 10px", height: "34px" }}
+                className="btn-secondary nav-icon-btn"
                 title="Log Out"
               >
                 <LogOut size={13} />
               </button>
             </div>
           ) : (
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <div className="nav-auth-group">
               <Link
                 to="/login"
-                className="btn-secondary"
-                style={{ padding: "6px 12px", height: "34px", fontSize: "12px", gap: "6px" }}
+                className="btn-secondary nav-btn-sm"
               >
                 <LogIn size={13} />
                 <span>Sign In</span>
@@ -135,8 +133,7 @@ export function Navbar() {
 
               <Link
                 to="/signup"
-                className="btn-primary"
-                style={{ padding: "6px 14px", height: "34px", fontSize: "12px" }}
+                className="btn-primary nav-btn-sm"
               >
                 <span>Sign Up</span>
               </Link>
@@ -176,8 +173,7 @@ export function Navbar() {
 
                 <button
                   onClick={disconnectWallet}
-                  className="btn-secondary"
-                  style={{ padding: "6px 10px", height: "34px" }}
+                  className="btn-secondary nav-icon-btn"
                   title="Disconnect Web3 Wallet"
                 >
                   <LogOut size={13} />
@@ -187,8 +183,7 @@ export function Navbar() {
               <button
                 onClick={connectWallet}
                 disabled={isConnecting}
-                className="btn-primary"
-                style={{ padding: "7px 14px", height: "34px", fontSize: "12.5px" }}
+                className="btn-primary nav-btn-connect"
               >
                 {isConnecting ? "Connecting..." : "Connect Wallet"}
               </button>

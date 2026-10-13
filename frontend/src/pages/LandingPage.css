@@ -598,3 +598,220 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* User Value Section & Persona Triad */
+.user-value-section {
+  margin: 50px 0;
+}
+
+.user-value-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.user-value-tag {
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--accent-primary);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.user-value-title {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text-highlight);
+  margin-top: 6px;
+}
+
+.user-value-desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 8px auto 0 auto;
+}
+
+.triad-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.triad-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-neutral);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: var(--shadow-sm);
+}
+
+.triad-card.student {
+  border-top: 3px solid var(--accent-primary);
+}
+
+.triad-card.issuer {
+  border-top: 3px solid #38bdf8;
+}
+
+.triad-card.employer {
+  border-top: 3px solid #10b981;
+}
+
+.triad-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.triad-icon-wrap {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.triad-icon-wrap.student {
+  background: rgba(227, 97, 40, 0.12);
+  color: var(--accent-primary);
+}
+
+.triad-icon-wrap.issuer {
+  background: rgba(56, 189, 248, 0.12);
+  color: #38bdf8;
+}
+
+.triad-icon-wrap.employer {
+  background: rgba(16, 185, 129, 0.12);
+  color: #10b981;
+}
+
+.triad-badge {
+  font-size: 10.5px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+}
+
+.triad-badge.student {
+  color: var(--accent-primary);
+  background: rgba(227, 97, 40, 0.1);
+}
+
+.triad-badge.issuer {
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.1);
+}
+
+.triad-badge.employer {
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.triad-title {
+  margin-top: 14px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-highlight);
+}
+
+.triad-card-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-top: 8px;
+}
+
+.triad-card-list {
+  margin: 14px 0;
+  padding-left: 18px;
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.triad-btn {
+  width: 100%;
+  justify-content: center;
+  padding: 10px;
+  font-size: 13px;
+  margin-top: 12px;
+}
+
+.triad-btn.issuer {
+  border-color: rgba(56, 189, 248, 0.4);
+  color: #38bdf8;
+}
+
+.triad-btn.employer {
+  border-color: rgba(16, 185, 129, 0.4);
+  color: #10b981;
+}
+
+/* Problem Solution Strip */
+.problem-solution-section {
+  padding: 32px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-neutral);
+  border-radius: var(--radius-lg);
+  margin: 30px 0;
+  box-shadow: var(--shadow-sm);
+}
+
+.problem-solution-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+}
+
+@media (max-width: 768px) {
+  .problem-solution-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.problem-label {
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: #f87171;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.solution-label {
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: #10b981;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.problem-solution-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-top: 8px;
+  color: var(--text-highlight);
+}
+
+.problem-solution-desc {
+  font-size: 13.5px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-top: 10px;
+}
+
+.search-submit-btn {
+  padding: 8px 18px;
+  white-space: nowrap;
+}

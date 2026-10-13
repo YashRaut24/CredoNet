@@ -116,8 +116,7 @@ export function BlindProofModal({ credential, onClose }) {
               <button
                 onClick={generateBlindProof}
                 disabled={loading}
-                className="btn-primary"
-                style={{ width: "100%", justifyContent: "center", padding: "12px", gap: "8px" }}
+                className="btn-primary blind-btn-generate"
               >
                 {loading ? (
                   <>
@@ -172,8 +171,7 @@ export function BlindProofModal({ credential, onClose }) {
                   href={`/verify/blind/${proofData.proofId}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="btn-secondary"
-                  style={{ width: "100%", justifyContent: "center", padding: "10px", fontSize: "12.5px" }}
+                  className="btn-secondary blind-btn-open"
                 >
                   <span>Open Blind Recruiter Dossier</span>
                   <ExternalLink size={13} />

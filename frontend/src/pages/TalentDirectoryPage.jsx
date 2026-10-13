@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { 
   Users, 
@@ -30,9 +30,32 @@ export function TalentDirectoryPage() {
   const [minVerified, setMinVerified] = useState("all");
   const [sortBy, setSortBy] = useState("credentials");
   const [copiedAddress, setCopiedAddress] = useState(null);
+  const [realCandidates, setRealCandidates] = useState([]);
+  const [loadingReal, setLoadingReal] = useState(false);
 
-  // Candidate Data Set (Real + Verified Samples)
-  const candidateDirectory = [
+  // Load live candidates from MongoDB & blockchain
+  useEffect(() => {
+    async function fetchCandidates() {
+      setLoadingReal(true);
+      try {
+        const res = await fetch("/api/candidates");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && Array.isArray(data.candidates) && data.candidates.length > 0) {
+            setRealCandidates(data.candidates);
+          }
+        }
+      } catch (err) {
+        console.warn("Could not load real candidates from backend:", err);
+      } finally {
+        setLoadingReal(false);
+      }
+    }
+    fetchCandidates();
+  }, []);
+
+  // Curated Baseline Candidates
+  const baseSampleProfiles = [
     {
       id: "cand-1",
       name: "Alex John",
@@ -105,7 +128,19 @@ export function TalentDirectoryPage() {
     }
   ];
 
+  // Merge live database/blockchain candidates with baseline profiles
+  const candidateDirectory = [
+    ...realCandidates,
+    ...baseSampleProfiles.filter((sample) => 
+      !realCandidates.some((real) => 
+        (real.address && sample.address && real.address.toLowerCase() === sample.address.toLowerCase()) ||
+        (real.name && sample.name && real.name.toLowerCase() === sample.name.toLowerCase())
+      )
+    )
+  ];
+
   const handleCopy = (address) => {
+    if (!address) return;
     navigator.clipboard.writeText(address);
     setCopiedAddress(address);
     setTimeout(() => setCopiedAddress(null), 2000);
@@ -219,7 +254,7 @@ export function TalentDirectoryPage() {
               <button
                 type="button"
                 onClick={() => setSearchTerm("")}
-                style={{ background: "none", border: "none", color: "var(--text-muted)", cursor: "pointer", fontSize: "12px" }}
+                className="talent-clear-btn"
               >
                 Clear
               </button>
@@ -275,11 +310,11 @@ export function TalentDirectoryPage() {
 
       {/* 3. Candidate Directory Grid */}
       <section>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
-          <h2 style={{ fontSize: "18px", fontWeight: "700", color: "var(--text-highlight)" }}>
+        <div className="talent-section-header">
+          <h2 className="talent-section-title">
             Verified Candidates ({filteredCandidates.length})
           </h2>
-          <span style={{ fontSize: "12px", fontFamily: "var(--font-mono)", color: "var(--text-muted)" }}>
+          <span className="talent-section-sub">
             Zero-Gas Public Verification Available
           </span>
         </div>
@@ -304,10 +339,10 @@ export function TalentDirectoryPage() {
                   <p className="talent-card-bio">{candidate.bio}</p>
 
                   {/* Skills Cloud */}
-                  <div className="talent-skills-container" style={{ marginTop: "14px" }}>
+                  <div className="talent-skills-container">
                     <div className="talent-skills-heading">
                       <span>On-Chain Verified Skills</span>
-                      <span style={{ color: "#10b981", fontSize: "11px" }}>✓ Certified</span>
+                      <span className="talent-skills-certified-tag">✓ Certified</span>
                     </div>
                     <div className="talent-skills-wrap">
                       {candidate.skills.map((skill, sIdx) => (
@@ -321,15 +356,15 @@ export function TalentDirectoryPage() {
 
                   {/* Project Evidence */}
                   {candidate.evidenceProject && (
-                    <div className="talent-evidence-row" style={{ marginTop: "12px" }}>
-                      <FolderGit2 size={13} color="#38bdf8" />
-                      <span style={{ flex: 1 }}>Build: <strong style={{ color: "var(--text-highlight)" }}>{candidate.evidenceProject}</strong></span>
+                    <div className="talent-evidence-row">
+                      <FolderGit2 size={13} color="#e36128" />
+                      <span className="talent-evidence-text">Build: <strong className="talent-evidence-build">{candidate.evidenceProject}</strong></span>
                       {candidate.githubUrl && (
                         <a
                           href={candidate.githubUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          style={{ color: "#c084fc", display: "inline-flex", alignItems: "center", gap: "3px" }}
+                          className="talent-repo-link"
                         >
                           <span>Repo</span>
                           <ExternalLink size={10} />
@@ -349,18 +384,21 @@ export function TalentDirectoryPage() {
 
                     <button
                       type="button"
-                      onClick={() => handleCopy(candidate.address)}
+                      onClick={() => candidate.address && handleCopy(candidate.address)}
                       className="talent-wallet-chip"
                       title="Click to copy wallet address"
-                      style={{ border: "none", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: "4px" }}
                     >
-                      <span>{candidate.address.slice(0, 6)}...{candidate.address.slice(-4)}</span>
+                      <span>
+                        {candidate.address && candidate.address.length >= 10
+                          ? `${candidate.address.slice(0, 6)}...${candidate.address.slice(-4)}`
+                          : candidate.address || "0x..."}
+                      </span>
                       {copiedAddress === candidate.address ? <Check size={11} color="#10b981" /> : <Copy size={11} />}
                     </button>
                   </div>
 
                   <div className="talent-card-action-btns">
-                    <Link to={`/vault/${candidate.address}`} className="btn-talent-passport">
+                    <Link to={candidate.address ? `/vault/${candidate.address}` : "/vault/0x71C92a8C943B8d62283e1c66289b5B38B71C4e92"} className="btn-talent-passport">
                       <span>View Sovereign Passport</span>
                       <ExternalLink size={12} />
                     </Link>
@@ -376,8 +414,8 @@ export function TalentDirectoryPage() {
         ) : (
           <div className="talent-empty-state">
             <Users size={32} color="var(--text-muted)" />
-            <h3 style={{ fontSize: "16px", color: "var(--text-highlight)" }}>No candidates found matching your criteria</h3>
-            <p style={{ fontSize: "13px", color: "var(--text-muted)", maxWidth: "420px" }}>
+            <h3 className="talent-empty-title">No candidates found matching your criteria</h3>
+            <p className="talent-empty-desc">
               Try adjusting your search terms or selecting "All Engineers" to view all pre-verified profiles.
             </p>
             <button
@@ -387,7 +425,6 @@ export function TalentDirectoryPage() {
                 setMinVerified("all");
               }}
               className="btn-secondary"
-              style={{ padding: "6px 14px", fontSize: "12px", marginTop: "8px" }}
             >
               Reset All Filters
             </button>

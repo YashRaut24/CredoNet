@@ -1,6 +1,8 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
+const { ethers } = require("ethers");
 const User = require("../models/User");
+const StudentProfile = require("../models/StudentProfile");
 const { protect, JWT_SECRET } = require("../middleware/auth");
 
 const router = express.Router();
@@ -46,14 +48,41 @@ router.post("/signup", async (req, res) => {
 
     const assignedRole = ["student", "issuer", "employer"].includes(role) ? role : "student";
 
+    // Ensure candidate has a valid EVM wallet address for sovereign credential ledger
+    let finalWallet = walletAddress ? walletAddress.trim().toLowerCase() : "";
+    if (!finalWallet && assignedRole === "student") {
+      finalWallet = ethers.Wallet.createRandom().address.toLowerCase();
+    }
+
     const user = await User.create({
       name: name.trim(),
       email: email.toLowerCase().trim(),
       password,
       role: assignedRole,
       organization: organization ? organization.trim() : "",
-      walletAddress: walletAddress ? walletAddress.trim() : "",
+      walletAddress: finalWallet,
     });
+
+    // Auto-create StudentProfile so the candidate immediately shows up in Talent Directory
+    if (assignedRole === "student" && finalWallet) {
+      try {
+        await StudentProfile.findOneAndUpdate(
+          { walletAddress: finalWallet },
+          {
+            walletAddress: finalWallet,
+            name: name.trim(),
+            college: organization ? organization.trim() : "Accredited University",
+            degree: "B.E. Computer Engineering",
+            graduationYear: "2027",
+            bio: `${name.trim()} is an engineering candidate registered on CredoNet with verifiable credentials.`,
+            interests: ["Blockchain", "Web Development", "Distributed Systems"],
+          },
+          { upsert: true, new: true, setDefaultsOnInsert: true }
+        );
+      } catch (profErr) {
+        console.warn("[Auth Signup] Auto-create student profile note:", profErr.message);
+      }
+    }
 
     const token = generateToken(user._id);
 
@@ -147,7 +176,56 @@ router.get("/me", protect, async (req, res) => {
 });
 
 /**
- * Seed initial sample users if database is empty
+ * @route   PUT /api/auth/wallet
+ * @desc    Update wallet address for the logged-in user and synchronize profile
+ * @access  Private
+ */
+router.put("/wallet", protect, async (req, res) => {
+  try {
+    const { walletAddress } = req.body;
+    if (!walletAddress) {
+      return res.status(400).json({ success: false, error: "Wallet address is required" });
+    }
+
+    const cleanWallet = walletAddress.trim().toLowerCase();
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ success: false, error: "User not found" });
+    }
+
+    user.walletAddress = cleanWallet;
+    await user.save();
+
+    if (user.role === "student") {
+      await StudentProfile.findOneAndUpdate(
+        { walletAddress: cleanWallet },
+        {
+          walletAddress: cleanWallet,
+          name: user.name,
+          college: user.organization || "Accredited University",
+        },
+        { upsert: true, new: true, setDefaultsOnInsert: true }
+      );
+    }
+
+    res.json({
+      success: true,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        organization: user.organization,
+        walletAddress: user.walletAddress,
+      },
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+/**
+ * Seed initial sample users if database is empty & backfill any student profiles
  */
 async function seedDefaultUsers() {
   try {
@@ -185,6 +263,31 @@ async function seedDefaultUsers() {
         },
       ]);
       console.log("[CredoNet Auth] Demo accounts successfully created!");
+    }
+
+    // Backfill any existing student users without a wallet address or StudentProfile
+    const registeredStudents = await User.find({ role: "student" });
+    for (const student of registeredStudents) {
+      let wallet = student.walletAddress ? student.walletAddress.trim().toLowerCase() : "";
+      if (!wallet) {
+        wallet = ethers.Wallet.createRandom().address.toLowerCase();
+        student.walletAddress = wallet;
+        await student.save();
+      }
+
+      const existingProf = await StudentProfile.findOne({ walletAddress: wallet });
+      if (!existingProf) {
+        await StudentProfile.create({
+          walletAddress: wallet,
+          name: student.name,
+          college: student.organization || "Accredited University",
+          degree: "B.E. Computer Engineering",
+          graduationYear: "2027",
+          bio: `${student.name} is an engineering candidate registered on CredoNet with verifiable credentials.`,
+          interests: ["Web Development", "Blockchain", "Distributed Systems"],
+        });
+        console.log(`[CredoNet Auth] Synchronized profile for candidate: ${student.name} (${wallet})`);
+      }
     }
   } catch (err) {
     console.warn("[CredoNet Auth] Seed accounts warning:", err.message);

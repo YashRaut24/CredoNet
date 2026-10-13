@@ -10,15 +10,12 @@ import {
   ExternalLink, 
   CheckCircle2, 
   XCircle,
-  Layers,
   ArrowLeft,
   User,
   FolderGit2,
   GitBranch,
-  Search,
   MessageSquare,
-  Sparkles,
-  Code2
+  Sparkles
 } from "lucide-react";
 import { useWeb3 } from "../context/Web3Context";
 import { CredentialCard } from "../components/CredentialCard";
@@ -102,7 +99,7 @@ export function PassportPage() {
 
   if (!isValidAddress) {
     return (
-      <div className="container" style={{ padding: "60px 0" }}>
+      <div className="container passport-empty-container">
         <div className="connect-prompt-card">
           <XCircle size={40} color="#f43f5e" />
           <h3 className="connect-title">Invalid Wallet Address</h3>
@@ -122,7 +119,7 @@ export function PassportPage() {
     <div className="container passport-page">
       {/* Back button */}
       <div>
-        <Link to="/" className="btn-secondary" style={{ padding: "6px 14px", fontSize: "12px" }}>
+        <Link to="/" className="btn-secondary passport-back-btn">
           <ArrowLeft size={13} />
           <span>Back to Home</span>
         </Link>
@@ -131,21 +128,21 @@ export function PassportPage() {
       {/* 1. PROFILE HEADER */}
       <div className="passport-hero-card">
         <div className="passport-identity-wrap">
-          <div className="passport-avatar-shield" style={{ overflow: "hidden" }}>
+          <div className="passport-avatar-shield">
             {profile?.avatar ? (
-              <img src={profile.avatar} alt="Profile" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              <img src={profile.avatar} alt="Profile" className="passport-avatar-img" />
             ) : (
               <User size={32} />
             )}
           </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-            <span className="trust-badge" style={{ width: "fit-content" }}>
+          <div className="passport-hero-info">
+            <span className="trust-badge">
               <span className="trust-badge-dot" />
               Verified SkillPassport • Monad Testnet
             </span>
             <h2 className="passport-title">{profile?.name || "Student Career Passport"}</h2>
             
-            <div style={{ display: "flex", gap: "8px", alignItems: "center", flexWrap: "wrap", fontSize: "13px", color: "var(--text-secondary)" }}>
+            <div className="passport-meta-tags">
               {profile?.degree && <span>{profile.degree}</span>}
               {profile?.college && (
                 <>
@@ -161,7 +158,7 @@ export function PassportPage() {
               )}
             </div>
 
-            <div className="passport-address-chip" style={{ marginTop: "4px" }}>
+            <div className="passport-address-chip">
               <span>WALLET: {address}</span>
               <button onClick={() => {
                 navigator.clipboard.writeText(address);
@@ -174,7 +171,7 @@ export function PassportPage() {
           </div>
         </div>
 
-        <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+        <div className="passport-actions-group">
           <button onClick={copyAddress} className="btn-secondary">
             {copied ? <Check size={14} color="#10b981" /> : <Copy size={14} />}
             <span>{copied ? "Link Copied!" : "Share Passport"}</span>
@@ -188,20 +185,15 @@ export function PassportPage() {
 
       {/* 2. ABOUT SECTION */}
       {profile?.bio && (
-        <div style={{
-          padding: "18px 24px",
-          background: "var(--bg-surface)",
-          border: "1px solid var(--border-medium)",
-          borderRadius: "var(--radius-md)"
-        }}>
-          <h4 style={{ fontSize: "14px", fontWeight: "700", color: "var(--text-highlight)", marginBottom: "6px" }}>About</h4>
-          <p style={{ fontSize: "13.5px", color: "var(--text-secondary)", lineHeight: "1.6" }}>
+        <div className="passport-about-card">
+          <h4 className="passport-about-title">About</h4>
+          <p className="passport-about-desc">
             {profile.bio}
           </p>
           {profile?.interests?.length > 0 && (
-            <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginTop: "12px" }}>
+            <div className="passport-links-chips">
               {profile.interests.map((int, i) => (
-                <span key={i} style={{ fontSize: "11px", padding: "3px 8px", background: "var(--bg-secondary)", border: "1px solid var(--border-subtle)", borderRadius: "12px", color: "var(--text-muted)" }}>
+                <span key={i} className="passport-link-pill">
                   {int}
                 </span>
               ))}
@@ -211,22 +203,15 @@ export function PassportPage() {
       )}
 
       {/* Trust Notice */}
-      <div style={{
-        padding: "12px 18px",
-        background: "rgba(242, 108, 54, 0.08)",
-        border: "1px solid rgba(242, 108, 54, 0.25)",
-        borderRadius: "var(--radius-md)",
-        fontSize: "12.5px",
-        color: "var(--text-secondary)"
-      }}>
-        <strong style={{ color: "var(--text-highlight)" }}>Employer Verification Guarantee:</strong> Official credentials shown in this passport are cryptographically signed by authorized issuers and verified directly against Monad smart contracts. Students cannot self-verify skills or projects.
+      <div className="passport-guarantee-banner">
+        <strong>Employer Verification Guarantee:</strong> Official credentials shown in this passport are cryptographically signed by authorized issuers and verified directly against Monad smart contracts. Students cannot self-verify skills or projects.
       </div>
 
       {/* 3. VERIFIED SKILLS SECTION */}
       <div className="skills-cloud-card">
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
-          <span className="skills-cloud-header" style={{ marginBottom: 0 }}>Verified Skills (Issuer-Certified)</span>
-          <span style={{ fontSize: "12px", color: "#10b981", fontWeight: "600" }}>{verifiedSkills.length} Verified</span>
+        <div className="passport-skills-header-row">
+          <span className="skills-cloud-header">Verified Skills (Issuer-Certified)</span>
+          <span className="passport-count-badge">{verifiedSkills.length} Verified</span>
         </div>
 
         {verifiedSkills.length > 0 ? (
@@ -239,7 +224,7 @@ export function PassportPage() {
             ))}
           </div>
         ) : (
-          <p style={{ fontSize: "13px", color: "var(--text-muted)" }}>
+          <p className="passport-empty-msg">
             No verified skills certified on Monad yet for this wallet.
           </p>
         )}
@@ -247,57 +232,36 @@ export function PassportPage() {
 
       {/* 4. PROJECTS PORTFOLIO */}
       {projects.length > 0 && (
-        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <h3 style={{ fontSize: "18px", fontWeight: "700", display: "flex", alignItems: "center", gap: "8px" }}>
-              <FolderGit2 size={18} color="#38bdf8" />
+        <div className="passport-section">
+          <div className="passport-section-header">
+            <h3 className="passport-section-title">
+              <FolderGit2 size={18} color="var(--accent-primary)" />
               <span>Project Evidence Portfolio</span>
             </h3>
-            <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>{projects.length} Documented Builds</span>
+            <span className="passport-section-count">{projects.length} Documented Builds</span>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+          <div className="passport-projects-grid">
             {projects.map((p) => (
-              <div
-                key={p.id}
-                style={{
-                  padding: "18px 22px",
-                  background: "var(--bg-surface)",
-                  border: "1px solid var(--border-medium)",
-                  borderRadius: "var(--radius-md)",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                  gap: "12px"
-                }}
-              >
+              <div key={p.id} className="passport-project-card">
                 <div>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "8px" }}>
-                    <h4 style={{ fontSize: "15px", fontWeight: "700", color: "var(--text-highlight)" }}>{p.name}</h4>
-                    <span style={{
-                      fontSize: "9.5px",
-                      fontFamily: "var(--font-mono)",
-                      padding: "2px 6px",
-                      background: "rgba(56, 189, 248, 0.1)",
-                      border: "1px solid rgba(56, 189, 248, 0.3)",
-                      borderRadius: "4px",
-                      color: "#38bdf8",
-                      whiteSpace: "nowrap"
-                    }}>
+                  <div className="passport-project-top">
+                    <h4 className="passport-project-title">{p.name}</h4>
+                    <span className="app-badge-tag">
                       PORTFOLIO EVIDENCE
                     </span>
                   </div>
 
-                  <p style={{ fontSize: "12.5px", color: "var(--text-secondary)", marginTop: "6px", lineHeight: "1.5" }}>
+                  <p className="passport-project-desc">
                     {p.description}
                   </p>
 
                   {p.technologies && (
-                    <div style={{ marginTop: "10px" }}>
-                      <span style={{ fontSize: "10.5px", color: "var(--text-muted)", display: "block", marginBottom: "4px" }}>TECHNOLOGIES:</span>
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
+                    <div className="passport-tech-wrap">
+                      <span className="passport-tech-stack-label">TECHNOLOGIES:</span>
+                      <div className="passport-tech-chips">
                         {p.technologies.split(",").map((tech, tIdx) => (
-                          <span key={tIdx} style={{ fontSize: "10.5px", fontFamily: "var(--font-mono)", padding: "2px 6px", background: "var(--bg-secondary)", borderRadius: "3px" }}>
+                          <span key={tIdx} className="passport-tech-tag">
                             {tech.trim()}
                           </span>
                         ))}
@@ -306,16 +270,16 @@ export function PassportPage() {
                   )}
                 </div>
 
-                <div style={{ display: "flex", gap: "8px", paddingTop: "10px", borderTop: "1px solid var(--border-subtle)" }}>
+                <div className="passport-project-links">
                   {p.githubUrl && (
-                    <a href={p.githubUrl} target="_blank" rel="noopener noreferrer" className="btn-secondary" style={{ padding: "4px 8px", fontSize: "11px" }}>
+                    <a href={p.githubUrl} target="_blank" rel="noopener noreferrer" className="btn-secondary passport-link-sm">
                       <GitBranch size={11} />
                       <span>Code Repository</span>
                       <ExternalLink size={9} />
                     </a>
                   )}
                   {p.demoUrl && (
-                    <a href={p.demoUrl} target="_blank" rel="noopener noreferrer" className="btn-secondary" style={{ padding: "4px 8px", fontSize: "11px" }}>
+                    <a href={p.demoUrl} target="_blank" rel="noopener noreferrer" className="btn-secondary passport-link-sm">
                       <span>Live Build</span>
                       <ExternalLink size={9} />
                     </a>
@@ -328,24 +292,24 @@ export function PassportPage() {
       )}
 
       {/* 5. ON-CHAIN CREDENTIALS */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <div className="passport-section">
+        <div className="passport-section-header">
           <div>
-            <h3 style={{ fontSize: "18px", fontWeight: "700" }}>On-Chain Monad Credentials</h3>
-            <p style={{ fontSize: "12.5px", color: "var(--text-secondary)", marginTop: "2px" }}>
+            <h3 className="passport-section-title">On-Chain Monad Credentials</h3>
+            <p className="app-section-desc">
               Independently verifiable against Monad smart contract without needing a wallet.
             </p>
           </div>
-          <span className="credentials-count-pill">{validCreds.length} Valid on Monad</span>
+          <span className="app-badge-tag">{validCreds.length} Valid on Monad</span>
         </div>
 
         {loading ? (
           <div className="credentials-grid">
             {[1, 2].map((n) => (
-              <div key={n} className="credential-card" style={{ minHeight: "180px", opacity: 0.6 }}>
-                <div className="skeleton-box" style={{ width: "60%", height: "18px", marginBottom: "12px" }} />
-                <div className="skeleton-box" style={{ width: "100%", height: "14px", marginBottom: "8px" }} />
-                <div className="skeleton-box" style={{ width: "80%", height: "14px" }} />
+              <div key={n} className="credential-card passport-cred-skeleton">
+                <div className="skeleton-box skeleton-title" />
+                <div className="skeleton-box skeleton-line-1" />
+                <div className="skeleton-box skeleton-line-2" />
               </div>
             ))}
           </div>
@@ -359,7 +323,7 @@ export function PassportPage() {
           <div className="empty-credentials-box">
             <ShieldCheck size={28} color="var(--accent-primary)" />
             <h4>No credentials issued to this wallet</h4>
-            <p style={{ fontSize: "13px", color: "var(--text-muted)" }}>
+            <p className="passport-empty-msg">
               This wallet has not yet received verified credentials on Monad blockchain.
             </p>
           </div>
@@ -368,30 +332,19 @@ export function PassportPage() {
 
       {/* 6. ACHIEVEMENTS */}
       {achievements.filter(a => a.unlocked).length > 0 && (
-        <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-          <h3 style={{ fontSize: "18px", fontWeight: "700", display: "flex", alignItems: "center", gap: "8px" }}>
-            <Sparkles size={18} color="#eab308" />
+        <div className="passport-section">
+          <h3 className="passport-section-title">
+            <Sparkles size={18} color="var(--accent-primary)" />
             <span>Unlocked Career Achievements</span>
           </h3>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
+          <div className="passport-achievements-grid">
             {achievements.filter(a => a.unlocked).map((ach) => (
-              <div
-                key={ach.id}
-                style={{
-                  padding: "16px 20px",
-                  background: "rgba(16, 185, 129, 0.05)",
-                  border: "1px solid rgba(16, 185, 129, 0.25)",
-                  borderRadius: "var(--radius-md)",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "12px"
-                }}
-              >
-                <span style={{ fontSize: "24px" }}>{ach.icon}</span>
+              <div key={ach.id} className="passport-achievement-card">
+                <span className="passport-achievement-icon">{ach.icon}</span>
                 <div>
-                  <h4 style={{ fontSize: "14px", fontWeight: "700", color: "var(--text-highlight)" }}>{ach.title}</h4>
-                  <p style={{ fontSize: "12px", color: "var(--text-secondary)", marginTop: "2px" }}>{ach.description}</p>
+                  <h4 className="passport-achievement-title">{ach.title}</h4>
+                  <p className="passport-achievement-desc">{ach.description}</p>
                 </div>
               </div>
             ))}
@@ -401,35 +354,27 @@ export function PassportPage() {
 
       {/* 7. MENTOR ENDORSEMENTS */}
       {endorsements.length > 0 && (
-        <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-          <h3 style={{ fontSize: "18px", fontWeight: "700", display: "flex", alignItems: "center", gap: "8px" }}>
+        <div className="passport-section">
+          <h3 className="passport-section-title">
             <MessageSquare size={18} color="var(--accent-primary)" />
             <span>Mentor Endorsements</span>
           </h3>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+          <div className="passport-endorsements-list">
             {endorsements.map((end) => (
-              <div
-                key={end.id}
-                style={{
-                  padding: "16px 20px",
-                  background: "var(--bg-surface)",
-                  border: "1px solid var(--border-medium)",
-                  borderRadius: "var(--radius-md)"
-                }}
-              >
-                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px" }}>
-                  <span style={{ fontSize: "11.5px", fontFamily: "var(--font-mono)", color: "var(--accent-primary)", fontWeight: "700" }}>
+              <div key={end.id} className="passport-endorsement-card">
+                <div className="passport-endorsement-top">
+                  <span className="passport-endorsement-skill">
                     ENDORSED: {end.skill}
                   </span>
-                  <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>{end.date}</span>
+                  <span className="passport-endorsement-date">{end.date}</span>
                 </div>
-                <p style={{ fontSize: "13px", color: "var(--text-highlight)", fontStyle: "italic", lineHeight: "1.5" }}>
+                <p className="passport-endorsement-quote">
                   "{end.endorsementText}"
                 </p>
-                <div style={{ display: "flex", justifyContent: "space-between", marginTop: "6px", fontSize: "11.5px", color: "var(--text-secondary)" }}>
+                <div className="passport-endorsement-footer">
                   <span>— {end.endorserName}</span>
-                  <span style={{ fontFamily: "var(--font-mono)", color: "var(--text-muted)" }}>
+                  <span className="passport-endorsement-signer">
                     Signer: {end.endorserWallet.slice(0, 6)}...{end.endorserWallet.slice(-4)}
                   </span>
                 </div>

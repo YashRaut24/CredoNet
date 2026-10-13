@@ -242,3 +242,17 @@
   background: var(--bg-surface-hover);
   border-color: var(--border-highlight);
 }
+
+.blind-btn-generate {
+  width: 100%;
+  justify-content: center;
+  padding: 12px;
+  gap: 8px;
+}
+
+.blind-btn-open {
+  width: 100%;
+  justify-content: center;
+  padding: 10px;
+  font-size: 12.5px;
+}

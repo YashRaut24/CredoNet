@@ -147,8 +147,8 @@ export function AuthRoleModal() {
 
         {/* Footer info */}
         <div className="auth-modal-footer">
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <Lock size={14} color="#f26c36" />
+          <div className="auth-modal-footer-info">
+            <Lock size={14} color="var(--accent-primary)" />
             <span>Cryptographic integrity powered by Monad Testnet EVM. Personal data remains strictly off-chain.</span>
           </div>
         </div>

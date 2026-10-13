@@ -39,23 +39,24 @@
 
 .signup-role-option.selected.student {
   border-color: var(--accent-primary);
-  background: rgba(242, 108, 54, 0.12);
+  background: rgba(227, 97, 40, 0.12);
   color: var(--accent-primary);
-  box-shadow: 0 0 0 1px var(--accent-primary);
 }
 
 .signup-role-option.selected.issuer {
   border-color: #38bdf8;
   background: rgba(56, 189, 248, 0.12);
   color: #38bdf8;
-  box-shadow: 0 0 0 1px #38bdf8;
 }
 
 .signup-role-option.selected.employer {
   border-color: #10b981;
   background: rgba(16, 185, 129, 0.12);
   color: #10b981;
-  box-shadow: 0 0 0 1px #10b981;
+}
+
+.req {
+  color: var(--accent-primary);
 }
 
 .role-opt-title {

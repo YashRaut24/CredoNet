@@ -81,7 +81,7 @@ export function SignupPage() {
         <form onSubmit={handleSubmit} className="auth-form">
           {/* Persona Role Selection */}
           <div className="auth-field">
-            <label>Select Your Persona / Role <span style={{ color: "var(--accent-primary)" }}>*</span></label>
+            <label>Select Your Persona / Role <span className="req">*</span></label>
             <div className="signup-role-grid">
               <div 
                 className={`signup-role-option ${role === PERSONAS.STUDENT ? "selected student" : ""}`}
@@ -114,7 +114,7 @@ export function SignupPage() {
 
           {/* Full Name */}
           <div className="auth-field">
-            <label>Full Name <span style={{ color: "var(--accent-primary)" }}>*</span></label>
+            <label>Full Name <span className="req">*</span></label>
             <div className="auth-input-wrap">
               <User size={16} className="auth-input-icon" />
               <input
@@ -130,7 +130,7 @@ export function SignupPage() {
 
           {/* Email */}
           <div className="auth-field">
-            <label>Email Address <span style={{ color: "var(--accent-primary)" }}>*</span></label>
+            <label>Email Address <span className="req">*</span></label>
             <div className="auth-input-wrap">
               <Mail size={16} className="auth-input-icon" />
               <input
@@ -146,7 +146,7 @@ export function SignupPage() {
 
           {/* Password */}
           <div className="auth-field">
-            <label>Password (min 6 characters) <span style={{ color: "var(--accent-primary)" }}>*</span></label>
+            <label>Password (min 6 characters) <span className="req">*</span></label>
             <div className="auth-input-wrap">
               <Lock size={16} className="auth-input-icon" />
               <input

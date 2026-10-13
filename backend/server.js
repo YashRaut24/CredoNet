@@ -7,6 +7,7 @@ const { CONTRACT_ADDRESS, RPC_URL, CONTRACT_ABI } = require("./contractConfig");
 const { router: authRouter, seedDefaultUsers } = require("./routes/auth");
 
 // MongoDB Models
+const User = require("./models/User");
 const StudentProfile = require("./models/StudentProfile");
 const Project = require("./models/Project");
 const Endorsement = require("./models/Endorsement");
@@ -441,6 +442,122 @@ app.post("/api/profile/:address", async (req, res) => {
     );
     res.json({ success: true, profile: { ...updated.toObject(), wallet: req.params.address } });
   } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+/**
+ * Get All Candidates for Employer Talent Directory
+ * Returns registered student profiles combined with their on-chain verified credential counts
+ */
+app.get("/api/candidates", async (req, res) => {
+  try {
+    const [profiles, studentUsers] = await Promise.all([
+      StudentProfile.find({}).sort({ updatedAt: -1 }).lean(),
+      User.find({ role: "student" }).sort({ createdAt: -1 }).lean(),
+    ]);
+
+    // Build map of candidates indexed by normalized wallet address or user ID
+    const candidateMap = new Map();
+
+    // 1. Add all profiles from StudentProfile
+    for (const prof of profiles) {
+      if (prof.walletAddress) {
+        candidateMap.set(prof.walletAddress.toLowerCase(), {
+          id: prof._id ? prof._id.toString() : "cand-" + prof.walletAddress,
+          walletAddress: prof.walletAddress.toLowerCase(),
+          name: prof.name || "Student Learner",
+          college: prof.college || "Accredited University",
+          degree: prof.degree || "B.E. Computer Engineering",
+          graduationYear: prof.graduationYear || "2027",
+          bio: prof.bio || "Candidate with verified skills anchored on the Monad EVM blockchain.",
+          interests: Array.isArray(prof.interests) ? prof.interests : [],
+        });
+      }
+    }
+
+    // 2. Merge all registered student users from User collection
+    for (const u of studentUsers) {
+      const uWallet = (u.walletAddress || "").toLowerCase().trim();
+      if (uWallet && candidateMap.has(uWallet)) {
+        const existing = candidateMap.get(uWallet);
+        if (!existing.name || existing.name === "Student Learner") existing.name = u.name;
+        if (!existing.college || existing.college === "Accredited University") existing.college = u.organization || existing.college;
+      } else if (uWallet) {
+        candidateMap.set(uWallet, {
+          id: u._id.toString(),
+          walletAddress: uWallet,
+          name: u.name,
+          college: u.organization || "Accredited University",
+          degree: "B.E. Computer Engineering",
+          graduationYear: "2027",
+          bio: `${u.name} is an engineering candidate registered on CredoNet with verifiable credentials.`,
+          interests: ["Blockchain", "Web Development", "Distributed Systems"],
+        });
+      } else {
+        // Fallback placeholder wallet address if student hasn't linked wallet yet
+        const pseudoWallet = "0x" + crypto.createHash("sha256").update(u.email || u._id.toString()).digest("hex").slice(0, 40);
+        candidateMap.set(pseudoWallet, {
+          id: u._id.toString(),
+          walletAddress: pseudoWallet,
+          name: u.name,
+          college: u.organization || "Accredited University",
+          degree: "B.E. Computer Engineering",
+          graduationYear: "2027",
+          bio: `${u.name} is an engineering candidate registered on CredoNet.`,
+          interests: ["Blockchain", "Web Development"],
+        });
+      }
+    }
+
+    const candidateList = Array.from(candidateMap.values());
+
+    const candidates = await Promise.all(
+      candidateList.map(async (cand) => {
+        let verifiedCount = 0;
+        let onChainSkills = [];
+        let projects = [];
+
+        try {
+          if (contract && cand.walletAddress && ethers.isAddress(cand.walletAddress)) {
+            const rawList = await contract.getStudentCredentials(cand.walletAddress);
+            const formatted = (rawList || []).map(formatCredential);
+            const valid = formatted.filter((c) => !c.revoked);
+            verifiedCount = valid.length;
+            onChainSkills = valid.map((c) => c.skill);
+          }
+        } catch (e) {
+          // fallback if blockchain query times out
+        }
+
+        try {
+          if (cand.walletAddress) {
+            projects = await Project.find({ walletAddress: cand.walletAddress.toLowerCase() }).limit(2);
+          }
+        } catch (e) {}
+
+        const allSkills = Array.from(new Set([...(cand.interests || []), ...onChainSkills]));
+
+        return {
+          id: cand.id,
+          name: cand.name,
+          address: cand.walletAddress,
+          college: cand.college,
+          degree: `${cand.degree} ${cand.graduationYear ? `(${cand.graduationYear})` : ""}`.trim(),
+          role: cand.degree || "Blockchain & Web3 Engineer",
+          bio: cand.bio,
+          skills: allSkills.length > 0 ? allSkills : ["Verified Builder", "Web3 Explorer"],
+          evidenceProject: projects.length > 0 ? projects[0].name : "",
+          githubUrl: projects.length > 0 ? projects[0].githubUrl : "",
+          verifiedCount,
+          issuer: "Accredited Institution",
+        };
+      })
+    );
+
+    res.json({ success: true, candidates });
+  } catch (error) {
+    console.error("Error fetching candidates directory:", error);
     res.status(500).json({ success: false, error: error.message });
   }
 });

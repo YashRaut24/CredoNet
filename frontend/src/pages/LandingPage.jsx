@@ -146,99 +146,99 @@ export function LandingPage() {
       </section>
 
       {/* 3 Dedicated Persona Portals */}
-      <section className="user-value-section" style={{ margin: "50px 0" }}>
-        <div style={{ textAlign: "center", marginBottom: "32px" }}>
-          <span style={{ fontSize: "11px", fontFamily: "var(--font-mono)", color: "var(--accent-primary)", fontWeight: "700", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+      <section className="user-value-section">
+        <div className="user-value-header">
+          <span className="user-value-tag">
             THREE DEDICATED PORTALS
           </span>
-          <h2 style={{ fontSize: "28px", fontWeight: "800", color: "var(--text-highlight)", marginTop: "6px" }}>
+          <h2 className="user-value-title">
             Experience CredoNet By Your Role
           </h2>
-          <p style={{ fontSize: "14px", color: "var(--text-secondary)", maxWidth: "600px", margin: "8px auto 0 auto" }}>
+          <p className="user-value-desc">
             Whether you are a student building proof of work, an accredited institution certifying talent, or an employer auditing credentials.
           </p>
         </div>
 
         <div className="triad-grid">
           {/* Persona 1: Student */}
-          <div className="triad-card" style={{ borderTop: "3px solid var(--accent-primary)", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+          <div className="triad-card student">
             <div>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <div className="triad-icon-wrap" style={{ background: "rgba(242, 108, 54, 0.15)", color: "var(--accent-primary)" }}>
+              <div className="triad-card-top">
+                <div className="triad-icon-wrap student">
                   <Award size={22} />
                 </div>
-                <span style={{ fontSize: "10.5px", fontFamily: "var(--font-mono)", color: "var(--accent-primary)", fontWeight: "700", textTransform: "uppercase", background: "rgba(242, 108, 54, 0.1)", padding: "3px 8px", borderRadius: "var(--radius-sm)" }}>
+                <span className="triad-badge student">
                   STUDENT / TALENT
                 </span>
               </div>
-              <h3 className="triad-title" style={{ marginTop: "14px", fontSize: "18px" }}>Student Career Vault</h3>
-              <p style={{ fontSize: "13px", color: "var(--text-secondary)", lineHeight: "1.5", marginTop: "8px" }}>
+              <h3 className="triad-title">Student Career Vault</h3>
+              <p className="triad-card-desc">
                 Own your portable career passport. Add project evidence with GitHub links, collect verified credentials from authorized issuers, and unlock achievements.
               </p>
-              <ul style={{ margin: "14px 0", paddingLeft: "18px", fontSize: "12.5px", color: "var(--text-secondary)", display: "flex", flexDirection: "column", gap: "6px" }}>
+              <ul className="triad-card-list">
                 <li>Self-custody profile & portfolio projects</li>
                 <li>Evidence-linked skill verification</li>
                 <li>Real milestones & mentor endorsements</li>
                 <li>Shareable public link & QR code</li>
               </ul>
             </div>
-            <Link to="/signup" className="btn-primary" style={{ width: "100%", justifyContent: "center", padding: "10px", fontSize: "13px", marginTop: "12px" }}>
+            <Link to="/signup" className="btn-primary triad-btn">
               <span>Get Started as Student</span>
               <ArrowRight size={14} />
             </Link>
           </div>
 
           {/* Persona 2: Issuer */}
-          <div className="triad-card" style={{ borderTop: "3px solid #38bdf8", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+          <div className="triad-card issuer">
             <div>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <div className="triad-icon-wrap" style={{ background: "rgba(56, 189, 248, 0.15)", color: "#38bdf8" }}>
+              <div className="triad-card-top">
+                <div className="triad-icon-wrap issuer">
                   <Building2 size={22} />
                 </div>
-                <span style={{ fontSize: "10.5px", fontFamily: "var(--font-mono)", color: "#38bdf8", fontWeight: "700", textTransform: "uppercase", background: "rgba(56, 189, 248, 0.1)", padding: "3px 8px", borderRadius: "var(--radius-sm)" }}>
+                <span className="triad-badge issuer">
                   ACCREDITED ISSUER
                 </span>
               </div>
-              <h3 className="triad-title" style={{ marginTop: "14px", fontSize: "18px" }}>Issuer Certification Portal</h3>
-              <p style={{ fontSize: "13px", color: "var(--text-secondary)", lineHeight: "1.5", marginTop: "8px" }}>
+              <h3 className="triad-title">Issuer Certification Portal</h3>
+              <p className="triad-card-desc">
                 For universities, bootcamps, and hackathons. Review student project submissions, certify verified competencies, and anchor proof directly on-chain.
               </p>
-              <ul style={{ margin: "14px 0", paddingLeft: "18px", fontSize: "12.5px", color: "var(--text-secondary)", display: "flex", flexDirection: "column", gap: "6px" }}>
+              <ul className="triad-card-list">
                 <li>Review student portfolio evidence</li>
                 <li>Link capstone projects to verified skills</li>
                 <li>Permanent decentralized on-chain issuance</li>
                 <li>On-chain cryptographic revocation</li>
               </ul>
             </div>
-            <Link to="/signup" className="btn-secondary" style={{ width: "100%", justifyContent: "center", padding: "10px", fontSize: "13px", marginTop: "12px", borderColor: "rgba(56, 189, 248, 0.4)", color: "#38bdf8" }}>
+            <Link to="/signup" className="btn-secondary triad-btn issuer">
               <span>Register as Certifying Issuer</span>
               <ArrowRight size={14} />
             </Link>
           </div>
 
           {/* Persona 3: Employer */}
-          <div className="triad-card" style={{ borderTop: "3px solid #10b981", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+          <div className="triad-card employer">
             <div>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <div className="triad-icon-wrap" style={{ background: "rgba(16, 185, 129, 0.15)", color: "#10b981" }}>
+              <div className="triad-card-top">
+                <div className="triad-icon-wrap employer">
                   <ShieldCheck size={22} />
                 </div>
-                <span style={{ fontSize: "10.5px", fontFamily: "var(--font-mono)", color: "#10b981", fontWeight: "700", textTransform: "uppercase", background: "rgba(16, 185, 129, 0.1)", padding: "3px 8px", borderRadius: "var(--radius-sm)" }}>
+                <span className="triad-badge employer">
                   EMPLOYER / AUDITOR
                 </span>
               </div>
-              <h3 className="triad-title" style={{ marginTop: "14px", fontSize: "18px" }}>Employer Verification Hub</h3>
-              <p style={{ fontSize: "13px", color: "var(--text-secondary)", lineHeight: "1.5", marginTop: "8px" }}>
+              <h3 className="triad-title">Employer Verification Hub</h3>
+              <p className="triad-card-desc">
                 Zero-gas, zero-wallet verification. Scan candidate QR codes, inspect underlying GitHub repositories, and verify active validity directly from blockchain RPC.
               </p>
-              <ul style={{ margin: "14px 0", paddingLeft: "18px", fontSize: "12.5px", color: "var(--text-secondary)", display: "flex", flexDirection: "column", gap: "6px" }}>
+              <ul className="triad-card-list">
                 <li>Zero gas fees & no wallet needed</li>
                 <li>Inspect code behind claimed skills</li>
                 <li>Sub-second cryptographic verification</li>
                 <li>Instant detection of revoked credentials</li>
               </ul>
             </div>
-            <Link to="/signup" className="btn-secondary" style={{ width: "100%", justifyContent: "center", padding: "10px", fontSize: "13px", marginTop: "12px", borderColor: "rgba(16, 185, 129, 0.4)", color: "#10b981" }}>
+            <Link to="/signup" className="btn-secondary triad-btn employer">
               <span>Register as Verified Employer</span>
               <ArrowRight size={14} />
             </Link>
@@ -247,33 +247,27 @@ export function LandingPage() {
       </section>
 
       {/* Problem & Solution Strip */}
-      <section className="problem-solution-section" style={{
-        padding: "32px",
-        background: "var(--bg-surface)",
-        border: "1px solid var(--border-medium)",
-        borderRadius: "var(--radius-lg)",
-        margin: "30px 0"
-      }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "30px" }}>
+      <section className="problem-solution-section">
+        <div className="problem-solution-grid">
           <div>
-            <span style={{ fontSize: "11px", fontFamily: "var(--font-mono)", color: "#f87171", fontWeight: "700", letterSpacing: "0.06em", textTransform: "uppercase" }}>
+            <span className="problem-label">
               THE REAL PROBLEM
             </span>
-            <h3 style={{ fontSize: "20px", fontWeight: "700", marginTop: "8px", color: "var(--text-highlight)" }}>
+            <h3 className="problem-solution-title">
               Proof Scattered Across Certificates & Portals
             </h3>
-            <p style={{ fontSize: "13.5px", color: "var(--text-secondary)", lineHeight: "1.6", marginTop: "10px" }}>
+            <p className="problem-solution-desc">
               Students collect achievements from universities, bootcamps, certification providers, hackathons and other organizations. Today, this proof is scattered across PDF certificates, emails, portals, and project links. When applying for jobs, students repeatedly submit unverified claims, and employers struggle to verify issuer identity, issue date, and revocation status.
             </p>
           </div>
           <div>
-            <span style={{ fontSize: "11px", fontFamily: "var(--font-mono)", color: "#10b981", fontWeight: "700", letterSpacing: "0.06em", textTransform: "uppercase" }}>
+            <span className="solution-label">
               THE SKILLPASSPORT SOLUTION
             </span>
-            <h3 style={{ fontSize: "20px", fontWeight: "700", marginTop: "8px", color: "var(--text-highlight)" }}>
+            <h3 className="problem-solution-title">
               Portable Wallet-Based Passport on Monad
             </h3>
-            <p style={{ fontSize: "13.5px", color: "var(--text-secondary)", lineHeight: "1.6", marginTop: "10px" }}>
+            <p className="problem-solution-desc">
               SkillPassport gives students a portable wallet-based achievement passport. Trusted issuers issue credentials to the student's wallet on Monad. Blockchain provides tamper-evident proof that an authorized issuer issued a particular credential to the student's wallet and that it has not been revoked.
             </p>
           </div>
@@ -569,8 +563,7 @@ export function LandingPage() {
               />
               <button 
                 type="submit" 
-                className="btn-primary" 
-                style={{ padding: "8px 18px", whiteSpace: "nowrap" }}
+                className="btn-primary search-submit-btn" 
                 disabled={searchingVault}
               >
                 {searchingVault ? (
@@ -611,8 +604,7 @@ export function LandingPage() {
               />
               <button 
                 type="submit" 
-                className="btn-secondary" 
-                style={{ padding: "8px 18px", whiteSpace: "nowrap" }}
+                className="btn-secondary search-submit-btn" 
                 disabled={searchingVerify}
               >
                 {searchingVerify ? (

@@ -34,7 +34,7 @@ export function QRCodeModal({ url, title, description, onClose }) {
         </div>
 
         <div className="qr-actions">
-          <button onClick={copyUrl} className="btn-secondary" style={{ flex: 1 }}>
+          <button onClick={copyUrl} className="btn-secondary">
             {copied ? <Check size={14} color="#10b981" /> : <Copy size={14} />}
             <span>{copied ? "Copied Link" : "Copy Link"}</span>
           </button>
@@ -43,7 +43,6 @@ export function QRCodeModal({ url, title, description, onClose }) {
             target="_blank"
             rel="noopener noreferrer"
             className="btn-primary"
-            style={{ flex: 1 }}
           >
             <ExternalLink size={14} />
             <span>Open Link</span>

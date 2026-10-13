@@ -74,7 +74,7 @@ export function BlindVerifyPage() {
           <AlertTriangle size={36} color="#f43f5e" />
           <h2>Proof Verification Failed</h2>
           <p>{error || "The requested blind proof claim does not exist or has expired."}</p>
-          <Link to="/verify/search" className="btn-secondary" style={{ marginTop: "14px" }}>
+          <Link to="/verify/search" className="btn-secondary blind-btn-return">
             Return to Public Verifier
           </Link>
         </div>
@@ -203,10 +203,10 @@ export function BlindVerifyPage() {
               <div className="recruiter-accepted-box">
                 <UserCheck size={20} color="#10b981" />
                 <div>
-                  <h4 style={{ fontSize: "14px", fontWeight: "700", color: "#10b981" }}>
+                  <h4 className="recruiter-accepted-title">
                     Candidate Fast-Tracked to Technical Interview!
                   </h4>
-                  <p style={{ fontSize: "12px", color: "var(--text-secondary)", marginTop: "2px" }}>
+                  <p className="recruiter-accepted-desc">
                     Candidate ID {proof.blindCandidateCode} was confirmed for verified competency in "{proof.skillTitle}".
                   </p>
                 </div>
@@ -214,17 +214,16 @@ export function BlindVerifyPage() {
             ) : (
               <div className="recruiter-prompt">
                 <div>
-                  <h4 style={{ fontSize: "14.5px", fontWeight: "700", color: "var(--text-highlight)" }}>
+                  <h4 className="recruiter-prompt-title">
                     Ready to proceed with this candidate?
                   </h4>
-                  <p style={{ fontSize: "12.5px", color: "var(--text-secondary)", marginTop: "2px" }}>
+                  <p className="recruiter-prompt-desc">
                     Verified on-chain credentials eliminate the need for preliminary resume background checks.
                   </p>
                 </div>
                 <button
                   onClick={() => setAccepted(true)}
-                  className="btn-primary"
-                  style={{ padding: "9px 18px", fontSize: "13px", gap: "6px" }}
+                  className="btn-primary recruiter-fasttrack-btn"
                 >
                   <Sparkles size={14} />
                   <span>Fast-Track to Interview</span>

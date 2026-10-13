@@ -27,32 +27,43 @@ export function VerifySearchPage() {
     e.preventDefault();
     setError("");
 
-    const raw = searchInput.trim();
+    let raw = searchInput.trim().replace(/['"]/g, "");
     if (!raw) {
       setError("Please enter a valid wallet address or credential ID.");
       return;
     }
 
-    // Extract address if user pasted full URL (e.g. /vault/0x...)
-    const addressMatch = raw.match(/0x[a-fA-F0-9]{40}/);
-    const credMatch = raw.match(/0x[a-fA-F0-9]{64}/);
+    // Auto-prepend 0x if user pasted 64 hex characters
+    if (!raw.startsWith("0x") && /^[a-fA-F0-9]{64}$/.test(raw)) {
+      raw = "0x" + raw;
+    }
 
-    if (searchMode === "passport") {
-      if (addressMatch) {
-        navigate(`/vault/${addressMatch[0]}`);
-      } else if (ethers.isAddress(raw)) {
-        navigate(`/vault/${raw}`);
-      } else {
-        setError("Invalid student wallet address. Must be a 20-byte address (starts with 0x...).");
-      }
-    } else {
+    // Extract address or 32-byte hash even if full URL was pasted
+    const addressMatch = raw.match(/0x[a-fA-F0-9]{40}/i);
+    const credMatch = raw.match(/0x[a-fA-F0-9]{64}/i);
+
+    if (searchMode === "credential") {
       if (credMatch) {
         navigate(`/verify/${credMatch[0]}`);
-      } else if (/^0x[a-fA-F0-9]{64}$/.test(raw)) {
-        navigate(`/verify/${raw}`);
-      } else {
-        setError("Invalid Credential ID. Must be a 32-byte hexadecimal hash (66 characters starting with 0x...).");
+        return;
       }
+      if (addressMatch) {
+        // User pasted an address into credential mode -> smartly route to passport
+        navigate(`/vault/${addressMatch[0]}`);
+        return;
+      }
+      setError("Invalid Credential ID. A Credential ID is a 32-byte on-chain state hash (starts with 0x followed by 64 hex characters). Note: A wallet private key is NOT a credential ID.");
+    } else {
+      if (addressMatch) {
+        navigate(`/vault/${addressMatch[0]}`);
+        return;
+      }
+      if (credMatch) {
+        // User pasted a credential ID into passport mode -> smartly route to verify
+        navigate(`/verify/${credMatch[0]}`);
+        return;
+      }
+      setError("Invalid student wallet address. Must be a 20-byte address (starts with 0x...).");
     }
   };
 
@@ -94,24 +105,14 @@ export function VerifySearchPage() {
         </p>
 
         {/* 4 Trust Highlights */}
-        <div style={{ display: "flex", gap: "14px", flexWrap: "wrap", justifyContent: "center", marginTop: "6px" }}>
+        <div className="trust-highlights-row">
           {[
             "100% Free & Zero Gas",
             "No Wallet or Account Needed",
             "Sub-Second Monad Finality",
             "Cryptographic Proof Against Fraud"
           ].map((pill) => (
-            <div key={pill} style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "6px",
-              padding: "4px 10px",
-              background: "var(--bg-surface)",
-              border: "1px solid var(--border-medium)",
-              borderRadius: "var(--radius-full)",
-              fontSize: "12px",
-              color: "var(--text-secondary)"
-            }}>
+            <div key={pill} className="trust-highlight-chip">
               <Check size={12} color="#10b981" />
               <span>{pill}</span>
             </div>
@@ -122,19 +123,11 @@ export function VerifySearchPage() {
       {/* Main Search Panel */}
       <div className="search-card-main">
         {/* Mode Selector Tabs */}
-        <div style={{ display: "flex", gap: "10px", borderBottom: "1px solid var(--border-medium)", paddingBottom: "14px" }}>
+        <div className="search-mode-tabs">
           <button
             type="button"
             onClick={() => { setSearchMode("passport"); setError(""); }}
-            className={`btn-secondary ${searchMode === "passport" ? "active" : ""}`}
-            style={{
-              padding: "8px 18px",
-              fontSize: "13px",
-              fontWeight: "600",
-              borderColor: searchMode === "passport" ? "var(--accent-primary)" : "var(--border-medium)",
-              background: searchMode === "passport" ? "rgba(242, 108, 54, 0.12)" : "transparent",
-              color: searchMode === "passport" ? "var(--text-highlight)" : "var(--text-secondary)"
-            }}
+            className={`search-mode-btn ${searchMode === "passport" ? "active" : ""}`}
           >
             <User size={15} />
             <span>Audit Candidate Passport</span>
@@ -143,23 +136,15 @@ export function VerifySearchPage() {
           <button
             type="button"
             onClick={() => { setSearchMode("credential"); setError(""); }}
-            className={`btn-secondary ${searchMode === "credential" ? "active" : ""}`}
-            style={{
-              padding: "8px 18px",
-              fontSize: "13px",
-              fontWeight: "600",
-              borderColor: searchMode === "credential" ? "var(--accent-primary)" : "var(--border-medium)",
-              background: searchMode === "credential" ? "rgba(242, 108, 54, 0.12)" : "transparent",
-              color: searchMode === "credential" ? "var(--text-highlight)" : "var(--text-secondary)"
-            }}
+            className={`search-mode-btn ${searchMode === "credential" ? "active" : ""}`}
           >
             <ShieldCheck size={15} />
             <span>Verify Specific Credential ID</span>
           </button>
         </div>
 
-        <form onSubmit={handleSearch} style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-          <label style={{ fontSize: "13px", color: "var(--text-secondary)", fontWeight: "500" }}>
+        <form onSubmit={handleSearch} className="search-form-wrap">
+          <label className="search-input-label">
             {searchMode === "passport"
               ? "Enter Candidate Wallet Address or Passport URL:"
               : "Enter 32-Byte Cryptographic Credential ID:"}
@@ -178,99 +163,78 @@ export function VerifySearchPage() {
                 setSearchInput(e.target.value);
                 setError("");
               }}
-              className="search-input mono"
-              style={{ padding: "14px 16px", fontSize: "13px" }}
+              className="search-input-field mono"
             />
-            <button type="submit" className="btn-primary" style={{ padding: "14px 28px", whiteSpace: "nowrap" }}>
+            <button type="submit" className="btn-primary search-submit-btn">
               <Search size={16} />
               <span>{searchMode === "passport" ? "Audit Passport" : "Verify on Monad"}</span>
             </button>
           </div>
 
           {error && (
-            <p style={{ fontSize: "12.5px", color: "var(--danger)", paddingLeft: "4px" }}>
+            <p className="search-error-msg">
               {error}
             </p>
           )}
         </form>
 
-        <div style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "12px", color: "var(--text-muted)" }}>
-          <Lock size={12} color="#f26c36" />
+        <div className="search-footer-note">
+          <Lock size={12} color="#e36128" />
           <span>Queries execute directly against the public Monad Testnet EVM consensus node at zero cost.</span>
         </div>
       </div>
 
       {/* Recruiter Quick Sample Audits */}
-      <div style={{ width: "100%", maxWidth: "900px" }}>
-        <div style={{ marginBottom: "16px" }}>
-          <h3 style={{ fontSize: "17px", fontWeight: "700", color: "var(--text-highlight)" }}>
+      <div className="sample-audits-section">
+        <div className="sample-audits-header">
+          <h3 className="sample-audits-title">
             Quick Recruiter Audits (Try with Sample Candidates)
           </h3>
-          <p style={{ fontSize: "12.5px", color: "var(--text-secondary)", marginTop: "2px" }}>
+          <p className="sample-audits-desc">
             Click any candidate below to audit their full evidence-backed SkillPassport:
           </p>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(380px, 1fr))", gap: "18px" }}>
+        <div className="sample-audits-grid">
           {sampleCandidates.map((cand) => (
             <div
               key={cand.address}
-              style={{
-                background: "var(--bg-surface)",
-                border: "1px solid var(--border-medium)",
-                borderRadius: "var(--radius-lg)",
-                padding: "20px",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-between",
-                gap: "14px"
-              }}
+              className="sample-audit-card"
             >
               <div>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <div style={{
-                      width: "36px",
-                      height: "36px",
-                      borderRadius: "var(--radius-md)",
-                      background: "rgba(242, 108, 54, 0.15)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      color: "var(--accent-primary)",
-                      fontWeight: "700"
-                    }}>
+                <div className="sample-audit-top">
+                  <div className="sample-audit-profile">
+                    <div className="sample-audit-avatar">
                       {cand.name.charAt(0)}
                     </div>
                     <div>
-                      <h4 style={{ fontSize: "15px", fontWeight: "700", color: "var(--text-highlight)" }}>{cand.name}</h4>
-                      <p style={{ fontSize: "12px", color: "var(--text-secondary)" }}>{cand.role}</p>
+                      <h4 className="sample-audit-name">{cand.name}</h4>
+                      <p className="sample-audit-role">{cand.role}</p>
                     </div>
                   </div>
-                  <span style={{ fontSize: "10.5px", fontFamily: "var(--font-mono)", color: "#10b981", background: "rgba(16, 185, 129, 0.1)", padding: "3px 8px", borderRadius: "var(--radius-sm)" }}>
+                  <span className="sample-audit-badge">
                     {cand.badge}
                   </span>
                 </div>
 
-                <div style={{ marginTop: "12px", display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                <div className="sample-audit-skills">
                   {cand.skills.map((s) => (
-                    <span key={s} style={{ fontSize: "11px", background: "var(--bg-primary)", padding: "2px 8px", borderRadius: "var(--radius-sm)", color: "var(--text-secondary)", border: "1px solid var(--border-subtle)" }}>
+                    <span key={s} className="sample-audit-skill-pill">
                       ✓ {s}
                     </span>
                   ))}
                 </div>
 
-                <div style={{ marginTop: "10px", fontSize: "11.5px", color: "var(--text-muted)" }}>
+                <div className="sample-audit-portfolio">
                   <span>Portfolio: </span>
-                  <span style={{ color: "var(--text-secondary)" }}>{cand.projects.join(" • ")}</span>
+                  <span className="sample-audit-portfolio-text">{cand.projects.join(" • ")}</span>
                 </div>
               </div>
 
-              <div style={{ display: "flex", gap: "10px", marginTop: "6px" }}>
+              <div>
                 <Link
                   to={`/vault/${cand.address}`}
-                  className="btn-primary"
-                  style={{ flex: 1, justifyContent: "center", padding: "8px", fontSize: "12.5px" }}
+                  className="btn-primary btn-sample-audit"
                 >
                   <Briefcase size={13} />
                   <span>Audit Candidate Passport</span>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { 
   Briefcase, 
@@ -45,6 +45,24 @@ export function EmployerHomePage() {
 
   const [directoryFilter, setDirectoryFilter] = useState("all");
   const [filterText, setFilterText] = useState("");
+  const [realCandidates, setRealCandidates] = useState([]);
+
+  useEffect(() => {
+    async function loadCandidates() {
+      try {
+        const res = await fetch("/api/candidates");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && Array.isArray(data.candidates) && data.candidates.length > 0) {
+            setRealCandidates(data.candidates);
+          }
+        }
+      } catch (e) {
+        console.warn("Could not load candidate directory:", e);
+      }
+    }
+    loadCandidates();
+  }, []);
 
   const sampleProfiles = [
     {
@@ -77,7 +95,17 @@ export function EmployerHomePage() {
     }
   ];
 
-  const filteredCandidates = sampleProfiles.filter((c) => {
+  const allCandidates = [
+    ...realCandidates,
+    ...sampleProfiles.filter((sample) =>
+      !realCandidates.some((real) =>
+        (real.address && sample.address && real.address.toLowerCase() === sample.address.toLowerCase()) ||
+        (real.name && sample.name && real.name.toLowerCase() === sample.name.toLowerCase())
+      )
+    )
+  ];
+
+  const filteredCandidates = allCandidates.filter((c) => {
     const matchesFilter =
       directoryFilter === "all" ||
       c.skills.some((s) => s.toLowerCase().includes(directoryFilter.toLowerCase()));
@@ -85,7 +113,7 @@ export function EmployerHomePage() {
       !filterText.trim() ||
       c.name.toLowerCase().includes(filterText.toLowerCase()) ||
       c.role.toLowerCase().includes(filterText.toLowerCase()) ||
-      c.address.toLowerCase().includes(filterText.toLowerCase()) ||
+      (c.address && c.address.toLowerCase().includes(filterText.toLowerCase())) ||
       c.skills.some((s) => s.toLowerCase().includes(filterText.toLowerCase()));
     return matchesFilter && matchesText;
   });
@@ -289,68 +317,42 @@ export function EmployerHomePage() {
       </section>
 
       {/* Verified Candidates Pipeline & Talent Directory */}
-      <section id="talent-directory" className="featured-candidates-section" style={{ scrollMarginTop: "90px" }}>
-        <div className="section-header-row" style={{ flexWrap: "wrap", gap: "14px" }}>
+      <section id="talent-directory" className="featured-candidates-section">
+        <div className="section-header-row">
           <div>
-            <h3 className="section-title" style={{ fontSize: "22px", display: "flex", alignItems: "center", gap: "10px" }}>
-              <Users size={22} color="#a855f7" />
+            <h3 className="section-title">
+              <Users size={22} color="#e36128" />
               <span>Pre-Verified Engineering Talent Directory</span>
             </h3>
-            <p className="section-desc" style={{ marginBottom: 0 }}>
+            <p className="section-desc">
               Browse engineering candidates with on-chain credentials verified on the EVM Monad network.
             </p>
           </div>
 
-          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <span style={{ fontSize: "12px", fontFamily: "var(--font-mono)", color: "var(--text-muted)" }}>
-              Showing {filteredCandidates.length} of {sampleProfiles.length} Candidates
+          <div>
+            <span className="section-counter-tag">
+              Showing {filteredCandidates.length} of {allCandidates.length} Candidates
             </span>
           </div>
         </div>
 
         {/* Directory Controls: Search & Skill Filter Pills */}
-        <div style={{
-          margin: "18px 0 24px",
-          padding: "16px 20px",
-          background: "var(--bg-surface)",
-          border: "1px solid var(--border-medium)",
-          borderRadius: "var(--radius-md)",
-          display: "flex",
-          flexDirection: "column",
-          gap: "14px"
-        }}>
-          <div style={{ display: "flex", gap: "12px", alignItems: "center", flexWrap: "wrap" }}>
-            <div style={{
-              flex: 1,
-              minWidth: "240px",
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              background: "var(--bg-secondary)",
-              border: "1px solid var(--border-subtle)",
-              borderRadius: "var(--radius-sm)",
-              padding: "8px 14px"
-            }}>
+        <div className="directory-controls-box">
+          <div className="directory-search-row">
+            <div className="directory-search-input-wrap">
               <Search size={15} color="var(--text-muted)" />
               <input
                 type="text"
                 placeholder="Filter by candidate name, skill, or wallet address..."
                 value={filterText}
                 onChange={(e) => setFilterText(e.target.value)}
-                style={{
-                  background: "transparent",
-                  border: "none",
-                  outline: "none",
-                  color: "var(--text-primary)",
-                  fontSize: "13px",
-                  width: "100%"
-                }}
+                className="directory-search-input"
               />
               {filterText && (
                 <button
                   type="button"
                   onClick={() => setFilterText("")}
-                  style={{ background: "none", border: "none", color: "var(--text-muted)", cursor: "pointer", fontSize: "12px" }}
+                  className="directory-search-clear"
                 >
                   Clear
                 </button>
@@ -358,25 +360,14 @@ export function EmployerHomePage() {
             </div>
           </div>
 
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
-            <span style={{ fontSize: "11.5px", color: "var(--text-muted)", fontWeight: "600", textTransform: "uppercase" }}>Skill Filter:</span>
+          <div className="directory-filter-row">
+            <span className="directory-filter-label">Skill Filter:</span>
             {["all", "Solidity", "Android Developer", "Smart Contract Security", "Distributed Systems", "Zero-Knowledge", "Backend"].map((cat) => (
               <button
                 key={cat}
                 type="button"
                 onClick={() => setDirectoryFilter(cat)}
-                style={{
-                  padding: "4px 10px",
-                  borderRadius: "14px",
-                  fontSize: "11.5px",
-                  fontFamily: "var(--font-mono)",
-                  cursor: "pointer",
-                  border: directoryFilter === cat ? "1px solid #a855f7" : "1px solid var(--border-subtle)",
-                  background: directoryFilter === cat ? "rgba(168, 85, 247, 0.18)" : "var(--bg-secondary)",
-                  color: directoryFilter === cat ? "#c084fc" : "var(--text-secondary)",
-                  fontWeight: directoryFilter === cat ? "700" : "500",
-                  transition: "all 0.15s ease"
-                }}
+                className={`directory-pill-btn ${directoryFilter === cat ? "active" : ""}`}
               >
                 {cat === "all" ? "All Skills" : cat}
               </button>
@@ -404,13 +395,13 @@ export function EmployerHomePage() {
                   ))}
                 </div>
 
-                <div className="candidate-card-bottom" style={{ flexWrap: "wrap", gap: "8px" }}>
+                <div className="candidate-card-bottom">
                   <span className="verified-badge">
                     <ShieldCheck size={12} color="#10b981" />
                     <span>{candidate.verifiedCount} Verified Credentials</span>
                   </span>
-                  <div style={{ display: "flex", gap: "8px" }}>
-                    <Link to={`/vault/${candidate.address}`} className="btn-view-candidate">
+                  <div>
+                    <Link to={candidate.address ? `/vault/${candidate.address}` : "/vault/0x71C92a8C943B8d62283e1c66289b5B38B71C4e92"} className="btn-view-candidate">
                       <span>View Passport</span>
                       <ExternalLink size={12} />
                     </Link>
@@ -420,19 +411,11 @@ export function EmployerHomePage() {
             ))}
           </div>
         ) : (
-          <div style={{
-            padding: "36px",
-            textAlign: "center",
-            background: "var(--bg-surface)",
-            border: "1px solid var(--border-medium)",
-            borderRadius: "var(--radius-md)",
-            color: "var(--text-muted)"
-          }}>
-            <p style={{ fontSize: "14px", marginBottom: "8px" }}>No candidate matches your current filter.</p>
+          <div className="directory-empty-state">
+            <p className="directory-empty-text">No candidate matches your current filter.</p>
             <button
               onClick={() => { setDirectoryFilter("all"); setFilterText(""); }}
               className="btn-secondary"
-              style={{ padding: "6px 14px", fontSize: "12px" }}
             >
               Reset Filters
             </button>

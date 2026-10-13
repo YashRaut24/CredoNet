@@ -130,6 +130,12 @@
   letter-spacing: 0.05em;
 }
 
+.brand-text {
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
 .btn-switch-monad {
   display: inline-flex;
   align-items: center;
@@ -143,7 +149,6 @@
   color: #f87171;
   cursor: pointer;
   transition: all 0.2s ease;
-  animation: pulse-border 2s infinite ease-in-out;
 }
 
 .btn-switch-monad:hover {
@@ -152,13 +157,35 @@
   color: #ffffff;
 }
 
-@keyframes pulse-border {
-  0%, 100% {
-    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
-  }
-  50% {
-    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0);
-  }
+.nav-auth-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-icon-btn {
+  padding: 6px 10px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-btn-sm {
+  padding: 6px 14px;
+  height: 34px;
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.nav-btn-connect {
+  padding: 7px 14px;
+  height: 34px;
+  font-size: 12.5px;
+  display: inline-flex;
+  align-items: center;
 }
 
 /* Mobile Toggle */

@@ -44,7 +44,7 @@ export function CredentialDetailModal({ credential, onClose }) {
       <div className="modal-dialog credential-detail-dialog" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
         <div className="modal-header">
-          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <div className="modal-header-left">
             <div className="modal-icon-wrap">
               <ShieldCheck size={20} color="var(--accent-primary)" />
             </div>
@@ -59,21 +59,21 @@ export function CredentialDetailModal({ credential, onClose }) {
         </div>
 
         {/* Status Strip */}
-        <div style={{ padding: "16px 24px", borderBottom: "1px solid var(--border-subtle)", display: "flex", alignItems: "center", justifyContent: "space-between", background: "var(--bg-surface)" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        <div className="modal-status-strip">
+          <div className="modal-status-strip-left">
             {credential.revoked ? (
-              <span className="verify-status-badge revoked" style={{ padding: "4px 10px", fontSize: "12px" }}>
+              <span className="verify-status-badge revoked">
                 <XCircle size={14} />
                 <span>✕ REVOKED</span>
               </span>
             ) : (
-              <span className="verify-status-badge valid" style={{ padding: "4px 10px", fontSize: "12px" }}>
+              <span className="verify-status-badge valid">
                 <CheckCircle2 size={14} />
                 <span>✓ VALID ON MONAD</span>
               </span>
             )}
           </div>
-          <span style={{ fontSize: "11.5px", fontFamily: "var(--font-mono)", color: "var(--text-muted)" }}>
+          <span className="modal-anchor-hint">
             Anchor: Monad Testnet (10143)
           </span>
         </div>
@@ -82,32 +82,23 @@ export function CredentialDetailModal({ credential, onClose }) {
         <div className="modal-body-scroll">
           {/* Linked Evidence (if present) */}
           {credential.evidenceProject && (
-            <div style={{
-              margin: "14px 24px 6px 24px",
-              padding: "12px 16px",
-              background: "rgba(56, 189, 248, 0.08)",
-              border: "1px solid rgba(56, 189, 248, 0.25)",
-              borderRadius: "var(--radius-md)",
-              display: "flex",
-              alignItems: "center",
-              gap: "10px"
-            }}>
-              <FolderGit2 size={18} color="#38bdf8" />
+            <div className="modal-evidence-box">
+              <FolderGit2 size={18} color="var(--accent-primary)" />
               <div>
-                <span style={{ fontSize: "10.5px", fontFamily: "var(--font-mono)", color: "#38bdf8", fontWeight: "700", textTransform: "uppercase" }}>
+                <span className="modal-evidence-tag">
                   LINKED PORTFOLIO EVIDENCE
                 </span>
-                <p style={{ fontSize: "13px", fontWeight: "600", color: "var(--text-highlight)", marginTop: "2px" }}>
+                <p className="modal-evidence-title">
                   {credential.evidenceProject}
                 </p>
               </div>
             </div>
           )}
 
-          <div className="audit-table" style={{ margin: "14px 24px 24px 24px" }}>
+          <div className="audit-table modal-audit-table">
             <div className="audit-row">
               <span className="audit-label">
-                <FileCheck size={14} color="#f26c36" /> Credential ID
+                <FileCheck size={14} color="var(--accent-primary)" /> Credential ID
               </span>
               <div className="audit-val-wrap">
                 <span className="audit-value">{credential.credentialId}</span>
@@ -119,7 +110,7 @@ export function CredentialDetailModal({ credential, onClose }) {
 
             <div className="audit-row">
               <span className="audit-label">
-                <User size={14} color="#f26c36" /> Student Wallet
+                <User size={14} color="var(--accent-primary)" /> Student Wallet
               </span>
               <div className="audit-val-wrap">
                 <span className="audit-value">{credential.student}</span>
@@ -131,7 +122,7 @@ export function CredentialDetailModal({ credential, onClose }) {
 
             <div className="audit-row">
               <span className="audit-label">
-                <Building2 size={14} color="#f26c36" /> Authorized Issuer
+                <Building2 size={14} color="var(--accent-primary)" /> Authorized Issuer
               </span>
               <div className="audit-val-wrap">
                 <span className="audit-value">{credential.issuer}</span>
@@ -143,28 +134,27 @@ export function CredentialDetailModal({ credential, onClose }) {
 
             <div className="audit-row">
               <span className="audit-label">
-                <Calendar size={14} color="#f26c36" /> Issued Timestamp
+                <Calendar size={14} color="var(--accent-primary)" /> Issued Timestamp
               </span>
               <span className="audit-value">{formattedDate}</span>
             </div>
 
             <div className="audit-row">
               <span className="audit-label">
-                <Database size={14} color="#f26c36" /> Metadata Reference
+                <Database size={14} color="var(--accent-primary)" /> Metadata Reference
               </span>
               <span className="audit-value">{credential.metadataHash || "ipfs://QmDefaultHash"}</span>
             </div>
 
             <div className="audit-row">
               <span className="audit-label">
-                <ShieldCheck size={14} color="#f26c36" /> Smart Contract
+                <ShieldCheck size={14} color="var(--accent-primary)" /> Smart Contract
               </span>
               <a
                 href={`${MONAD_TESTNET_CONFIG.explorerUrl}/address/${CONTRACT_ADDRESS}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="audit-value"
-                style={{ color: "var(--accent-primary)", display: "inline-flex", alignItems: "center", gap: "4px" }}
+                className="audit-value audit-link-external"
               >
                 <span>{CONTRACT_ADDRESS}</span>
                 <ExternalLink size={12} />
@@ -174,14 +164,13 @@ export function CredentialDetailModal({ credential, onClose }) {
         </div>
 
         {/* Modal Actions */}
-        <div className="modal-actions" style={{ padding: "16px 24px", borderTop: "1px solid var(--border-subtle)", display: "flex", justifyContent: "flex-end", gap: "10px" }}>
+        <div className="modal-actions-bar">
           <button onClick={onClose} className="btn-secondary">
             Close
           </button>
           <Link
             to={`/verify/${credential.credentialId}`}
-            className="btn-primary"
-            style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}
+            className="btn-primary modal-verify-btn"
           >
             <ShieldCheck size={14} />
             <span>Verify on Monad</span>

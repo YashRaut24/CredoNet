@@ -150,7 +150,7 @@ export function CredoVaultCard() {
             const Icon = cred.icon;
             return (
               <div key={cred.id} className="vault-item">
-                <div className="item-sigil-box" style={{ borderColor: `${cred.color}40`, color: cred.color }}>
+                <div className="item-sigil-box">
                   <Icon size={17} />
                 </div>
                 <div className="item-details">
@@ -199,14 +199,14 @@ export function CredoVaultCard() {
       {activeTab === "qr" && (
         <div className="vault-qr-shelf">
           <div className="vault-qr-frame">
-            <QrCode size={68} color="#f26c36" />
+            <QrCode size={68} color="var(--accent-primary)" />
             <span className="qr-frame-label">Vault Verification QR</span>
           </div>
           <div className="vault-qr-info">
-            <h4 style={{ fontSize: "14px", fontWeight: "600", color: "var(--text-highlight)", marginBottom: "4px" }}>
+            <h4 className="vault-qr-title">
               Instant Recruiter Verification
             </h4>
-            <p style={{ fontSize: "12px", color: "var(--text-secondary)", lineHeight: "1.5" }}>
+            <p className="vault-qr-desc">
               Employers can scan this QR code to instantly verify all completed skills and projects in &lt;1 second for free.
             </p>
           </div>

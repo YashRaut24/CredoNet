@@ -61,7 +61,7 @@ export function InitialLoader({ onComplete }) {
 
         <div className="loader-terminal">
           {steps.map((text, idx) => (
-            <div key={idx} className="loader-terminal-line" style={{ opacity: idx <= step ? 1 : 0.35 }}>
+            <div key={idx} className={`loader-terminal-line ${idx <= step ? "active" : "pending"}`}>
               <span className={`terminal-dot ${idx < step ? "done" : ""}`} />
               <span>{text}</span>
             </div>
@@ -69,7 +69,7 @@ export function InitialLoader({ onComplete }) {
         </div>
 
         <div className="loader-progress-track">
-          <div className="loader-progress-fill" style={{ width: `${progress}%` }} />
+          <div className={`loader-progress-fill step-${step}`} />
         </div>
 
         <div className="loader-progress-text">
